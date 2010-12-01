@@ -11,4 +11,11 @@ class Consumer extends AbstractBufferedPipedRunnable implements Pipe {
 			System.out.println(line);
 		}
 	}
+
+	public boolean isRunning() {
+		return false;
+	}
+
+	public void setRunning(boolean running) {
+	}
 }

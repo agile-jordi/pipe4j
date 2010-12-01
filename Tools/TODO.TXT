@@ -1,0 +1,25 @@
+From: http://en.wikipedia.org/wiki/List_of_Unix_utilities
+
+awk 	Text processing 	Pattern scanning and processing language 
+cat 	Filesystem 	Concatenate and print files 
+cksum 	Filesystem 	Write file checksums and sizes 
+command 	Shell Programming 	Execute a simple command 
+compress 	Filesystem 	Compress data 
+cp 	Filesystem 	Copy files  
+cut 	Shell Programming 	Cut out selected fields of each line of a file 
+diff 	Text processing 	Compare two files 
+dirname 	Filesystem 	Return the directory portion of a pathname 
+echo 	Shell programming 	Write arguments to standard output 
+grep 	Misc 	Search text for a pattern 
+head 	Text processing 	Copy the first part of files 
+nl 	Text Processing 	Line numbering filter 
+read 	Shell Programming 	Read a line from standard input 
+sed 	Text processing 	Stream editor 
+sort 	Text Processing 	Sort, merge, or sequence check text files 
+split 	Misc 	Split files into pieces 
+tail 	Text processing 	Copy the last part of a file 
+tee 	Shell programming 	Duplicate standard input 
+wc 	Text processing 	Line, word and byte or character count 
+xargs 	Shell Programming 	Construct argument lists and invoke utility 
+
+Mine: gzip, gunzip, tar, untar, jar, unjar, wget

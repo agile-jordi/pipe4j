@@ -1,10 +1,12 @@
-package pipe;
+package pipe.sink;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+
+import pipe.AbstractPipedRunnable;
 
 public class FileSink extends AbstractPipedRunnable {
 	private static final int defaultBufferSize = 8 * 1024;

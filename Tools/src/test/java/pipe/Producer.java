@@ -13,4 +13,11 @@ class Producer extends AbstractBufferedPipedRunnable implements Pipe {
 			writer.newLine();
 		}
 	}
+
+	public boolean isRunning() {
+		return false;
+	}
+
+	public void setRunning(boolean running) {
+	}
 }

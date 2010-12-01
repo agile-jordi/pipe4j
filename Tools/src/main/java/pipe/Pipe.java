@@ -13,4 +13,12 @@ public interface Pipe {
 	Reader getReader();
 
 	void run() throws Exception;
+
+	void setPipeConfiguration(PipeConfiguration pipeConfiguration);
+
+	PipeConfiguration getPipeConfiguration();
+
+	boolean isRunning();
+
+	void setRunning(boolean running);
 }

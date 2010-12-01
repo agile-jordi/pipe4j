@@ -1,10 +1,12 @@
-package pipe;
+package pipe.source;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+
+import pipe.AbstractPipedRunnable;
 
 public class FileSource extends AbstractPipedRunnable {
 	private static final int defaultBufferSize = 8 * 1024;
