@@ -1,55 +1,41 @@
 package pipe.source;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 
-import pipe.AbstractPipedRunnable;
+import pipe.AbstractDelegatingPipe;
 
-public class FileSource extends AbstractPipedRunnable {
+public class FileSource extends AbstractDelegatingPipe {
 	private static final int defaultBufferSize = 8 * 1024;
 	private int bufferSize = defaultBufferSize;
 
 	public FileSource(String filepath) throws IOException {
-		this(new FileReader(filepath));
+		this(new File(filepath));
 	}
 
 	public FileSource(File file) throws IOException {
-		this(new FileReader(file));
+		this(new FileInputStream(file));
 	}
 
-	public FileSource(FileReader fileReader) throws IOException {
-		setReader(fileReader);
+	public FileSource(FileInputStream fileReader) throws IOException {
+		setInputStream(fileReader);
 	}
 
 	public FileSource(String filepath, int bufferSize) throws IOException {
-		this(new FileReader(filepath), bufferSize);
+		this(new File(filepath), bufferSize);
 	}
 
 	public FileSource(File file, int bufferSize) throws IOException {
-		this(new FileReader(file), bufferSize);
+		this(new FileInputStream(file), bufferSize);
 	}
 
-	public FileSource(FileReader fileReader, int bufferSize) throws IOException {
-		setReader(fileReader);
+	public FileSource(FileInputStream fileReader, int bufferSize) throws IOException {
+		setInputStream(fileReader);
 		this.bufferSize = bufferSize;
 	}
 
-	@Override
-	public void run() throws Exception {
-		char[] buffer = new char[bufferSize];
-		Reader reader = getReader();
-		Writer writer = getWriter();
-        while (true) {
-            int bytesRead = reader.read(buffer);
-
-            if (bytesRead == -1) {
-                break; //we are done
-            }
-
-            writer.write(buffer, 0, bytesRead);
-        }
+	public int getBufferSize() {
+		return bufferSize;
 	}
 }

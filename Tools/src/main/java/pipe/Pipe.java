@@ -1,16 +1,16 @@
 package pipe;
 
-import java.io.Reader;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public interface Pipe {
-	void setWriter(Writer writer);
+	void setOutputStream(OutputStream outputStream);
 
-	Writer getWriter();
+	OutputStream getOutputStream();
 
-	void setReader(Reader reader);
+	void setInputStream(InputStream inputStream);
 
-	Reader getReader();
+	InputStream getInputStream();
 
 	void run() throws Exception;
 

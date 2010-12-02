@@ -1,8 +1,8 @@
 package pipe;
 
 import java.io.IOException;
-import java.io.PipedReader;
-import java.io.PipedWriter;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -125,23 +125,23 @@ public class Pipeline {
 
 		threadGroup = new ThreadGroup("Pipeline");
 		PipeThread[] threads = new PipeThread[pipeline.size()];
-		PipedWriter lastOut = new PipedWriter();
-		PipedReader lastIn;
-		pipeline.get(0).setWriter(lastOut);
+		PipedOutputStream lastOut = new PipedOutputStream();
+		PipedInputStream lastIn;
+		pipeline.get(0).setOutputStream(lastOut);
 		threads[0] = new PipeThread(threadGroup, pipeline.get(0));
 
 		for (int i = 1; i < pipeline.size() - 1; i++) {
-			lastIn = new PipedReader(lastOut);
-			lastOut = new PipedWriter();
+			lastIn = new PipedInputStream(lastOut);
+			lastOut = new PipedOutputStream();
 
 			Pipe pipedRunnable = pipeline.get(i);
-			pipedRunnable.setReader(lastIn);
-			pipedRunnable.setWriter(lastOut);
+			pipedRunnable.setInputStream(lastIn);
+			pipedRunnable.setOutputStream(lastOut);
 			threads[i] = new PipeThread(threadGroup, pipedRunnable);
 		}
 
-		lastIn = new PipedReader(lastOut);
-		pipeline.get(pipeline.size() - 1).setReader(lastIn);
+		lastIn = new PipedInputStream(lastOut);
+		pipeline.get(pipeline.size() - 1).setInputStream(lastIn);
 		threads[threads.length - 1] = new PipeThread(threadGroup,
 				pipeline.get(pipeline.size() - 1));
 		return threads;

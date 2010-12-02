@@ -2,13 +2,13 @@ package pipe;
 
 
 
-class ReadClosingPipe extends AbstractPipedRunnable implements Pipe {
+class ReadClosingPipe extends AbstractPipe implements Pipe {
 	@Override
 	public void run() throws Exception {
-		char[] buffer = new char[8];
-		int n = getReader().read(buffer);
-		getWriter().write(buffer, 0, n);
-		getReader().close();
+		byte[] buffer = new byte[8];
+		int n = getInputStream().read(buffer);
+		getOutputStream().write(buffer, 0, n);
+		getInputStream().close();
 	}
 
 	public boolean isRunning() {

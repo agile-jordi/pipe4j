@@ -1,12 +1,12 @@
 package pipe;
 
-import java.io.Reader;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractPipedRunnable implements Pipe {
-	private Reader reader;
-	private Writer writer;
+public abstract class AbstractPipe implements Pipe {
+	private InputStream inputStream;
+	private OutputStream outputStream;
 	private PipeConfiguration pipeConfiguration;
 	private AtomicBoolean running = new AtomicBoolean(false);
 
@@ -20,20 +20,20 @@ public abstract class AbstractPipedRunnable implements Pipe {
 		return this.running.get();
 	}
 	
-	public Reader getReader() {
-		return reader;
+	public InputStream getInputStream() {
+		return inputStream;
 	}
 
-	public void setReader(Reader reader) {
-		this.reader = reader;
+	public void setInputStream(InputStream inputStream) {
+		this.inputStream = inputStream;
 	}
 
-	public Writer getWriter() {
-		return writer;
+	public OutputStream getOutputStream() {
+		return outputStream;
 	}
 
-	public void setWriter(Writer writer) {
-		this.writer = writer;
+	public void setOutputStream(OutputStream outputStream) {
+		this.outputStream = outputStream;
 	}
 
 	@Override

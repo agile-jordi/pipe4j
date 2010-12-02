@@ -30,20 +30,20 @@ class PipeThread extends Thread {
 		} catch (Exception e) {
 			exception = e;
 		} finally {
-			if (pipe.getReader() != null) {
+			if (pipe.getInputStream() != null) {
 				try {
-					pipe.getReader().close();
+					pipe.getInputStream().close();
 				} catch (IOException e) {
 				}
 			}
 
-			if (pipe.getWriter() != null) {
+			if (pipe.getOutputStream() != null) {
 				try {
-					pipe.getWriter().flush();
+					pipe.getOutputStream().flush();
 				} catch (IOException e) {
 				}
 				try {
-					pipe.getWriter().close();
+					pipe.getOutputStream().close();
 				} catch (IOException e) {
 				}
 			}

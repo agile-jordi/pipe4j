@@ -3,12 +3,12 @@ package pipe;
 import java.io.IOException;
 
 
-class ExceptionPipe extends AbstractPipedRunnable implements Pipe {
+class ExceptionPipe extends AbstractPipe implements Pipe {
 	@Override
 	public void run() throws Exception {
-		char[] buffer = new char[8];
-		int n = getReader().read(buffer);
-		getWriter().write(buffer, 0, n);
+		byte[] buffer = new byte[8];
+		int n = getInputStream().read(buffer);
+		getOutputStream().write(buffer, 0, n);
 		throw new IOException("Argh!");
 	}
 

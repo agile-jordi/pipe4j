@@ -1,38 +1,24 @@
 package pipe.source;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
 
-import pipe.AbstractPipedRunnable;
+import pipe.AbstractDelegatingPipe;
 
-public class StringSource extends AbstractPipedRunnable {
+public class StringSource extends AbstractDelegatingPipe {
 	private static final int defaultBufferSize = 4 * 1024;
 	private int bufferSize = defaultBufferSize;
 	
 	public StringSource(String source) throws IOException {
-		setReader(new StringReader(source));
+		this(source, defaultBufferSize);
 	}
 	
 	public StringSource(String source, int bufferSize) throws IOException {
-		this(source);
+		setInputStream(new ByteArrayInputStream(source.getBytes()));
 		this.bufferSize = bufferSize;
 	}
 
-	@Override
-	public void run() throws Exception {
-		char[] buffer = new char[bufferSize];
-		Reader reader = getReader();
-		Writer writer = getWriter();
-        while (true) {
-            int bytesRead = reader.read(buffer);
-
-            if (bytesRead == -1) {
-                break; //we are done
-            }
-
-            writer.write(buffer, 0, bytesRead);
-        }
+	public int getBufferSize() {
+		return bufferSize;
 	}
 }

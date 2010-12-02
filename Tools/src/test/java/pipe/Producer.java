@@ -1,12 +1,14 @@
 package pipe;
 
 import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 
-class Producer extends AbstractBufferedPipedRunnable implements Pipe {
+class Producer extends AbstractPipe implements Pipe {
 	@Override
 	public void run() throws Exception {
 		Runtime runtime = Runtime.getRuntime();
-		BufferedWriter writer = (BufferedWriter) getWriter();
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+				getOutputStream()));
 		for (int i = 0; i < 10000; i++) {
 			writer.write(i + ", used mem: "
 					+ (runtime.totalMemory() - runtime.freeMemory()));
