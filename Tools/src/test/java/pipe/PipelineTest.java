@@ -1,10 +1,11 @@
 package pipe;
 
 import java.io.IOException;
+import java.util.List;
 
+import junit.framework.TestCase;
 import pipe.sink.StringSink;
 import pipe.source.StringSource;
-import junit.framework.TestCase;
 
 public class PipelineTest extends TestCase {
 	private StringBuilder sb = new StringBuilder();
@@ -21,11 +22,43 @@ public class PipelineTest extends TestCase {
 		}
 	}
 
+	public void testInvalidArgs() throws Exception {
+		try {
+			new Pipeline().run();
+			fail("Expected IllegalArgumentException!");
+		} catch (IllegalArgumentException expected) {
+		}
+		try {
+			new Pipeline((Pipe[]) null).run();
+			fail("Expected IllegalArgumentException!");
+		} catch (IllegalArgumentException expected) {
+		}
+		try {
+			new Pipeline((List<Pipe>) null).run();
+			fail("Expected IllegalArgumentException!");
+		} catch (IllegalArgumentException expected) {
+		}
+	}
+
 	public void testSimple() throws Exception {
 		StringSink stringSink = new StringSink();
 		Pipeline pipeline = new Pipeline(new Pipe[] {
 				new StringSource(sb.toString()), new MiddlePipe(), stringSink });
 		ThreadGroup threadGroup = pipeline.run();
+
+		checkThreadGroup(threadGroup);
+		assertEquals(sb.toString(), stringSink.getString());
+	}
+
+	public void testSimpleTwice() throws Exception {
+		StringSink stringSink = new StringSink();
+		Pipeline pipeline = new Pipeline(new Pipe[] {
+				new StringSource(sb.toString()), new MiddlePipe(), stringSink });
+		ThreadGroup threadGroup = pipeline.run();
+
+		checkThreadGroup(threadGroup);
+		assertEquals(sb.toString(), stringSink.getString());
+		threadGroup = pipeline.run();
 
 		checkThreadGroup(threadGroup);
 		assertEquals(sb.toString(), stringSink.getString());

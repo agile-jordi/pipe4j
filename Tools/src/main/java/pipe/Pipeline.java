@@ -16,14 +16,17 @@ public class Pipeline {
 	}
 
 	public Pipeline(Pipe[] pipeline) {
-		this(Arrays.asList(pipeline));
+		this(pipeline == null ? null : Arrays.asList(pipeline));
 	}
 
 	public Pipeline(List<Pipe> pipeline) {
 		this();
-		for (Iterator<Pipe> iterator = pipeline.iterator(); iterator.hasNext();) {
-			Pipe pipe = iterator.next();
-			addPipe(pipe);
+		if (pipeline != null) {
+			for (Iterator<Pipe> iterator = pipeline.iterator(); iterator
+					.hasNext();) {
+				Pipe pipe = iterator.next();
+				addPipe(pipe);
+			}
 		}
 	}
 
@@ -51,7 +54,7 @@ public class Pipeline {
 		PipeThread[] threads = buildThreadGroup();
 		return startSync(threads);
 	}
-	
+
 	public ThreadGroup runNoWait() throws Exception {
 		final PipeThread[] threads = buildThreadGroup();
 		new Thread() {
@@ -60,7 +63,7 @@ public class Pipeline {
 					startSync(threads);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-				}		
+				}
 			};
 		}.start();
 		return this.threadGroup;
