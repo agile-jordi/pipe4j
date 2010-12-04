@@ -64,6 +64,18 @@ public class PipelineTest extends TestCase {
 		assertEquals(sb.toString(), stringSink.getString());
 	}
 
+	public void testAsync() throws Exception {
+		Pipeline pipeline = new Pipeline(new Pipe[] {
+				new StringSource(sb.toString()), new SleepPipe(1000),
+				new StringSink() });
+		ThreadGroup threadGroup = pipeline.runNoWait();
+		while (pipeline.isRunning()) {
+			Thread.sleep(100);
+		}
+
+		checkThreadGroup(threadGroup);
+	}
+
 	public void testTimeout() throws Exception {
 		Pipeline pipeline = new Pipeline(new Pipe[] { new StringSource(
 				sb.toString()) }).addPipe(new SleepPipe(5000), 100).addPipe(

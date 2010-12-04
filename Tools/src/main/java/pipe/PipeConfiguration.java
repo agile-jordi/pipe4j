@@ -10,7 +10,7 @@ public class PipeConfiguration {
 	public void setTimeoutMillis(long timeoutMillis) {
 		this.timeoutMillis = timeoutMillis;
 	}
-	
+
 	public boolean hasTimeout() {
 		return this.timeoutMillis > 0l;
 	}

@@ -2,7 +2,6 @@ package pipe;
 
 import java.io.IOException;
 
-
 class ExceptionPipe extends AbstractPipe implements Pipe {
 	@Override
 	public void run() throws Exception {

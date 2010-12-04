@@ -1,7 +1,5 @@
 package pipe;
 
-
-
 class ReadClosingPipe extends AbstractPipe implements Pipe {
 	@Override
 	public void run() throws Exception {

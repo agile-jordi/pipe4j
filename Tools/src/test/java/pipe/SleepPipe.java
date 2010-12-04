@@ -2,7 +2,7 @@ package pipe;
 
 class SleepPipe extends MiddlePipe {
 	private long millis;
-	
+
 	public SleepPipe(long millis) {
 		super();
 		this.millis = millis;

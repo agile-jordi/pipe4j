@@ -11,7 +11,32 @@ import java.util.List;
 public class Pipeline {
 	private List<Pipe> pipeline = new ArrayList<Pipe>();
 	private ThreadGroup threadGroup;
+	private PipeThread[] threads;
 
+	public static Pipeline runPipeline(Pipe[] pipeline) throws Exception {
+		Pipeline instance = new Pipeline(pipeline);
+		instance.run();
+		return instance;
+	}
+	
+	public static Pipeline runPipeline(List<Pipe> pipeline) throws Exception {
+		Pipeline instance = new Pipeline(pipeline);
+		instance.run();
+		return instance;
+	}
+	
+	public static Pipeline runPipelineNoWait(Pipe[] pipeline) throws Exception {
+		Pipeline instance = new Pipeline(pipeline);
+		instance.runNoWait();
+		return instance;
+	}
+	
+	public static Pipeline runPipelineNoWait(List<Pipe> pipeline) throws Exception {
+		Pipeline instance = new Pipeline(pipeline);
+		instance.runNoWait();
+		return instance;
+	}
+	
 	public Pipeline() {
 	}
 
@@ -51,16 +76,16 @@ public class Pipeline {
 	}
 
 	public ThreadGroup run() throws Exception {
-		PipeThread[] threads = buildThreadGroup();
-		return startSync(threads);
+		buildThreadGroup();
+		return startSync();
 	}
 
 	public ThreadGroup runNoWait() throws Exception {
-		final PipeThread[] threads = buildThreadGroup();
+		buildThreadGroup();
 		new Thread() {
 			public void run() {
 				try {
-					startSync(threads);
+					startSync();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -69,7 +94,19 @@ public class Pipeline {
 		return this.threadGroup;
 	}
 
-	private ThreadGroup startSync(PipeThread[] threads)
+	public boolean isRunning() {
+		ThreadGroup threadGroup = this.threadGroup;
+		return threadGroup != null && !threadGroup.isDestroyed();
+	}
+
+	public void cancel() {
+		for (int i = 0; i < threads.length; i++) {
+			PipeThread thread = threads[i];
+			cancelThread(thread);
+		}
+	}
+	
+	private ThreadGroup startSync()
 			throws InterruptedException {
 		for (int i = 0; i < pipeline.size(); i++) {
 			threads[i].getPipe().setRunning(true);
@@ -82,14 +119,7 @@ public class Pipeline {
 			PipeConfiguration config = pipe.getPipeConfiguration();
 			if (config != null && config.hasTimeout()) {
 				thread.join(config.getTimeoutMillis());
-				pipe.setRunning(false);
-				if (thread.isAlive()) {
-					thread.interrupt();
-					System.out.println("Timeout exceeded for pipe "
-							+ pipe.toString()
-							+ ". Thread was interrupted. State is "
-							+ thread.getState());
-				}
+				cancelThread(thread);
 			} else {
 				thread.join();
 				pipe.setRunning(false);
@@ -114,12 +144,24 @@ public class Pipeline {
 			throw exception;
 		}
 
+		threadGroup.destroy();
 		return threadGroup;
 	}
 
-	private PipeThread[] buildThreadGroup() throws IOException {
-		if (threadGroup != null) {
-			threadGroup.destroy();
+	private void cancelThread(PipeThread thread) {
+		thread.getPipe().setRunning(false);
+		if (thread.isAlive()) {
+			thread.interrupt();
+			System.out.println("Timeout exceeded for pipe "
+					+ thread.getPipe().toString()
+					+ ". Thread was interrupted. State is "
+					+ thread.getState());
+		}
+	}
+
+	private void buildThreadGroup() throws IOException {
+		if (isRunning()) {
+			throw new IllegalStateException("Pipeline running!");
 		}
 
 		if (pipeline == null || pipeline.size() < 2) {
@@ -127,7 +169,7 @@ public class Pipeline {
 		}
 
 		threadGroup = new ThreadGroup("Pipeline");
-		PipeThread[] threads = new PipeThread[pipeline.size()];
+		threads = new PipeThread[pipeline.size()];
 		PipedOutputStream lastOut = new PipedOutputStream();
 		PipedInputStream lastIn;
 		pipeline.get(0).setOutputStream(lastOut);
@@ -147,6 +189,5 @@ public class Pipeline {
 		pipeline.get(pipeline.size() - 1).setInputStream(lastIn);
 		threads[threads.length - 1] = new PipeThread(threadGroup,
 				pipeline.get(pipeline.size() - 1));
-		return threads;
 	}
 }

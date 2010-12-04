@@ -14,12 +14,12 @@ public abstract class AbstractPipe implements Pipe {
 	public void setRunning(boolean running) {
 		this.running.set(running);
 	}
-	
+
 	@Override
 	public boolean isRunning() {
 		return this.running.get();
 	}
-	
+
 	public InputStream getInputStream() {
 		return inputStream;
 	}
