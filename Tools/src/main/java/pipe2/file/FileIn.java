@@ -8,14 +8,14 @@ import java.io.OutputStream;
 
 import pipe2.core.AbstractDelegatingPipe;
 
-public class FileOutput extends AbstractDelegatingPipe {
+public class FileIn extends AbstractDelegatingPipe {
 	private File file;
 
-	public FileOutput(String filepath) throws IOException {
+	public FileIn(String filepath) throws IOException {
 		this(new File(filepath));
 	}
 
-	public FileOutput(File file) throws IOException {
+	public FileIn(File file) throws IOException {
 		this.file = file;
 	}
 

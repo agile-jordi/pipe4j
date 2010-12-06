@@ -7,10 +7,10 @@ import java.io.OutputStream;
 
 import pipe2.core.AbstractDelegatingPipe;
 
-public class StringOutput extends AbstractDelegatingPipe {
+public class StringIn extends AbstractDelegatingPipe {
 	private String source;
 
-	public StringOutput(String source) throws IOException {
+	public StringIn(String source) throws IOException {
 		this.source = source;
 	}
 	

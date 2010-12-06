@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import pipe2.core.AbstractPipe;
 
 public class FixEolPipe extends AbstractPipe {
-	enum Platform {
+	public enum Platform {
 		DOS, UNIX, MAC, AUTO
 	}
 

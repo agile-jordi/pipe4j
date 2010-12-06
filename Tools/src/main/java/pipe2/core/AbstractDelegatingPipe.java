@@ -11,5 +11,6 @@ public abstract class AbstractDelegatingPipe extends AbstractPipe {
 		while (!isCancelled() && (bytesRead = is.read(buffer)) != -1) {
 			os.write(buffer, 0, bytesRead);
 		}
+		os.flush();
 	}
 }

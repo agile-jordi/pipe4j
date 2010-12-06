@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 import pipe2.core.AbstractDelegatingPipe;
 
-public class StringInput extends AbstractDelegatingPipe {
+public class StringOut extends AbstractDelegatingPipe {
 	private ByteArrayOutputStream baos;
 
 	public String getString() {

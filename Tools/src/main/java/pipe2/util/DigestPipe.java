@@ -31,7 +31,7 @@ public class DigestPipe extends AbstractPipe {
 			md.update(buffer, 0, numRead);
 		}
 
-		if (!isCancelled()) {
+		if (isCancelled()) {
 			return;
 		}
 

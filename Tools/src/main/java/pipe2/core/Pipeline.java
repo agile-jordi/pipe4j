@@ -3,13 +3,17 @@ package pipe2.core;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-public class Pipeline {
-	public static ThreadGroup run(Pipe[] pipeline) throws Exception {
+public abstract class Pipeline {
+	public static PipelineInfo run(Pipe[] pipeline) throws Exception {
 		return run(pipeline, -1);
 	}
 
-	public static ThreadGroup run(Pipe[] pipeline, long timeoutMilis)
+	public static PipelineInfo run(Pipe[] pipeline, long timeoutMilis)
 			throws Exception {
+		if (pipeline == null || pipeline.length < 2) {
+			throw new IllegalArgumentException("Need at least 2 pipes!");
+		}
+
 		final long timestamp = System.currentTimeMillis();
 		ThreadGroup threadGroup = new ThreadGroup("Pipeline");
 
@@ -19,6 +23,7 @@ public class Pipeline {
 		threads[0] = new PipeThread(null, lastOut, pipeline[0]);
 		for (int i = 1; i < threads.length - 1; i++) {
 			lastIn = new PipedInputStream(lastOut);
+			lastOut = new PipedOutputStream();
 			PipeThread thread = new PipeThread(lastIn, lastOut, pipeline[i]);
 			threads[i] = thread;
 		}
@@ -33,16 +38,20 @@ public class Pipeline {
 		for (int i = 0; i < threads.length; i++) {
 			if (timeoutMilis > 0) {
 				// Wait for the requested perid, minus elapsed time
-				threads[i].join(timeoutMilis
-						- (System.currentTimeMillis() - timestamp));
+				long discountedTimeout = Math
+						.max(0, timeoutMilis
+								- (System.currentTimeMillis() - timestamp));
+				/* System.out.println("will wait for " + discountedTimeout
+						+ " millis for " + threads[i].getPipe()); */
+				threads[i].join(discountedTimeout);
 				if (threads[i].isAlive()) {
 					threads[i].getPipe().cancel();
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(100);
 					} catch (InterruptedException ignored) {
 					}
 				}
-				
+
 				if (threads[i].isAlive()) {
 					threads[i].interrupt();
 					threads[i].close();
@@ -53,12 +62,15 @@ public class Pipeline {
 			}
 		}
 
-		// If exception happened, throw first found
+		// If exception happened, get first found
+		PipelineInfo info = new PipelineInfo(threadGroup);
 		for (int i = 0; i < threads.length; i++) {
 			if (threads[i].hasError()) {
-				throw threads[i].getException();
+				info.setException(threads[i].getException());
+				break;
 			}
 		}
-		return threadGroup;
+		
+		return info;
 	}
 }
