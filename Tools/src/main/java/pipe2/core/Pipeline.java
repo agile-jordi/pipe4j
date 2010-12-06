@@ -41,8 +41,10 @@ public abstract class Pipeline {
 				long discountedTimeout = Math
 						.max(0, timeoutMilis
 								- (System.currentTimeMillis() - timestamp));
-				/* System.out.println("will wait for " + discountedTimeout
-						+ " millis for " + threads[i].getPipe()); */
+				/*
+				 * System.out.println("will wait for " + discountedTimeout +
+				 * " millis for " + threads[i].getPipe());
+				 */
 				threads[i].join(discountedTimeout);
 				if (threads[i].isAlive()) {
 					threads[i].getPipe().cancel();
@@ -70,7 +72,7 @@ public abstract class Pipeline {
 				break;
 			}
 		}
-		
+
 		return info;
 	}
 }

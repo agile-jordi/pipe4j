@@ -12,7 +12,7 @@ public class StringOut extends AbstractDelegatingPipe {
 	public String getString() {
 		return new String(this.baos.toByteArray());
 	}
-	
+
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
 		baos = new ByteArrayOutputStream();

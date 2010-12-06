@@ -1,11 +1,9 @@
-package pipe2;
+package pipe2.core;
 
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-
-import pipe2.core.AbstractPipe;
 
 class Producer extends AbstractPipe {
 	@Override

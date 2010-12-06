@@ -7,7 +7,7 @@ import java.nio.CharBuffer;
 
 class CountingInputStreamReader extends InputStreamReader {
 	private int count = 0;
-	
+
 	public CountingInputStreamReader(InputStream in) {
 		super(in);
 	}
@@ -20,28 +20,28 @@ class CountingInputStreamReader extends InputStreamReader {
 		}
 		return read;
 	}
-	
+
 	@Override
 	public int read(char[] cbuf) throws IOException {
 		int read = super.read(cbuf);
 		count += read;
 		return read;
 	}
-	
+
 	@Override
 	public int read(char[] cbuf, int offset, int length) throws IOException {
 		int read = super.read(cbuf, offset, length);
 		count += read;
 		return read;
 	}
-	
+
 	@Override
 	public int read(CharBuffer target) throws IOException {
 		int read = super.read(target);
 		count += read;
 		return read;
 	}
-	
+
 	public int getCount() {
 		return count;
 	}

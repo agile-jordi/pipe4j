@@ -13,7 +13,7 @@ public class StringIn extends AbstractDelegatingPipe {
 	public StringIn(String source) throws IOException {
 		this.source = source;
 	}
-	
+
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
 		super.run(new ByteArrayInputStream(source.getBytes()), os);

@@ -15,7 +15,7 @@ class CountingInputStream extends InputStream {
 	public int read() throws IOException {
 		int read = is.read();
 		if (read >= 0) {
-			++count;				
+			++count;
 		}
 		return read;
 	}

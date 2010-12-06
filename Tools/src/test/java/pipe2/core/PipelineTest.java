@@ -1,11 +1,8 @@
-package pipe2;
+package pipe2.core;
 
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import pipe2.core.Pipe;
-import pipe2.core.Pipeline;
-import pipe2.core.PipelineInfo;
 import pipe2.string.StringIn;
 import pipe2.string.StringOut;
 

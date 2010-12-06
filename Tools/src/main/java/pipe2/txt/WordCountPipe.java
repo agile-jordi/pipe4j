@@ -16,7 +16,7 @@ public class WordCountPipe extends AbstractPipe {
 		int totalWords = 0;
 		int totalLines = 0;
 		int totalChars = 0;
-		
+
 		CountingInputStream cis = new CountingInputStream(is);
 		CountingInputStreamReader cisr = new CountingInputStreamReader(cis);
 		BufferedReader reader = new BufferedReader(cisr);
@@ -30,11 +30,12 @@ public class WordCountPipe extends AbstractPipe {
 				++totalWords;
 			}
 		}
-		
+
 		totalChars = cisr.getCount();
 		totalBytes = cis.getCount();
 		OutputStreamWriter writer = new OutputStreamWriter(os);
-		writer.write(totalLines + "\t" + totalWords + "\t" + totalChars + "\t" + totalBytes);
+		writer.write(totalLines + "\t" + totalWords + "\t" + totalChars + "\t"
+				+ totalBytes);
 		writer.flush();
 	}
 }

@@ -1,11 +1,11 @@
-package pipe2;
+package pipe2.util;
 
 import junit.framework.TestCase;
 import pipe2.core.Pipe;
 import pipe2.core.Pipeline;
+import pipe2.core.TestUtils;
 import pipe2.file.FileIn;
 import pipe2.string.StringOut;
-import pipe2.util.DigestPipe;
 
 public class DigestPipeTest extends TestCase {
 	public void testDigestPipe() throws Exception {

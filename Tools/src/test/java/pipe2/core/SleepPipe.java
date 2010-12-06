@@ -1,4 +1,4 @@
-package pipe2;
+package pipe2.core;
 
 import java.io.InputStream;
 import java.io.OutputStream;

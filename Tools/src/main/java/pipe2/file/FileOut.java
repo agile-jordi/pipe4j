@@ -33,8 +33,8 @@ public class FileOut extends AbstractDelegatingPipe {
 								+ this.file.getAbsolutePath());
 		} else {
 			if (!file.createNewFile()) {
-				throw new IllegalArgumentException("Could not create new file: "
-						+ file.getAbsolutePath());
+				throw new IllegalArgumentException(
+						"Could not create new file: " + file.getAbsolutePath());
 			}
 		}
 		super.run(is, new FileOutputStream(file));
