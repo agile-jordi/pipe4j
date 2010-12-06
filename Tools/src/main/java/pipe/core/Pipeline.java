@@ -20,15 +20,18 @@ public abstract class Pipeline {
 		PipeThread[] threads = new PipeThread[pipeline.length];
 		PipedInputStream lastIn;
 		PipedOutputStream lastOut = new PipedOutputStream();
-		threads[0] = new PipeThread(null, lastOut, pipeline[0]);
+		threads[0] = new PipeThread(threadGroup, pipeline[0].toString(), null,
+				lastOut, pipeline[0]);
 		for (int i = 1; i < threads.length - 1; i++) {
 			lastIn = new PipedInputStream(lastOut);
 			lastOut = new PipedOutputStream();
-			PipeThread thread = new PipeThread(lastIn, lastOut, pipeline[i]);
+			PipeThread thread = new PipeThread(threadGroup,
+					pipeline[0].toString(), lastIn, lastOut, pipeline[i]);
 			threads[i] = thread;
 		}
 		lastIn = new PipedInputStream(lastOut);
-		threads[threads.length - 1] = new PipeThread(lastIn, null,
+		threads[threads.length - 1] = new PipeThread(threadGroup,
+				pipeline[0].toString(), lastIn, null,
 				pipeline[threads.length - 1]);
 
 		for (int i = 0; i < threads.length; i++) {
@@ -41,10 +44,6 @@ public abstract class Pipeline {
 				long discountedTimeout = Math
 						.max(0, timeoutMilis
 								- (System.currentTimeMillis() - timestamp));
-				/*
-				 * System.out.println("will wait for " + discountedTimeout +
-				 * " millis for " + threads[i].getPipe());
-				 */
 				threads[i].join(discountedTimeout);
 				if (threads[i].isAlive()) {
 					threads[i].getPipe().cancel();
@@ -57,6 +56,15 @@ public abstract class Pipeline {
 				if (threads[i].isAlive()) {
 					threads[i].interrupt();
 					threads[i].close();
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException ignored) {
+					}
+				}
+
+				if (threads[i].isAlive()) {
+					threads[i]
+							.stop(new InterruptedException("Thread stopped!"));
 				}
 			} else {
 				// Wait forever

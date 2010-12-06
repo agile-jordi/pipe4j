@@ -9,8 +9,9 @@ class PipeThread extends Thread {
 	private final Pipe pipe;
 	private Exception exception;
 
-	public PipeThread(InputStream is, OutputStream os, Pipe pipe) {
-		super();
+	public PipeThread(ThreadGroup threadGroup, String name, InputStream is,
+			OutputStream os, Pipe pipe) {
+		super(threadGroup, name);
 		this.is = is;
 		this.os = os;
 		this.pipe = pipe;

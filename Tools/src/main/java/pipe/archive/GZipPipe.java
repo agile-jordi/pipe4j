@@ -9,6 +9,8 @@ import pipe.core.AbstractDelegatingPipe;
 public class GZipPipe extends AbstractDelegatingPipe {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
-		super.run(is, new GZIPOutputStream(os));
+		GZIPOutputStream gzipos = new GZIPOutputStream(os);
+		super.run(is, gzipos);
+		gzipos.finish();
 	}
 }
