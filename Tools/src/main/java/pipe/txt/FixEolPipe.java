@@ -8,8 +8,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import pipe.core.AbstractPipe;
+import pipe.core.PipeProcessor;
 
-public class FixEolPipe extends AbstractPipe {
+public class FixEolPipe extends AbstractPipe implements PipeProcessor {
 	public enum Platform {
 		DOS, UNIX, MAC, AUTO
 	}

@@ -1,11 +1,10 @@
 package pipe.adaptor;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 
-import pipe.core.AbstractDelegatingPipe;
+import pipe.core.AbstractPipeOut;
 
-public class OutAdaptor extends AbstractDelegatingPipe {
+public class OutAdaptor extends AbstractPipeOut {
 	private final OutputStream outputStream;
 
 	public OutAdaptor(OutputStream outputStream) {
@@ -15,10 +14,5 @@ public class OutAdaptor extends AbstractDelegatingPipe {
 
 	public OutputStream getOutputStream() {
 		return outputStream;
-	}
-
-	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		super.run(is, getOutputStream());
 	}
 }

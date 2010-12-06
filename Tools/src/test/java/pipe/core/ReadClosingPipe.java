@@ -3,7 +3,7 @@ package pipe.core;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class ReadClosingPipe extends AbstractPipe {
+class ReadClosingPipe extends AbstractPipe implements PipeProcessor {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
 		byte[] buffer = new byte[8];

@@ -26,7 +26,7 @@ public class GetUrlPipeTest extends TestCase {
 	public void testGetUrlPipe() throws Exception {
 		StringOut stringIn = new StringOut();
 		Pipeline.run(new Pipe[] {
-				new GetUrlPipe("http://localhost:8080/src/test/java/sample.txt"),
+				new UrlIn("http://localhost:8080/src/test/java/sample.txt"),
 				new DigestPipe(), stringIn });
 
 		assertEquals(TestUtils.txtMD5, stringIn.getString());

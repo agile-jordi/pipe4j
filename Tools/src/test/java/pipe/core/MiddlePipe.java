@@ -1,4 +1,4 @@
 package pipe.core;
 
-class MiddlePipe extends AbstractDelegatingPipe {
+class MiddlePipe extends AbstractPipeProcessor {
 }

@@ -4,11 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
-import pipe.core.AbstractDelegatingPipe;
+import pipe.core.AbstractPipeIn;
 
-public class FileIn extends AbstractDelegatingPipe {
+public class FileIn extends AbstractPipeIn {
 	private File file;
 
 	public FileIn(String filepath) throws IOException {
@@ -20,7 +19,7 @@ public class FileIn extends AbstractDelegatingPipe {
 	}
 
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
+	protected InputStream getInputStream() throws Exception {
 		if (!file.exists()) {
 			throw new IllegalArgumentException("File not found: "
 					+ file.getAbsolutePath());
@@ -30,6 +29,6 @@ public class FileIn extends AbstractDelegatingPipe {
 			throw new IllegalArgumentException("Cannot read: "
 					+ file.getAbsolutePath());
 		}
-		super.run(new FileInputStream(file), os);
+		return new FileInputStream(file);
 	}
 }

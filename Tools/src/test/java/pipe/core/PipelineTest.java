@@ -48,21 +48,21 @@ public class PipelineTest extends TestCase {
 	public void testException() throws Exception {
 		PipelineInfo info = Pipeline.run(new Pipe[] {
 				new StringIn(sb.toString()), new MiddlePipe(),
-				new ExceptionPipe() });
+				new ExceptionPipe(), new StringOut() });
 		checkResults(info, IOException.class);
 	}
 
 	public void testCloseReader() throws Exception {
 		PipelineInfo info = Pipeline.run(new Pipe[] {
 				new StringIn(sb.toString()), new MiddlePipe(),
-				new ReadClosingPipe() });
+				new ReadClosingPipe(), new StringOut() });
 		checkResults(info, IOException.class);
 	}
 
 	public void testCloseWriter() throws Exception {
 		PipelineInfo info = Pipeline.run(new Pipe[] {
 				new StringIn(sb.toString()), new WriteClosingPipe(),
-				new MiddlePipe() });
+				new MiddlePipe(), new StringOut() });
 		checkResults(info, IOException.class);
 	}
 

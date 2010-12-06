@@ -6,8 +6,9 @@ import java.io.OutputStreamWriter;
 import java.security.MessageDigest;
 
 import pipe.core.AbstractPipe;
+import pipe.core.PipeProcessor;
 
-public class DigestPipe extends AbstractPipe {
+public class DigestPipe extends AbstractPipe implements PipeProcessor {
 	private static final String HEXES = "0123456789abcdef";
 	private static final String defaultAlgorithm = "MD5";
 	private String algorithm;

@@ -14,25 +14,46 @@ public abstract class Pipeline {
 			throw new IllegalArgumentException("Need at least 2 pipes!");
 		}
 
+		if (!(pipeline[0] instanceof PipeIn)) {
+			throw new IllegalArgumentException(
+					"First pipe must be an instance of "
+							+ PipeIn.class.toString());
+		}
+
+		for (int i = 1; i < pipeline.length - 1; i++) {
+			if (!(pipeline[i] instanceof PipeProcessor)) {
+				throw new IllegalArgumentException(
+						"First pipe must be an instance of "
+								+ PipeProcessor.class.toString());
+			}
+		}
+
+		if (!(pipeline[pipeline.length - 1] instanceof PipeOut)) {
+			throw new IllegalArgumentException(
+					"Last pipe must be an instance of "
+							+ PipeOut.class.toString());
+		}
+
 		final long timestamp = System.currentTimeMillis();
 		ThreadGroup threadGroup = new ThreadGroup("Pipeline");
 
 		PipeThread[] threads = new PipeThread[pipeline.length];
 		PipedInputStream lastIn;
 		PipedOutputStream lastOut = new PipedOutputStream();
-		threads[0] = new PipeThread(threadGroup, pipeline[0].toString(), null,
-				lastOut, pipeline[0]);
+		threads[0] = new PipeInThread(threadGroup, pipeline[0].toString(),
+				lastOut, (PipeIn) pipeline[0]);
 		for (int i = 1; i < threads.length - 1; i++) {
 			lastIn = new PipedInputStream(lastOut);
 			lastOut = new PipedOutputStream();
-			PipeThread thread = new PipeThread(threadGroup,
-					pipeline[0].toString(), lastIn, lastOut, pipeline[i]);
+			PipeProcessorThread thread = new PipeProcessorThread(threadGroup,
+					pipeline[0].toString(), lastIn, lastOut,
+					(PipeProcessor) pipeline[i]);
 			threads[i] = thread;
 		}
 		lastIn = new PipedInputStream(lastOut);
-		threads[threads.length - 1] = new PipeThread(threadGroup,
-				pipeline[0].toString(), lastIn, null,
-				pipeline[threads.length - 1]);
+		threads[threads.length - 1] = new PipeOutThread(threadGroup,
+				pipeline[0].toString(), lastIn,
+				(PipeOut) pipeline[threads.length - 1]);
 
 		for (int i = 0; i < threads.length; i++) {
 			threads[i].start();

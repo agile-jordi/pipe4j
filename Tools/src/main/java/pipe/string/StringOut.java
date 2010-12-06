@@ -1,12 +1,11 @@
 package pipe.string;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 
-import pipe.core.AbstractDelegatingPipe;
+import pipe.core.AbstractPipeOut;
 
-public class StringOut extends AbstractDelegatingPipe {
+public class StringOut extends AbstractPipeOut {
 	private ByteArrayOutputStream baos;
 
 	public String getString() {
@@ -14,8 +13,8 @@ public class StringOut extends AbstractDelegatingPipe {
 	}
 
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
+	protected OutputStream getOutputStream() throws Exception {
 		baos = new ByteArrayOutputStream();
-		super.run(is, baos);
+		return baos;
 	}
 }

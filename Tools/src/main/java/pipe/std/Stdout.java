@@ -1,13 +1,12 @@
 package pipe.std;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 
-import pipe.core.AbstractDelegatingPipe;
+import pipe.core.AbstractPipeOut;
 
-public class Stdout extends AbstractDelegatingPipe {
+public class Stdout extends AbstractPipeOut {
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		super.run(is, System.out);
+	protected OutputStream getOutputStream() throws Exception {
+		return System.out;
 	}
 }

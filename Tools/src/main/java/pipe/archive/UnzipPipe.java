@@ -6,9 +6,9 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import pipe.core.AbstractDelegatingPipe;
+import pipe.core.AbstractPipeProcessor;
 
-public class UnzipPipe extends AbstractDelegatingPipe {
+public class UnzipPipe extends AbstractPipeProcessor {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
 		ZipInputStream in = new ZipInputStream(is);

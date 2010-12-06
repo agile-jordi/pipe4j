@@ -3,12 +3,11 @@ package pipe.file;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
-import pipe.core.AbstractDelegatingPipe;
+import pipe.core.AbstractPipeOut;
 
-public class FileOut extends AbstractDelegatingPipe {
+public class FileOut extends AbstractPipeOut {
 	private File file;
 
 	public FileOut(String filepath) throws IOException {
@@ -20,7 +19,7 @@ public class FileOut extends AbstractDelegatingPipe {
 	}
 
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
+	protected OutputStream getOutputStream() throws Exception {
 		if (file.exists()) {
 			if (file.isDirectory()) {
 				throw new IllegalArgumentException(
@@ -37,6 +36,6 @@ public class FileOut extends AbstractDelegatingPipe {
 						"Could not create new file: " + file.getAbsolutePath());
 			}
 		}
-		super.run(is, new FileOutputStream(file));
+		return new FileOutputStream(file);
 	}
 }

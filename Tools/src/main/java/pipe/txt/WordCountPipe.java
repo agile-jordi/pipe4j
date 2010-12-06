@@ -8,8 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import pipe.core.AbstractPipe;
+import pipe.core.PipeProcessor;
 
-public class WordCountPipe extends AbstractPipe {
+public class WordCountPipe extends AbstractPipe implements PipeProcessor {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
 		int totalBytes = 0;

@@ -6,9 +6,9 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import pipe.core.AbstractDelegatingPipe;
+import pipe.core.AbstractPipeProcessor;
 
-public class ZipPipe extends AbstractDelegatingPipe {
+public class ZipPipe extends AbstractPipeProcessor {
 	private final String entryName;
 	private int level = Deflater.DEFAULT_COMPRESSION;
 
