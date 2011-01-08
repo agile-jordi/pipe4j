@@ -64,7 +64,7 @@ public class PipeThread<I, O> extends Thread {
 				os.close();
 			} catch (IOException e) {
 			}
-		} else {
+		} else if (obj instanceof BlockingQueue){
 			BlockingQueue<?> queue = (BlockingQueue<?>) obj;
 			queue.clear();
 		}
