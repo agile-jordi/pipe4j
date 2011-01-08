@@ -16,25 +16,44 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+package pipe4j.pipe.txt;
 
-import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import pipe4j.pipe.AbstractPipe;
 
-class Producer extends AbstractPipe<InputStream, OutputStream> {
+public class WordCountPipe extends AbstractPipe<InputStream, OutputStream> {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
-		Runtime runtime = Runtime.getRuntime();
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
-		for (int i = 0; i < 10000; i++) {
-			writer.write(i + ", used mem: "
-					+ (runtime.totalMemory() - runtime.freeMemory()));
-			writer.newLine();
+		int totalBytes = 0;
+		int totalWords = 0;
+		int totalLines = 0;
+		int totalChars = 0;
+
+		CountingInputStream cis = new CountingInputStream(is);
+		CountingInputStreamReader cisr = new CountingInputStreamReader(cis);
+		BufferedReader reader = new BufferedReader(cisr);
+
+		String line;
+		Pattern pattern = Pattern.compile("\\S+");
+		while ((line = reader.readLine()) != null) {
+			++totalLines;
+			Matcher matcher = pattern.matcher(line);
+			while (matcher.find()) {
+				++totalWords;
+			}
 		}
+
+		totalChars = cisr.getCount();
+		totalBytes = cis.getCount();
+		OutputStreamWriter writer = new OutputStreamWriter(os);
+		writer.write(totalLines + "\t" + totalWords + "\t" + totalChars + "\t"
+				+ totalBytes);
 		writer.flush();
 	}
 }

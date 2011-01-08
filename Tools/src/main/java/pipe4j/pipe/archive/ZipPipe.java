@@ -16,20 +16,38 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+package pipe4j.pipe.archive;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.AbstractStreamPipe;
 
-class ExceptionPipe extends AbstractPipe<InputStream, OutputStream> {
+public class ZipPipe extends AbstractStreamPipe {
+	private final String entryName;
+	private int level = Deflater.DEFAULT_COMPRESSION;
+
+	public ZipPipe(String entryName) {
+		super();
+		this.entryName = entryName;
+	}
+
+	public ZipPipe(String entryName, int level) {
+		super();
+		this.entryName = entryName;
+		this.level = level;
+	}
+
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
-		byte[] buffer = new byte[8];
-		int n = is.read(buffer);
-		os.write(buffer, 0, n);
-		throw new IOException("Argh!");
+		ZipOutputStream out = new ZipOutputStream(os);
+		out.putNextEntry(new ZipEntry(entryName));
+		out.setLevel(level);
+		super.run(is, out);
+		out.closeEntry();
+		out.finish();
 	}
 }

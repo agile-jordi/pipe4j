@@ -19,17 +19,17 @@
 package pipe.util;
 
 import junit.framework.TestCase;
-import pipe.core.Pipe;
-import pipe.core.Pipeline;
 import pipe.core.TestUtils;
-import pipe.file.FileIn;
-import pipe.string.StringOut;
+import pipe4j.core.Pipeline;
+import pipe4j.pipe.file.FileIn;
+import pipe4j.pipe.string.StringOut;
+import pipe4j.pipe.util.DigestPipe;
 
 public class DigestPipeTest extends TestCase {
 	public void testDigestPipe() throws Exception {
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new Pipe[] { new FileIn(TestUtils.txtInFilePath),
-				new DigestPipe(), stringOut });
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
+				new DigestPipe(), stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}

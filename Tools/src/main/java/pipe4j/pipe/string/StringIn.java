@@ -1,3 +1,10 @@
+package pipe4j.pipe.string;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import pipe4j.pipe.AbstractStreamPipeIn;
 /*
  * Copyright (C) 2010 Bernardo O. Bennett
  * 
@@ -16,20 +23,15 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+public class StringIn extends AbstractStreamPipeIn {
+	private String source;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+	public StringIn(String source) throws IOException {
+		this.source = source;
+	}
 
-import pipe4j.pipe.AbstractPipe;
-
-class ExceptionPipe extends AbstractPipe<InputStream, OutputStream> {
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		byte[] buffer = new byte[8];
-		int n = is.read(buffer);
-		os.write(buffer, 0, n);
-		throw new IOException("Argh!");
+	protected InputStream getInputStream() throws Exception {
+		return new ByteArrayInputStream(source.getBytes());
 	}
 }

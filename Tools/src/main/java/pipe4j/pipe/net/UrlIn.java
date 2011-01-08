@@ -16,20 +16,23 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+package pipe4j.pipe.net;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.URL;
 
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.AbstractStreamPipeIn;
 
-class ExceptionPipe extends AbstractPipe<InputStream, OutputStream> {
+public class UrlIn extends AbstractStreamPipeIn {
+	private String url;
+
+	public UrlIn(String url) throws IOException {
+		this.url = url;
+	}
+
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		byte[] buffer = new byte[8];
-		int n = is.read(buffer);
-		os.write(buffer, 0, n);
-		throw new IOException("Argh!");
+	protected InputStream getInputStream() throws Exception {
+		return new URL(url).openStream();
 	}
 }

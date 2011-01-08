@@ -21,7 +21,9 @@ package pipe.core;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class ReadClosingPipe extends AbstractPipe implements PipeProcessor {
+import pipe4j.pipe.AbstractPipe;
+
+class ReadClosingPipe extends AbstractPipe<InputStream, OutputStream> {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
 		byte[] buffer = new byte[8];

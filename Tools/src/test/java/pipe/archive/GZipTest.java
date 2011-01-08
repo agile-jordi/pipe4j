@@ -21,13 +21,14 @@ package pipe.archive;
 import java.io.File;
 
 import junit.framework.TestCase;
-import pipe.core.Pipe;
-import pipe.core.Pipeline;
 import pipe.core.TestUtils;
-import pipe.file.FileIn;
-import pipe.file.FileOut;
-import pipe.string.StringOut;
-import pipe.util.DigestPipe;
+import pipe4j.core.Pipeline;
+import pipe4j.pipe.archive.GUnzipPipe;
+import pipe4j.pipe.archive.GZipPipe;
+import pipe4j.pipe.file.FileIn;
+import pipe4j.pipe.file.FileOut;
+import pipe4j.pipe.string.StringOut;
+import pipe4j.pipe.util.DigestPipe;
 
 public class GZipTest extends TestCase {
 	@Override
@@ -37,13 +38,13 @@ public class GZipTest extends TestCase {
 	}
 
 	public void testGZip() throws Exception {
-		Pipeline.run(new Pipe[] { new FileIn(TestUtils.txtInFilePath),
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
 				new GZipPipe(), new GUnzipPipe(),
-				new FileOut(TestUtils.txtOutFilePath) });
+				new FileOut(TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new Pipe[] { new FileIn(TestUtils.txtOutFilePath),
-				new DigestPipe(), stringOut });
+		Pipeline.run(new FileIn(TestUtils.txtOutFilePath),
+				new DigestPipe(), stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}

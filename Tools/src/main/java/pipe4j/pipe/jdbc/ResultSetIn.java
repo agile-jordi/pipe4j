@@ -16,20 +16,35 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+package pipe4j.pipe.jdbc;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.concurrent.BlockingQueue;
 
+import pipe4j.core.Null;
 import pipe4j.pipe.AbstractPipe;
 
-class ExceptionPipe extends AbstractPipe<InputStream, OutputStream> {
+
+public class ResultSetIn extends AbstractPipe<Null, BlockingQueue<Object>> {
+	private final ResultSet resultSet;
+
+	public ResultSetIn(ResultSet resultSet) {
+		super();
+		this.resultSet = resultSet;
+	}
+
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		byte[] buffer = new byte[8];
-		int n = is.read(buffer);
-		os.write(buffer, 0, n);
-		throw new IOException("Argh!");
+	public void run(Null in, BlockingQueue<Object> out) throws Exception {
+		ResultSetMetaData md = resultSet.getMetaData();
+		int columnCount = md.getColumnCount();
+		Object[] row;
+		while (resultSet.next()) {
+			row = new Object[columnCount];
+			for (int i = 0; i < row.length; i++) {
+				row[i] = resultSet.getObject(i + 1);
+			}
+			out.put(row);
+		}
 	}
 }

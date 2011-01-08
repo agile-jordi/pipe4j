@@ -22,16 +22,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
-import pipe.core.Pipe;
-import pipe.core.Pipeline;
+import pipe4j.core.Pipeline;
+import pipe4j.pipe.adaptor.InAdaptor;
+import pipe4j.pipe.adaptor.OutAdaptor;
 
 public class AdaptorTest extends TestCase {
 	public void testAdaptor() throws Exception {
 		String s = "foo bar";
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Pipeline.run(new Pipe[] {
-				new InAdaptor(new ByteArrayInputStream(s.getBytes())),
-				new OutAdaptor(baos) });
+		Pipeline.run(new InAdaptor(new ByteArrayInputStream(s.getBytes())),
+				new OutAdaptor(baos));
 
 		assertEquals(s, new String(baos.toByteArray()));
 	}

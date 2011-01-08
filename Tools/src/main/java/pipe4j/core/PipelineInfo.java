@@ -16,20 +16,30 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+package pipe4j.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+public class PipelineInfo {
+	private final ThreadGroup threadGroup;
+	private Exception exception;
 
-import pipe4j.pipe.AbstractPipe;
+	public PipelineInfo(ThreadGroup threadGroup) {
+		super();
+		this.threadGroup = threadGroup;
+	}
 
-class ExceptionPipe extends AbstractPipe<InputStream, OutputStream> {
-	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		byte[] buffer = new byte[8];
-		int n = is.read(buffer);
-		os.write(buffer, 0, n);
-		throw new IOException("Argh!");
+	public ThreadGroup getThreadGroup() {
+		return threadGroup;
+	}
+
+	public void setException(Exception exception) {
+		this.exception = exception;
+	}
+
+	public Exception getException() {
+		return exception;
+	}
+
+	public boolean hasError() {
+		return exception != null;
 	}
 }

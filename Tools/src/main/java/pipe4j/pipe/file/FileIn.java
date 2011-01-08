@@ -16,20 +16,37 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+package pipe4j.pipe.file;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.AbstractStreamPipeIn;
 
-class ExceptionPipe extends AbstractPipe<InputStream, OutputStream> {
+public class FileIn extends AbstractStreamPipeIn {
+	private File file;
+
+	public FileIn(String filepath) throws IOException {
+		this(new File(filepath));
+	}
+
+	public FileIn(File file) throws IOException {
+		this.file = file;
+	}
+
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		byte[] buffer = new byte[8];
-		int n = is.read(buffer);
-		os.write(buffer, 0, n);
-		throw new IOException("Argh!");
+	protected InputStream getInputStream() throws Exception {
+		if (!file.exists()) {
+			throw new IllegalArgumentException("File not found: "
+					+ file.getAbsolutePath());
+		}
+
+		if (!file.canRead()) {
+			throw new IllegalArgumentException("Cannot read: "
+					+ file.getAbsolutePath());
+		}
+		return new FileInputStream(file);
 	}
 }

@@ -21,8 +21,10 @@ package pipe.core;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import pipe.string.StringIn;
-import pipe.string.StringOut;
+import pipe4j.core.Pipeline;
+import pipe4j.core.PipelineInfo;
+import pipe4j.pipe.string.StringIn;
+import pipe4j.pipe.string.StringOut;
 
 public class PipelineTest extends TestCase {
 	private StringBuilder sb = new StringBuilder();
@@ -41,7 +43,7 @@ public class PipelineTest extends TestCase {
 
 	public void testInvalidArgs() throws Exception {
 		try {
-			Pipeline.run((Pipe[]) null);
+			Pipeline.run(null);
 			fail("Expected IllegalArgumentException!");
 		} catch (IllegalArgumentException expected) {
 		}
@@ -49,38 +51,38 @@ public class PipelineTest extends TestCase {
 
 	public void testSimple() throws Exception {
 		StringOut stringOut = new StringOut();
-		PipelineInfo info = Pipeline.run(new Pipe[] {
-				new StringIn(sb.toString()), new MiddlePipe(), stringOut });
+		PipelineInfo info = Pipeline.run(
+				new StringIn(sb.toString()), new MiddlePipe(), stringOut);
 
 		checkResults(info, null);
 		assertEquals(sb.toString(), stringOut.getString());
 	}
 
 	public void testTimeout() throws Exception {
-		PipelineInfo info = Pipeline.run(
-				new Pipe[] { new StringIn(sb.toString()), new SleepPipe(5000),
-						new StringOut() }, 100);
+		PipelineInfo info = Pipeline.run(100,
+				new StringIn(sb.toString()), new SleepPipe(5000),
+						new StringOut());
 		checkResults(info, InterruptedException.class);
 	}
 
 	public void testException() throws Exception {
-		PipelineInfo info = Pipeline.run(new Pipe[] {
+		PipelineInfo info = Pipeline.run(
 				new StringIn(sb.toString()), new MiddlePipe(),
-				new ExceptionPipe(), new StringOut() });
+				new ExceptionPipe(), new StringOut());
 		checkResults(info, IOException.class);
 	}
 
 	public void testCloseReader() throws Exception {
-		PipelineInfo info = Pipeline.run(new Pipe[] {
+		PipelineInfo info = Pipeline.run(
 				new StringIn(sb.toString()), new MiddlePipe(),
-				new ReadClosingPipe(), new StringOut() });
+				new ReadClosingPipe(), new StringOut());
 		checkResults(info, IOException.class);
 	}
 
 	public void testCloseWriter() throws Exception {
-		PipelineInfo info = Pipeline.run(new Pipe[] {
+		PipelineInfo info = Pipeline.run(
 				new StringIn(sb.toString()), new WriteClosingPipe(),
-				new MiddlePipe(), new StringOut() });
+				new MiddlePipe(), new StringOut());
 		checkResults(info, IOException.class);
 	}
 

@@ -18,5 +18,7 @@
  */
 package pipe.core;
 
-class MiddlePipe extends AbstractPipeProcessor {
+import pipe4j.pipe.AbstractStreamPipe;
+
+class MiddlePipe extends AbstractStreamPipe {
 }

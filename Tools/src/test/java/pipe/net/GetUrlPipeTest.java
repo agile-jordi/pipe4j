@@ -20,11 +20,11 @@ package pipe.net;
 
 import http.NanoHTTPD;
 import junit.framework.TestCase;
-import pipe.core.Pipe;
-import pipe.core.Pipeline;
 import pipe.core.TestUtils;
-import pipe.string.StringOut;
-import pipe.util.DigestPipe;
+import pipe4j.core.Pipeline;
+import pipe4j.pipe.net.UrlIn;
+import pipe4j.pipe.string.StringOut;
+import pipe4j.pipe.util.DigestPipe;
 
 public class GetUrlPipeTest extends TestCase {
 	private NanoHTTPD httpd;
@@ -43,9 +43,9 @@ public class GetUrlPipeTest extends TestCase {
 
 	public void testGetUrlPipe() throws Exception {
 		StringOut stringIn = new StringOut();
-		Pipeline.run(new Pipe[] {
+		Pipeline.run(
 				new UrlIn("http://localhost:8080/src/test/java/sample.txt"),
-				new DigestPipe(), stringIn });
+				new DigestPipe(), stringIn);
 
 		assertEquals(TestUtils.txtMD5, stringIn.getString());
 	}

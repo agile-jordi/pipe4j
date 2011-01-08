@@ -16,24 +16,63 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+package pipe4j.pipe.txt;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import pipe4j.pipe.AbstractPipe;
 
-class Producer extends AbstractPipe<InputStream, OutputStream> {
+public class FixEolPipe extends AbstractPipe<InputStream, OutputStream> {
+	public enum Platform {
+		DOS, UNIX, MAC, AUTO
+	}
+
+	private Platform platform = Platform.AUTO;
+
+	public FixEolPipe() {
+	}
+
+	public FixEolPipe(Platform platform) {
+		super();
+		this.platform = platform;
+	}
+
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
-		Runtime runtime = Runtime.getRuntime();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
-		for (int i = 0; i < 10000; i++) {
-			writer.write(i + ", used mem: "
-					+ (runtime.totalMemory() - runtime.freeMemory()));
-			writer.newLine();
+
+		final String eol;
+		switch (this.platform) {
+		case MAC:
+			eol = "\r";
+			break;
+		case DOS:
+			eol = "\r\n";
+			break;
+		case UNIX:
+			eol = "\n";
+			break;
+		case AUTO:
+			eol = System.getProperty("line.separator");
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown platform: "
+					+ this.platform);
+		}
+
+		String line = reader.readLine();
+		if (line != null) {
+			writer.write(line);
+			while (!cancelled() && ((line = reader.readLine()) != null)) {
+				writer.write(eol); // intead of calling newLine
+				writer.write(line);
+			}
 		}
 		writer.flush();
 	}

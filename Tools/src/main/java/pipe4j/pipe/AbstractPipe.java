@@ -16,20 +16,21 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+package pipe4j.pipe;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.core.Pipe;
 
-class ExceptionPipe extends AbstractPipe<InputStream, OutputStream> {
+public abstract class AbstractPipe<I, O> implements Pipe<I, O> {
+	private AtomicBoolean cancel = new AtomicBoolean(false);
+
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		byte[] buffer = new byte[8];
-		int n = is.read(buffer);
-		os.write(buffer, 0, n);
-		throw new IOException("Argh!");
+	public void cancel() {
+		cancel.set(true);
+	}
+
+	protected boolean cancelled() {
+		return this.cancel.get();
 	}
 }

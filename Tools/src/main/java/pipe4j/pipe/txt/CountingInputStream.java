@@ -16,20 +16,41 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe.core;
+package pipe4j.pipe.txt;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
-import pipe4j.pipe.AbstractPipe;
+class CountingInputStream extends InputStream {
+	private final InputStream is;
+	private int count = 0;
 
-class ExceptionPipe extends AbstractPipe<InputStream, OutputStream> {
-	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		byte[] buffer = new byte[8];
-		int n = is.read(buffer);
-		os.write(buffer, 0, n);
-		throw new IOException("Argh!");
+	public CountingInputStream(InputStream is) {
+		super();
+		this.is = is;
+	}
+
+	public int read() throws IOException {
+		int read = is.read();
+		if (read >= 0) {
+			++count;
+		}
+		return read;
+	}
+
+	public int read(byte[] b) throws IOException {
+		int read = is.read(b);
+		this.count += read;
+		return read;
+	}
+
+	public int read(byte[] b, int off, int len) throws IOException {
+		int read = is.read(b, off, len);
+		this.count += read;
+		return read;
+	}
+
+	public int getCount() {
+		return count;
 	}
 }
