@@ -1,4 +1,4 @@
-package pipe4j.std;
+package pipe4j.pipe.std;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

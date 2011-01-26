@@ -16,22 +16,23 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.txt;
+package pipe4j.pipe.adaptor;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
 import pipe4j.core.Pipeline;
-import pipe4j.core.TestUtils;
-import pipe4j.pipe.file.FileIn;
-import pipe4j.pipe.string.StringOut;
-import pipe4j.pipe.txt.WordCountPipe;
+import pipe4j.pipe.adaptor.InAdaptor;
+import pipe4j.pipe.adaptor.OutAdaptor;
 
-public class WordCountPipeTest extends TestCase {
-	public void testWordCountPipe() throws Exception {
-		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new WordCountPipe(), stringOut);
+public class AdaptorTest extends TestCase {
+	public void testAdaptor() throws Exception {
+		String s = "foo bar";
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		Pipeline.run(new InAdaptor(new ByteArrayInputStream(s.getBytes())),
+				new OutAdaptor(baos));
 
-		// wc returns 2915 bytes for some reason
-		assertEquals("101\t502\t2914\t2914", stringOut.getString());
+		assertEquals(s, new String(baos.toByteArray()));
 	}
 }

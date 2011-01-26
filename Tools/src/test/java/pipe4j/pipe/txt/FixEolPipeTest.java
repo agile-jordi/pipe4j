@@ -16,33 +16,40 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.file;
-
-import java.io.File;
+package pipe4j.pipe.txt;
 
 import junit.framework.TestCase;
 import pipe4j.core.Pipeline;
-import pipe4j.core.TestUtils;
-import pipe4j.pipe.file.FileIn;
-import pipe4j.pipe.file.FileOut;
+import pipe4j.pipe.string.StringIn;
 import pipe4j.pipe.string.StringOut;
-import pipe4j.pipe.util.DigestPipe;
+import pipe4j.pipe.txt.FixEolPipe;
+import pipe4j.pipe.txt.FixEolPipe.Platform;
 
-public class FileTest extends TestCase {
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		new File(TestUtils.txtOutFilePath).delete();
-	}
+public class FixEolPipeTest extends TestCase {
+	private static final String source = "foo\r\nbar";
 
-	public void testFile() throws Exception {
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new FileOut(TestUtils.txtOutFilePath));
-
+	public void testFixEolPipe() throws Exception {
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtOutFilePath),
-				new DigestPipe(), stringOut);
+		Pipeline.run(new StringIn(source),
+				new FixEolPipe(Platform.UNIX), stringOut);
 
-		assertEquals(TestUtils.txtMD5, stringOut.getString());
+		assertEquals("foo\nbar", stringOut.getString());
+
+		Pipeline.run(new StringIn(source),
+				new FixEolPipe(Platform.UNIX), new FixEolPipe(Platform.DOS),
+				stringOut);
+
+		assertEquals(source, stringOut.getString());
+
+		Pipeline.run(new StringIn(source),
+				new FixEolPipe(Platform.MAC), stringOut);
+
+		assertEquals("foo\rbar", stringOut.getString());
+
+		Pipeline.run(new StringIn(source),
+				new FixEolPipe(Platform.MAC), new FixEolPipe(Platform.DOS),
+				stringOut);
+
+		assertEquals(source, stringOut.getString());
 	}
 }

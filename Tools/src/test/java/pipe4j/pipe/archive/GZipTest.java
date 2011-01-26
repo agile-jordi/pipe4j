@@ -16,46 +16,34 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.archive;
+package pipe4j.pipe.archive;
 
 import java.io.File;
 
 import junit.framework.TestCase;
 import pipe4j.core.Pipeline;
 import pipe4j.core.TestUtils;
-import pipe4j.pipe.archive.UnzipPipe;
-import pipe4j.pipe.archive.ZipPipe;
+import pipe4j.pipe.archive.GUnzipPipe;
+import pipe4j.pipe.archive.GZipPipe;
 import pipe4j.pipe.file.FileIn;
 import pipe4j.pipe.file.FileOut;
 import pipe4j.pipe.string.StringOut;
 import pipe4j.pipe.util.DigestPipe;
 
-public class ZipTest extends TestCase {
+public class GZipTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		new File(TestUtils.txtOutFilePath).delete();
 	}
 
-	public void testZip() throws Exception {
+	public void testGZip() throws Exception {
 		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new ZipPipe("foo.txt"), new UnzipPipe(),
+				new GZipPipe(), new GUnzipPipe(),
 				new FileOut(TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new DigestPipe(), stringOut);
-
-		assertEquals(TestUtils.txtMD5, stringOut.getString());
-	}
-
-	public void testZipMaxCompression() throws Exception {
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new ZipPipe("foo.txt", 9), new UnzipPipe(),
-				new FileOut(TestUtils.txtOutFilePath));
-
-		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
+		Pipeline.run(new FileIn(TestUtils.txtOutFilePath),
 				new DigestPipe(), stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());

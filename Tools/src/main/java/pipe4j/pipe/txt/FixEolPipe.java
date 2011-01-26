@@ -70,7 +70,7 @@ public class FixEolPipe extends AbstractPipe<InputStream, OutputStream> {
 		if (line != null) {
 			writer.write(line);
 			while (!cancelled() && ((line = reader.readLine()) != null)) {
-				writer.write(eol); // intead of calling newLine
+				writer.write(eol); // Instead of calling newLine
 				writer.write(line);
 			}
 		}
