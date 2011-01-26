@@ -23,15 +23,15 @@ import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
 import pipe4j.core.Pipeline;
-import pipe4j.pipe.adaptor.InAdaptor;
-import pipe4j.pipe.adaptor.OutAdaptor;
+import pipe4j.pipe.adaptor.InputStreamAdaptor;
+import pipe4j.pipe.adaptor.OutputStreamAdaptor;
 
 public class AdaptorTest extends TestCase {
 	public void testAdaptor() throws Exception {
 		String s = "foo bar";
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Pipeline.run(new InAdaptor(new ByteArrayInputStream(s.getBytes())),
-				new OutAdaptor(baos));
+		Pipeline.run(new InputStreamAdaptor(new ByteArrayInputStream(s.getBytes())),
+				new OutputStreamAdaptor(baos));
 
 		assertEquals(s, new String(baos.toByteArray()));
 	}

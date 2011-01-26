@@ -26,9 +26,11 @@ import java.util.concurrent.BlockingQueue;
 import pipe4j.core.Null;
 import pipe4j.pipe.AbstractPipe;
 
-public class PreparedStatementOut extends AbstractPipe<BlockingQueue<Object>, Null> {
+public class PreparedStatementOut extends
+		AbstractPipe<BlockingQueue<Object>, Null> {
 	private final PreparedStatement preparedStatement;
-	private int commitInterval = -1;
+	private int batchSize = 10;
+	private boolean commitBatch = false;
 
 	public PreparedStatementOut(PreparedStatement preparedStatement) {
 		super();
@@ -36,17 +38,22 @@ public class PreparedStatementOut extends AbstractPipe<BlockingQueue<Object>, Nu
 	}
 
 	public PreparedStatementOut(PreparedStatement preparedStatement,
-			int commitInterval) {
+			int commitInterval, boolean commitBatch) {
 		super();
 		this.preparedStatement = preparedStatement;
-		this.commitInterval = commitInterval;
+		if (commitInterval <= 0) {
+			throw new IllegalArgumentException(
+					"Commit interval must be higher than zero!");
+		}
+		this.batchSize = commitInterval;
+		this.commitBatch = commitBatch;
 	}
 
 	@Override
 	public void run(BlockingQueue<Object> in, Null out) throws Exception {
 		Object obj;
 		int count = 0;
-		while ((obj = in.take()) != null) {
+		while (!cancelled() && !((obj = in.take()) instanceof Null)) {
 			if (obj instanceof Object[]) {
 				Object[] row = (Object[]) obj;
 				for (int i = 0; i < row.length; i++) {
@@ -62,19 +69,20 @@ public class PreparedStatementOut extends AbstractPipe<BlockingQueue<Object>, Nu
 				this.preparedStatement.setObject(1, obj);
 			}
 			this.preparedStatement.addBatch();
-			if (this.commitInterval > 0 && ++count % this.commitInterval == 0) {
+			if (++count % this.batchSize == 0) {
 				this.preparedStatement.executeBatch();
-				this.preparedStatement.getConnection().commit();
+				if (this.commitBatch) {
+					this.preparedStatement.getConnection().commit();
+				}
 			}
 		}
 
-		if (this.commitInterval > 0) {
-			if (count % this.commitInterval != 0) {
-				this.preparedStatement.executeBatch();
-				this.preparedStatement.getConnection().commit();
-			}
-		} else {
+		if (count % this.batchSize != 0) {
 			this.preparedStatement.executeBatch();
+		}
+
+		if (this.commitBatch) {
+			this.preparedStatement.getConnection().commit();
 		}
 	}
 }

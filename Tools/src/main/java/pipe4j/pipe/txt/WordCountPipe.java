@@ -41,7 +41,7 @@ public class WordCountPipe extends AbstractPipe<InputStream, OutputStream> {
 
 		String line;
 		Pattern pattern = Pattern.compile("\\S+");
-		while ((line = reader.readLine()) != null) {
+		while (!cancelled() && (line = reader.readLine()) != null) {
 			++totalLines;
 			Matcher matcher = pattern.matcher(line);
 			while (matcher.find()) {

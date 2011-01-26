@@ -39,7 +39,8 @@ public class ResultSetIn extends AbstractPipe<Null, BlockingQueue<Object>> {
 		ResultSetMetaData md = resultSet.getMetaData();
 		int columnCount = md.getColumnCount();
 		Object[] row;
-		while (resultSet.next()) {
+		
+		while (!cancelled() && resultSet.next()) {
 			row = new Object[columnCount];
 			for (int i = 0; i < row.length; i++) {
 				row[i] = resultSet.getObject(i + 1);

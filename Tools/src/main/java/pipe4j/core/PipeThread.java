@@ -47,15 +47,27 @@ public class PipeThread<I, O> extends Thread {
 		}
 	}
 
-	private void close(Object obj) {
-		if (obj instanceof InputStream) {
-			InputStream is = (InputStream) obj;
+	public void close() {
+		closeIn();
+		closeOut();
+	}
+
+	private void closeIn() {
+		if (this.in instanceof InputStream) {
+			InputStream is = (InputStream) this.in;
 			try {
 				is.close();
 			} catch (IOException e) {
 			}
-		} else if (obj instanceof OutputStream) {
-			OutputStream os = (OutputStream) obj;
+		} else if (this.in instanceof BlockingQueue) {
+			BlockingQueue<?> queue = (BlockingQueue<?>) this.in;
+			queue.clear();
+		}
+	}
+
+	private void closeOut() {
+		if (this.out instanceof OutputStream) {
+			OutputStream os = (OutputStream) this.out;
 			try {
 				os.flush();
 			} catch (IOException e) {
@@ -64,14 +76,13 @@ public class PipeThread<I, O> extends Thread {
 				os.close();
 			} catch (IOException e) {
 			}
-		} else if (obj instanceof BlockingQueue){
-			BlockingQueue<?> queue = (BlockingQueue<?>) obj;
-			queue.clear();
+		} else if (this.out instanceof BlockingQueue) {
+			@SuppressWarnings("unchecked")
+			BlockingQueue<Object> queue = (BlockingQueue<Object>) this.out;
+			try {
+				queue.put(Null.INSTANCE);
+			} catch (InterruptedException ignored) {
+			}
 		}
-	}
-
-	public void close() {
-		close(this.in);
-		close(this.out);
 	}
 }

@@ -18,19 +18,19 @@
  */
 package pipe4j.pipe.adaptor;
 
-import java.io.OutputStream;
+import java.io.InputStream;
 
-import pipe4j.pipe.AbstractStreamPipeOut;
+import pipe4j.pipe.AbstractStreamPipeIn;
 
-public class OutAdaptor extends AbstractStreamPipeOut {
-	private final OutputStream outputStream;
+public class InputStreamAdaptor extends AbstractStreamPipeIn {
+	private final InputStream inputStream;
 
-	public OutAdaptor(OutputStream outputStream) {
+	public InputStreamAdaptor(InputStream inputStream) {
 		super();
-		this.outputStream = outputStream;
+		this.inputStream = inputStream;
 	}
 
-	public OutputStream getOutputStream() {
-		return outputStream;
+	public InputStream getInputStream() {
+		return inputStream;
 	}
 }
