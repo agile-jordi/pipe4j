@@ -48,7 +48,7 @@ public class TestJdbc extends TestCase {
 		for (int i = 1; i <= 10; i++) {
 			coll.add(i);
 		}
-		Pipeline.run(new CollectionInAdaptor<Integer>(coll), new PreparedStatementOut(ps));
+		Pipeline.run(new CollectionInAdaptor(coll), new PreparedStatementOut(ps));
 		ps.close();
 		
 		ResultSet rs = conn.prepareStatement("select count(*), sum(y) from x").executeQuery();
@@ -67,7 +67,7 @@ public class TestJdbc extends TestCase {
 			coll.add(innerColl);
 		}
 		
-		Pipeline.run(new CollectionInAdaptor<Collection<Integer>>(coll), new PreparedStatementOut(ps));
+		Pipeline.run(new CollectionInAdaptor(coll), new PreparedStatementOut(ps));
 		ps.close();
 		
 		ResultSet rs = conn.prepareStatement("select count(*), sum(y) from x").executeQuery();

@@ -7,21 +7,20 @@ import java.util.concurrent.BlockingQueue;
 import pipe4j.core.Null;
 import pipe4j.pipe.AbstractPipe;
 
-public class CollectionInAdaptor<E> extends
-		AbstractPipe<Null, BlockingQueue<E>> {
-	private final Collection<E> collection;
+public class CollectionInAdaptor extends
+		AbstractPipe<Null, BlockingQueue<Object>> {
+	private final Collection<?> collection;
 
-	public CollectionInAdaptor(Collection<E> collection) {
+	public CollectionInAdaptor(Collection<?> collection) {
 		super();
 		this.collection = collection;
 	}
 
 	@Override
-	public void run(Null in, BlockingQueue<E> out) throws Exception {
-		for (Iterator<E> iterator = collection.iterator(); !cancelled()
+	public void run(Null in, BlockingQueue<Object> out) throws Exception {
+		for (Iterator<?> iterator = collection.iterator(); !cancelled()
 				&& iterator.hasNext();) {
-			E e = iterator.next();
-			out.put(e);
+			out.put(iterator.next());
 		}
 	}
 }

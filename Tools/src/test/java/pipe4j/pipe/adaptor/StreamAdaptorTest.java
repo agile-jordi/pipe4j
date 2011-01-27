@@ -26,7 +26,7 @@ import pipe4j.core.Pipeline;
 import pipe4j.pipe.adaptor.InputStreamAdaptor;
 import pipe4j.pipe.adaptor.OutputStreamAdaptor;
 
-public class AdaptorTest extends TestCase {
+public class StreamAdaptorTest extends TestCase {
 	public void testAdaptor() throws Exception {
 		String s = "foo bar";
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
