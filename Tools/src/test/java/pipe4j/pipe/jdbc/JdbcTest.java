@@ -14,7 +14,7 @@ import org.hsqldb.jdbcDriver;
 import pipe4j.core.Pipeline;
 import pipe4j.pipe.adaptor.CollectionInAdaptor;
 
-public class TestJdbc extends TestCase {
+public class JdbcTest extends TestCase {
 	private Connection conn;
 
 	@Override
