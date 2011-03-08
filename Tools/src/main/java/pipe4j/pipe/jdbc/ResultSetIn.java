@@ -25,7 +25,6 @@ import pipe4j.core.BlockingBuffer;
 import pipe4j.core.Null;
 import pipe4j.pipe.AbstractPipe;
 
-
 public class ResultSetIn extends AbstractPipe<Null, BlockingBuffer<Object>> {
 	private final ResultSet resultSet;
 
@@ -39,7 +38,7 @@ public class ResultSetIn extends AbstractPipe<Null, BlockingBuffer<Object>> {
 		ResultSetMetaData md = resultSet.getMetaData();
 		int columnCount = md.getColumnCount();
 		Object[] row;
-		
+
 		while (!cancelled() && resultSet.next()) {
 			row = new Object[columnCount];
 			for (int i = 0; i < row.length; i++) {

@@ -34,12 +34,12 @@ public class FileTest extends TestCase {
 	}
 
 	public void testFile() throws Exception {
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new FileOut(TestUtils.txtOutFilePath));
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new FileOut(
+				TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtOutFilePath),
-				new DigestPipe(), stringOut);
+		Pipeline.run(new FileIn(TestUtils.txtOutFilePath), new DigestPipe(),
+				stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}

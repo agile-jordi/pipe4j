@@ -6,8 +6,7 @@ import java.io.OutputStream;
 class TeeOutputStream extends OutputStream {
 	private final OutputStream tee, out;
 
-	public TeeOutputStream(OutputStream chainedStream,
-			OutputStream teeStream) {
+	public TeeOutputStream(OutputStream chainedStream, OutputStream teeStream) {
 		out = chainedStream;
 		tee = teeStream;
 	}

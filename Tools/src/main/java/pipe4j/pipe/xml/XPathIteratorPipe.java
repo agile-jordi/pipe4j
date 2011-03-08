@@ -12,14 +12,13 @@ public class XPathIteratorPipe extends
 	private final Processor processor = new Processor();
 
 	@Override
-	public void run(BlockingBuffer<XMLEvent> in, BlockingBuffer<XPathAndValue> out)
-			throws Exception {
+	public void run(BlockingBuffer<XMLEvent> in,
+			BlockingBuffer<XPathAndValue> out) throws Exception {
 		XMLEvent event;
 		while (!cancelled() && (event = in.take()) != null) {
 			Map<String, String> result = processor.process(event);
 			for (Map.Entry<String, String> entry : result.entrySet()) {
-				out.put(new XPathAndValue(entry.getKey(), entry
-						.getValue()));
+				out.put(new XPathAndValue(entry.getKey(), entry.getValue()));
 			}
 		}
 	}

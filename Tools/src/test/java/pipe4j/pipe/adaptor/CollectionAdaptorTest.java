@@ -15,7 +15,7 @@ public class CollectionAdaptorTest extends TestCase {
 
 		CollectionOutAdaptor collectionOutAdaptor = new CollectionOutAdaptor();
 		Pipeline.run(new CollectionInAdaptor(coll), collectionOutAdaptor);
-		
+
 		assertEquals(coll, collectionOutAdaptor.getCollection());
 	}
 }

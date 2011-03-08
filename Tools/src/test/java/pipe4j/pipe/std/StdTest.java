@@ -37,11 +37,11 @@ public class StdTest extends TestCase {
 	public void testStd() throws Exception {
 		ByteArrayInputStream in = new ByteArrayInputStream(source.getBytes());
 		System.setIn(in);
-		
+
 		StringOut stringOut = new StringOut();
 		Pipeline.run(new Stdin(), stringOut);
 		assertEquals(source, stringOut.getString());
-				
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(out));
 
@@ -55,7 +55,6 @@ public class StdTest extends TestCase {
 		Pipeline.run(new StringIn(source), new Stderr());
 
 		assertEquals(source, new String(out.toByteArray()));
-		
-		
+
 	}
 }

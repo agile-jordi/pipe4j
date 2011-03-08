@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import pipe4j.pipe.AbstractStreamPipeIn;
+
 /*
  * Copyright (C) 2010 Bernardo O. Bennett
  * 

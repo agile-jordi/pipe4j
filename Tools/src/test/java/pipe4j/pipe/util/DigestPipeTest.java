@@ -27,8 +27,8 @@ import pipe4j.pipe.string.StringOut;
 public class DigestPipeTest extends TestCase {
 	public void testDigestPipe() throws Exception {
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new DigestPipe(), stringOut);
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new DigestPipe(),
+				stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}

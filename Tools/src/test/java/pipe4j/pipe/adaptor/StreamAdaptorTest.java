@@ -28,7 +28,8 @@ public class StreamAdaptorTest extends TestCase {
 	public void testAdaptor() throws Exception {
 		String s = "foo bar";
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Pipeline.run(new InputStreamAdaptor(new ByteArrayInputStream(s.getBytes())),
+		Pipeline.run(
+				new InputStreamAdaptor(new ByteArrayInputStream(s.getBytes())),
 				new OutputStreamAdaptor(baos));
 
 		assertEquals(s, new String(baos.toByteArray()));

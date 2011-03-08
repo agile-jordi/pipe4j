@@ -36,13 +36,12 @@ public class GZipTest extends TestCase {
 	}
 
 	public void testGZip() throws Exception {
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new GZipPipe(), new GUnzipPipe(),
-				new FileOut(TestUtils.txtOutFilePath));
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new GZipPipe(),
+				new GUnzipPipe(), new FileOut(TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtOutFilePath),
-				new DigestPipe(), stringOut);
+		Pipeline.run(new FileIn(TestUtils.txtOutFilePath), new DigestPipe(),
+				stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}

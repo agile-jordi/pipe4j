@@ -49,38 +49,34 @@ public class PipelineTest extends TestCase {
 
 	public void testSimple() throws Exception {
 		StringOut stringOut = new StringOut();
-		PipelineInfo info = Pipeline.run(
-				new StringIn(sb.toString()), new MiddlePipe(), stringOut);
+		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
+				new MiddlePipe(), stringOut);
 
 		checkResults(info, null);
 		assertEquals(sb.toString(), stringOut.getString());
 	}
 
 	public void testTimeout() throws Exception {
-		PipelineInfo info = Pipeline.run(100,
-				new StringIn(sb.toString()), new SleepPipe(5000),
-						new StringOut());
+		PipelineInfo info = Pipeline.run(100, new StringIn(sb.toString()),
+				new SleepPipe(5000), new StringOut());
 		checkResults(info, InterruptedException.class);
 	}
 
 	public void testException() throws Exception {
-		PipelineInfo info = Pipeline.run(
-				new StringIn(sb.toString()), new MiddlePipe(),
-				new ExceptionPipe(), new StringOut());
+		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
+				new MiddlePipe(), new ExceptionPipe(), new StringOut());
 		checkResults(info, IOException.class);
 	}
 
 	public void testCloseReader() throws Exception {
-		PipelineInfo info = Pipeline.run(
-				new StringIn(sb.toString()), new MiddlePipe(),
-				new ReadClosingPipe(), new StringOut());
+		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
+				new MiddlePipe(), new ReadClosingPipe(), new StringOut());
 		checkResults(info, IOException.class);
 	}
 
 	public void testCloseWriter() throws Exception {
-		PipelineInfo info = Pipeline.run(
-				new StringIn(sb.toString()), new WriteClosingPipe(),
-				new MiddlePipe(), new StringOut());
+		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
+				new WriteClosingPipe(), new MiddlePipe(), new StringOut());
 		checkResults(info, IOException.class);
 	}
 

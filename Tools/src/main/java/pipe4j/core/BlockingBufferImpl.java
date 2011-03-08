@@ -22,7 +22,7 @@ public class BlockingBufferImpl<E> implements BlockingBuffer<E> {
 		if (take == Null.INSTANCE) {
 			return null;
 		}
-		
+
 		return (E) take;
 	}
 

@@ -22,10 +22,10 @@ public abstract class AbstractPipeConnector implements PipeConnector {
 	public boolean supports(Pipe<?, ?> prev, Pipe<?, ?> next) {
 		Method prevMethod = getRunMethod(prev.getClass());
 		Method nextMethod = getRunMethod(next.getClass());
-	
+
 		Class<?> out = prevMethod.getParameterTypes()[1];
 		Class<?> in = nextMethod.getParameterTypes()[0];
-	
+
 		return supports(in, out);
 	}
 

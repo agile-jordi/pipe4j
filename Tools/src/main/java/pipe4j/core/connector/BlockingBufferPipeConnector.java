@@ -14,8 +14,8 @@ public class BlockingBufferPipeConnector extends AbstractPipeConnector {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void connect(PipeThread pipe1, PipeThread pipe2) throws Exception {
-		BlockingBuffer<Object> queue = new BlockingBufferImpl<Object>();	
+	public void connect(PipeThread pipe1, PipeThread pipe2) {
+		BlockingBuffer<Object> queue = new BlockingBufferImpl<Object>();
 		pipe1.setOut(queue);
 		pipe2.setIn(queue);
 	}
@@ -25,7 +25,7 @@ public class BlockingBufferPipeConnector extends AbstractPipeConnector {
 	public void close(Object in, Object out) {
 		BlockingBuffer bqi = (BlockingBuffer) in;
 		bqi.clear();
-		
+
 		BlockingBuffer bqo = (BlockingBuffer) out;
 		try {
 			bqo.put(Null.INSTANCE);

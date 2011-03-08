@@ -14,9 +14,15 @@ public class StreamPipeConnector extends AbstractPipeConnector {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void connect(PipeThread pipe1, PipeThread pipe2) throws Exception {
+	public void connect(PipeThread pipe1, PipeThread pipe2) {
 		PipedInputStream in = new PipedInputStream();
-		PipedOutputStream out = new PipedOutputStream(in);
+		PipedOutputStream out;
+		try {
+			out = new PipedOutputStream(in);
+		} catch (IOException e) {
+			// will never happen
+			throw new RuntimeException(e);
+		}
 		pipe1.setOut(out);
 		pipe2.setIn(in);
 	}

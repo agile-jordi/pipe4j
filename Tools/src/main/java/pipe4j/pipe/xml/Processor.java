@@ -69,9 +69,9 @@ class Processor {
 
 	private String getPath(Stack<String> stack) {
 		StringBuilder sb = new StringBuilder();
-        for (String string : stack) {
-            sb.append(SLASH).append(string);
-        }
+		for (String string : stack) {
+			sb.append(SLASH).append(string);
+		}
 		return sb.toString();
 	}
 }

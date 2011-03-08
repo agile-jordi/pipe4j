@@ -37,24 +37,24 @@ public class ZipTest extends TestCase {
 
 	public void testZip() throws Exception {
 		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new ZipPipe("foo.txt"), new UnzipPipe(),
-				new FileOut(TestUtils.txtOutFilePath));
+				new ZipPipe("foo.txt"), new UnzipPipe(), new FileOut(
+						TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new DigestPipe(), stringOut);
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new DigestPipe(),
+				stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}
 
 	public void testZipMaxCompression() throws Exception {
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new ZipPipe("foo.txt", 9), new UnzipPipe(),
-				new FileOut(TestUtils.txtOutFilePath));
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new ZipPipe(
+				"foo.txt", 9), new UnzipPipe(), new FileOut(
+				TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new DigestPipe(), stringOut);
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new DigestPipe(),
+				stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}

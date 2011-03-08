@@ -29,25 +29,23 @@ public class FixEolPipeTest extends TestCase {
 
 	public void testFixEolPipe() throws Exception {
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new StringIn(source),
-				new FixEolPipe(Platform.UNIX), stringOut);
+		Pipeline.run(new StringIn(source), new FixEolPipe(Platform.UNIX),
+				stringOut);
 
 		assertEquals("foo\nbar", stringOut.getString());
 
-		Pipeline.run(new StringIn(source),
-				new FixEolPipe(Platform.UNIX), new FixEolPipe(Platform.DOS),
-				stringOut);
+		Pipeline.run(new StringIn(source), new FixEolPipe(Platform.UNIX),
+				new FixEolPipe(Platform.DOS), stringOut);
 
 		assertEquals(source, stringOut.getString());
 
-		Pipeline.run(new StringIn(source),
-				new FixEolPipe(Platform.MAC), stringOut);
+		Pipeline.run(new StringIn(source), new FixEolPipe(Platform.MAC),
+				stringOut);
 
 		assertEquals("foo\rbar", stringOut.getString());
 
-		Pipeline.run(new StringIn(source),
-				new FixEolPipe(Platform.MAC), new FixEolPipe(Platform.DOS),
-				stringOut);
+		Pipeline.run(new StringIn(source), new FixEolPipe(Platform.MAC),
+				new FixEolPipe(Platform.DOS), stringOut);
 
 		assertEquals(source, stringOut.getString());
 	}

@@ -27,8 +27,8 @@ import pipe4j.pipe.string.StringOut;
 public class WordCountPipeTest extends TestCase {
 	public void testWordCountPipe() throws Exception {
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new WordCountPipe(), stringOut);
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new WordCountPipe(),
+				stringOut);
 
 		// wc returns 2915 bytes for some reason
 		assertEquals("101\t502\t2914\t2914", stringOut.getString());

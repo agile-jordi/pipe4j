@@ -10,7 +10,7 @@ import pipe4j.core.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
 public class XMLEventPipe extends
-AbstractPipe<InputStream, BlockingBuffer<XMLEvent>> {
+		AbstractPipe<InputStream, BlockingBuffer<XMLEvent>> {
 
 	@Override
 	public void run(InputStream in, BlockingBuffer<XMLEvent> out)

@@ -23,7 +23,8 @@ import java.io.OutputStream;
 
 import pipe4j.core.Null;
 
-public abstract class AbstractStreamPipeIn extends AbstractPipe<Null, OutputStream> {
+public abstract class AbstractStreamPipeIn extends
+		AbstractPipe<Null, OutputStream> {
 
 	public void run(Null in, OutputStream out) throws Exception {
 		byte[] buffer = new byte[8192];
