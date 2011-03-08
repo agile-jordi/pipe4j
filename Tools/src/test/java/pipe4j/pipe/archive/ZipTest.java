@@ -23,8 +23,6 @@ import java.io.File;
 import junit.framework.TestCase;
 import pipe4j.core.Pipeline;
 import pipe4j.core.TestUtils;
-import pipe4j.pipe.archive.UnzipPipe;
-import pipe4j.pipe.archive.ZipPipe;
 import pipe4j.pipe.file.FileIn;
 import pipe4j.pipe.file.FileOut;
 import pipe4j.pipe.string.StringOut;

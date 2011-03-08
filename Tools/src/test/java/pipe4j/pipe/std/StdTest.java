@@ -7,9 +7,6 @@ import java.io.PrintStream;
 
 import junit.framework.TestCase;
 import pipe4j.core.Pipeline;
-import pipe4j.pipe.std.Stderr;
-import pipe4j.pipe.std.Stdin;
-import pipe4j.pipe.std.Stdout;
 import pipe4j.pipe.string.StringIn;
 import pipe4j.pipe.string.StringOut;
 

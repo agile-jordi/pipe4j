@@ -1,19 +1,8 @@
 package pipe4j.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.lang.reflect.Method;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import pipe4j.core.connector.PipeConnectorHelper;
 
 public class Pipeline {
-	private enum DataType {
-		NULL, BYTE, OBJECT
-	}
-	
 	@SuppressWarnings("rawtypes")
 	public static PipelineInfo run(Pipe... pipeline) {
 		return run(-1, pipeline);
@@ -33,7 +22,7 @@ public class Pipeline {
 		threads[0].setIn(Null.INSTANCE);
 		for (int i = 1; i < pipeline.length; i++) {
 			threads[i] = new PipeThread(pipeline[i]);
-			connect(threads[i - 1], threads[i]);
+			PipeConnectorHelper.connect(threads[i - 1], threads[i]);
 		}
 		threads[threads.length - 1].setOut(Null.INSTANCE);
 
@@ -89,61 +78,5 @@ public class Pipeline {
 			}
 		}
 		return info;
-	}
-
-	private static void connect(PipeThread<Object, Object> prevThread,
-			PipeThread<Object, Object> thread) {
-		Method prevRunMethod = getRunMethod(prevThread.getPipe().getClass());
-		Method runMethod = getRunMethod(thread.getPipe().getClass());
-
-		DataType outType = getDataType(prevRunMethod.getParameterTypes()[1]);
-		DataType inType = getDataType(runMethod.getParameterTypes()[0]);
-
-		if (outType != inType) {
-			throw new IllegalArgumentException("Incompatible pipes: "
-					+ prevThread.getPipe().getClass() + " outputs " + outType
-					+ " but " + thread.getPipe().getClass() + " expects "
-					+ inType);
-		}
-
-		Object in;
-		Object out;
-		if (outType == DataType.BYTE) {
-			out = new PipedOutputStream();
-			try {
-				in = new PipedInputStream((PipedOutputStream) out);
-			} catch (IOException wontHappen) {
-				throw new RuntimeException(wontHappen);
-			}
-		} else {
-			in = new ArrayBlockingQueue<Object>(1);
-			out = in;
-		}
-		prevThread.setOut(out);
-		thread.setIn(in);
-	}
-
-	private static DataType getDataType(Class<?> clazz) {
-		if (clazz.isAssignableFrom(InputStream.class))
-			return DataType.BYTE;
-		if (clazz.isAssignableFrom(OutputStream.class))
-			return DataType.BYTE;
-		if (clazz.isAssignableFrom(BlockingQueue.class))
-			return DataType.OBJECT;
-		throw new IllegalArgumentException("Unknown data type: "
-				+ clazz.getName());
-	}
-
-	private static Method getRunMethod(Class<?> clazz) {
-		for (Method method : clazz.getMethods()) {
-			if (method.isBridge())
-				continue;
-			if (method.getName().equals("run")
-					&& void.class.equals(method.getReturnType())
-					&& method.getParameterTypes().length == 2)
-				return method;
-		}
-		throw new IllegalArgumentException("Cannot find run method for class "
-				+ clazz.getName());
 	}
 }

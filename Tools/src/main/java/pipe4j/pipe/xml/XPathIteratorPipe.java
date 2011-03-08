@@ -1,20 +1,18 @@
 package pipe4j.pipe.xml;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 import javax.xml.stream.events.XMLEvent;
 
+import pipe4j.core.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
 public class XPathIteratorPipe extends
-		AbstractPipe<BlockingQueue<XMLEvent>, BlockingQueue<XPathAndValue>> {
+		AbstractPipe<BlockingBuffer<XMLEvent>, BlockingBuffer<XPathAndValue>> {
 	private final Processor processor = new Processor();
 
 	@Override
-	public void run(BlockingQueue<XMLEvent> in, BlockingQueue<XPathAndValue> out)
+	public void run(BlockingBuffer<XMLEvent> in, BlockingBuffer<XPathAndValue> out)
 			throws Exception {
 		XMLEvent event;
 		while (!cancelled() && (event = in.take()) != null) {

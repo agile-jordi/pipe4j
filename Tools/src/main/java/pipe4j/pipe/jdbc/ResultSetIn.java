@@ -20,13 +20,13 @@ package pipe4j.pipe.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.util.concurrent.BlockingQueue;
 
+import pipe4j.core.BlockingBuffer;
 import pipe4j.core.Null;
 import pipe4j.pipe.AbstractPipe;
 
 
-public class ResultSetIn extends AbstractPipe<Null, BlockingQueue<Object>> {
+public class ResultSetIn extends AbstractPipe<Null, BlockingBuffer<Object>> {
 	private final ResultSet resultSet;
 
 	public ResultSetIn(ResultSet resultSet) {
@@ -35,7 +35,7 @@ public class ResultSetIn extends AbstractPipe<Null, BlockingQueue<Object>> {
 	}
 
 	@Override
-	public void run(Null in, BlockingQueue<Object> out) throws Exception {
+	public void run(Null in, BlockingBuffer<Object> out) throws Exception {
 		ResultSetMetaData md = resultSet.getMetaData();
 		int columnCount = md.getColumnCount();
 		Object[] row;

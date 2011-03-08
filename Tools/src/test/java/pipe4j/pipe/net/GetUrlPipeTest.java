@@ -22,7 +22,6 @@ import http.NanoHTTPD;
 import junit.framework.TestCase;
 import pipe4j.core.Pipeline;
 import pipe4j.core.TestUtils;
-import pipe4j.pipe.net.UrlIn;
 import pipe4j.pipe.string.StringOut;
 import pipe4j.pipe.util.DigestPipe;
 

@@ -3,7 +3,6 @@ package pipe4j.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.BlockingQueue;
 
 public class PipeThread<I, O> extends Thread {
 	private I in;
@@ -59,9 +58,9 @@ public class PipeThread<I, O> extends Thread {
 				is.close();
 			} catch (IOException e) {
 			}
-		} else if (this.in instanceof BlockingQueue) {
-			BlockingQueue<?> queue = (BlockingQueue<?>) this.in;
-			queue.clear();
+		} else if (this.in instanceof BlockingBuffer) {
+			BlockingBuffer<?> buffer = (BlockingBuffer<?>) this.in;
+			buffer.clear();
 		}
 	}
 
@@ -76,11 +75,11 @@ public class PipeThread<I, O> extends Thread {
 				os.close();
 			} catch (IOException e) {
 			}
-		} else if (this.out instanceof BlockingQueue) {
+		} else if (this.out instanceof BlockingBuffer) {
 			@SuppressWarnings("unchecked")
-			BlockingQueue<Object> queue = (BlockingQueue<Object>) this.out;
+			BlockingBuffer<Object> queue = (BlockingBuffer<Object>) this.out;
 			try {
-				queue.put(Null.INSTANCE);
+				queue.put(null);
 			} catch (InterruptedException ignored) {
 			}
 		}

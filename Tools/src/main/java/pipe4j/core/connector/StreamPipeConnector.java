@@ -8,8 +8,8 @@ import pipe4j.core.PipeThread;
 
 public class StreamPipeConnector extends AbstractPipeConnector {
 	protected boolean supports(Class<?> in, Class<?> out) {
-		return PipedInputStream.class.isAssignableFrom(in)
-				&& PipedOutputStream.class.isAssignableFrom(out);
+		return in.isAssignableFrom(PipedInputStream.class)
+				&& out.isAssignableFrom(PipedOutputStream.class);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

@@ -23,7 +23,6 @@ import pipe4j.core.Pipeline;
 import pipe4j.core.TestUtils;
 import pipe4j.pipe.file.FileIn;
 import pipe4j.pipe.string.StringOut;
-import pipe4j.pipe.txt.WordCountPipe;
 
 public class WordCountPipeTest extends TestCase {
 	public void testWordCountPipe() throws Exception {

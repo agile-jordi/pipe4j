@@ -23,8 +23,8 @@ public abstract class AbstractPipeConnector implements PipeConnector {
 		Method prevMethod = getRunMethod(prev.getClass());
 		Method nextMethod = getRunMethod(next.getClass());
 	
-		Class<?> in = prevMethod.getParameterTypes()[1];
-		Class<?> out = nextMethod.getParameterTypes()[0];
+		Class<?> out = prevMethod.getParameterTypes()[1];
+		Class<?> in = nextMethod.getParameterTypes()[0];
 	
 		return supports(in, out);
 	}

@@ -22,7 +22,6 @@ import junit.framework.TestCase;
 import pipe4j.core.Pipeline;
 import pipe4j.pipe.string.StringIn;
 import pipe4j.pipe.string.StringOut;
-import pipe4j.pipe.txt.FixEolPipe;
 import pipe4j.pipe.txt.FixEolPipe.Platform;
 
 public class FixEolPipeTest extends TestCase {

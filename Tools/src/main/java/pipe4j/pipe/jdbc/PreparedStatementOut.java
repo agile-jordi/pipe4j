@@ -21,13 +21,13 @@ package pipe4j.pipe.jdbc;
 import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.BlockingQueue;
 
+import pipe4j.core.BlockingBuffer;
 import pipe4j.core.Null;
 import pipe4j.pipe.AbstractPipe;
 
 public class PreparedStatementOut extends
-		AbstractPipe<BlockingQueue<Object>, Null> {
+		AbstractPipe<BlockingBuffer<Object>, Null> {
 	private final PreparedStatement preparedStatement;
 	private int batchSize = 10;
 	private boolean commitBatch = false;
@@ -50,10 +50,10 @@ public class PreparedStatementOut extends
 	}
 
 	@Override
-	public void run(BlockingQueue<Object> in, Null out) throws Exception {
+	public void run(BlockingBuffer<Object> in, Null out) throws Exception {
 		Object obj;
 		int count = 0;
-		while (!cancelled() && !((obj = in.take()) instanceof Null)) {
+		while (!cancelled() && (obj = in.take()) != null) {
 			if (obj instanceof Object[]) {
 				Object[] row = (Object[]) obj;
 				for (int i = 0; i < row.length; i++) {

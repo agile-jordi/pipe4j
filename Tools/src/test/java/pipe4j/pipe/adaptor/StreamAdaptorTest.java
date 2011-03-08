@@ -23,8 +23,6 @@ import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
 import pipe4j.core.Pipeline;
-import pipe4j.pipe.adaptor.InputStreamAdaptor;
-import pipe4j.pipe.adaptor.OutputStreamAdaptor;
 
 public class StreamAdaptorTest extends TestCase {
 	public void testAdaptor() throws Exception {
