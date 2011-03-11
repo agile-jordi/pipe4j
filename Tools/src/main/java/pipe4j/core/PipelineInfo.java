@@ -18,6 +18,11 @@
  */
 package pipe4j.core;
 
+/**
+ * DTO holding basic information of a pipeline execution.
+ * 
+ * @author bbennett
+ */
 public class PipelineInfo {
 	private final ThreadGroup threadGroup;
 	private Exception exception;

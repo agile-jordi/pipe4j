@@ -6,6 +6,12 @@ import java.io.PipedOutputStream;
 
 import pipe4j.core.PipeThread;
 
+/**
+ * Connects stream pipes through a pair of connected {@link PipedInputStream}
+ * and {@link PipedOutputStream}.
+ * 
+ * @author bbennett
+ */
 public class StreamPipeConnector extends AbstractPipeConnector {
 	@Override
 	protected boolean supports(Class<?> in, Class<?> out) {

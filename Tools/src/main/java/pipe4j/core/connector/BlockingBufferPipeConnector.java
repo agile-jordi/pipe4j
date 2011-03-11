@@ -5,6 +5,11 @@ import pipe4j.core.BlockingBufferImpl;
 import pipe4j.core.Null;
 import pipe4j.core.PipeThread;
 
+/**
+ * Connect object pipes with a {@link BlockingBuffer}. 
+ * 
+ * @author bbennett
+ */
 public class BlockingBufferPipeConnector extends AbstractPipeConnector {
 	@Override
 	protected boolean supports(Class<?> in, Class<?> out) {

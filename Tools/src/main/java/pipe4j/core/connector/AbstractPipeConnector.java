@@ -4,6 +4,11 @@ import java.lang.reflect.Method;
 
 import pipe4j.core.Pipe;
 
+/**
+ * Abstract parent for connector implementations with utility methods.
+ * 
+ * @author bbennett
+ */
 public abstract class AbstractPipeConnector implements PipeConnector {
 	protected Method getRunMethod(Class<?> clazz) {
 		for (Method method : clazz.getMethods()) {

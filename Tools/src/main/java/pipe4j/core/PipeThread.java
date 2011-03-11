@@ -4,6 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * Thread specialized in executing pipes.
+ * 
+ * @author bbennett
+ * 
+ * @param <I>
+ *            Pipe input type
+ * @param <O>
+ *            Pipe output type
+ */
 public class PipeThread<I, O> extends Thread {
 	private I in;
 	private O out;
@@ -35,6 +45,7 @@ public class PipeThread<I, O> extends Thread {
 		return exception;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		try {

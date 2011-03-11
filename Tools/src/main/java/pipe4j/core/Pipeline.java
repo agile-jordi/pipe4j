@@ -2,6 +2,11 @@ package pipe4j.core;
 
 import pipe4j.core.connector.PipeConnectorHelper;
 
+/**
+ * Utility class to assemble and execute pipelines.
+ * 
+ * @author bbennett
+ */
 public class Pipeline {
 	@SuppressWarnings("rawtypes")
 	public static PipelineInfo run(Pipe... pipeline) {
