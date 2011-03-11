@@ -18,11 +18,16 @@
  */
 package pipe4j.pipe;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import pipe4j.core.ConnectorDecorator;
+
 public abstract class AbstractStreamPipe extends
-		AbstractPipe<InputStream, OutputStream> {
+		AbstractPipe<InputStream, OutputStream> implements
+		ConnectorDecorator<InputStream, OutputStream> {
+
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
 		byte[] buffer = new byte[8192];
@@ -31,5 +36,15 @@ public abstract class AbstractStreamPipe extends
 			os.write(buffer, 0, bytesRead);
 		}
 		os.flush();
+	}
+
+	@Override
+	public InputStream decorateIn(InputStream in) throws IOException {
+		return in;
+	}
+
+	@Override
+	public OutputStream decorateOut(OutputStream out) throws IOException {
+		return out;
 	}
 }

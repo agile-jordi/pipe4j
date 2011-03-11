@@ -1,6 +1,6 @@
 package pipe4j.pipe.util;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import pipe4j.pipe.AbstractStreamPipe;
@@ -18,7 +18,7 @@ public class TeePipe extends AbstractStreamPipe {
 	}
 
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		super.run(is, new TeeOutputStream(os, getTeeStream()));
+	public OutputStream decorateOut(OutputStream out) throws IOException {
+		return new TeeOutputStream(out, getTeeStream());
 	}
 }

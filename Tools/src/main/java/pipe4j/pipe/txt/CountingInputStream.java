@@ -30,6 +30,7 @@ class CountingInputStream extends InputStream {
 		this.is = is;
 	}
 
+	@Override
 	public int read() throws IOException {
 		int read = is.read();
 		if (read >= 0) {
@@ -38,12 +39,14 @@ class CountingInputStream extends InputStream {
 		return read;
 	}
 
+	@Override
 	public int read(byte[] b) throws IOException {
 		int read = is.read(b);
 		this.count += read;
 		return read;
 	}
 
+	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
 		int read = is.read(b, off, len);
 		this.count += read;

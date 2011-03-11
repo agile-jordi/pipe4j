@@ -30,6 +30,7 @@ public class OutputStreamAdaptor extends AbstractStreamPipeOut {
 		this.outputStream = outputStream;
 	}
 
+	@Override
 	public OutputStream getOutputStream() {
 		return outputStream;
 	}

@@ -29,12 +29,17 @@ import pipe4j.pipe.AbstractStreamPipe;
 public class UnzipPipe extends AbstractStreamPipe {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
-		ZipInputStream in = new ZipInputStream(is);
+		ZipInputStream in = (ZipInputStream) is;
 		ZipEntry ze = in.getNextEntry();
 		if (ze == null) {
 			throw new IOException("Zip stream has no entry!");
 		}
 		super.run(in, os);
 		in.closeEntry();
+	}
+
+	@Override
+	public InputStream decorateIn(InputStream in) throws IOException {
+		return new ZipInputStream(in);
 	}
 }

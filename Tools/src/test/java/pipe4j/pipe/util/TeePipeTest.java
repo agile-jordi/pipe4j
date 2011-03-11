@@ -12,8 +12,8 @@ public class TeePipeTest extends TestCase {
 	public void testTee() throws Exception {
 		StringOut stringOut = new StringOut();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new TeePipe(
-				baos), stringOut);
+		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new TeePipe(baos),
+				stringOut);
 		assertEquals(stringOut.getString(), new String(baos.toByteArray()));
 	}
 }

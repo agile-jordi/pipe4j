@@ -18,15 +18,15 @@
  */
 package pipe4j.pipe.archive;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 
 import pipe4j.pipe.AbstractStreamPipe;
 
 public class GUnzipPipe extends AbstractStreamPipe {
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		super.run(new GZIPInputStream(is), os);
+	public InputStream decorateIn(InputStream in) throws IOException {
+		return new GZIPInputStream(in);
 	}
 }

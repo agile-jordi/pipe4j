@@ -30,6 +30,7 @@ public class InputStreamAdaptor extends AbstractStreamPipeIn {
 		this.inputStream = inputStream;
 	}
 
+	@Override
 	public InputStream getInputStream() {
 		return inputStream;
 	}

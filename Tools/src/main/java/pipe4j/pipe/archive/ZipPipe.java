@@ -18,6 +18,7 @@
  */
 package pipe4j.pipe.archive;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.Deflater;
@@ -43,11 +44,16 @@ public class ZipPipe extends AbstractStreamPipe {
 
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
-		ZipOutputStream out = new ZipOutputStream(os);
+		ZipOutputStream out = (ZipOutputStream) os;
 		out.putNextEntry(new ZipEntry(entryName));
 		out.setLevel(level);
 		super.run(is, out);
 		out.closeEntry();
 		out.finish();
+	}
+
+	@Override
+	public OutputStream decorateOut(OutputStream out) throws IOException {
+		return new ZipOutputStream(out);
 	}
 }

@@ -26,6 +26,7 @@ import pipe4j.core.Null;
 public abstract class AbstractStreamPipeIn extends
 		AbstractPipe<Null, OutputStream> {
 
+	@Override
 	public void run(Null in, OutputStream out) throws Exception {
 		byte[] buffer = new byte[8192];
 		int bytesRead;

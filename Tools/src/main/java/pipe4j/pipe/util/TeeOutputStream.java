@@ -11,6 +11,7 @@ class TeeOutputStream extends OutputStream {
 		tee = teeStream;
 	}
 
+	@Override
 	public void write(int c) throws IOException {
 		out.write(c);
 		tee.write(c);
@@ -28,6 +29,7 @@ class TeeOutputStream extends OutputStream {
 		tee.write(b, off, len);
 	}
 
+	@Override
 	public void close() throws IOException {
 		flush();
 
@@ -35,6 +37,7 @@ class TeeOutputStream extends OutputStream {
 		tee.close();
 	}
 
+	@Override
 	public void flush() throws IOException {
 		out.flush();
 		tee.flush();

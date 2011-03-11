@@ -38,6 +38,11 @@ public class PipeThread<I, O> extends Thread {
 	@Override
 	public void run() {
 		try {
+			if (pipe instanceof ConnectorDecorator) {
+				this.in = ((ConnectorDecorator<I, O>) pipe).decorateIn(this.in);
+				this.out = ((ConnectorDecorator<I, O>) pipe)
+						.decorateOut(this.out);
+			}
 			pipe.run(in, out);
 		} catch (Exception e) {
 			this.exception = e;

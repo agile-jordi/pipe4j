@@ -18,6 +18,7 @@ package pipe4j.pipe.archive;
  * You should have received a copy of the Lesser GNU General Public License
  * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
  */
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -27,8 +28,12 @@ import pipe4j.pipe.AbstractStreamPipe;
 public class GZipPipe extends AbstractStreamPipe {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
-		GZIPOutputStream gzipos = new GZIPOutputStream(os);
-		super.run(is, gzipos);
-		gzipos.finish();
+		super.run(is, os);
+		((GZIPOutputStream) os).finish();
+	}
+
+	@Override
+	public OutputStream decorateOut(OutputStream out) throws IOException {
+		return new GZIPOutputStream(out);
 	}
 }
