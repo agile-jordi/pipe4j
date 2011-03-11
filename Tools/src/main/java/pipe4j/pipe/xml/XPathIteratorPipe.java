@@ -33,7 +33,7 @@ import pipe4j.pipe.AbstractPipe;
  */
 public class XPathIteratorPipe extends
 		AbstractPipe<BlockingBuffer<XMLEvent>, BlockingBuffer<XPathAndValue>> {
-	private final Processor processor = new Processor();
+	private final XMLEventProcessor processor = new XMLEventProcessor();
 
 	@Override
 	public void run(BlockingBuffer<XMLEvent> in,

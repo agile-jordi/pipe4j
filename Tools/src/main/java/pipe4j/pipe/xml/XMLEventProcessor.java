@@ -36,9 +36,11 @@ import javax.xml.stream.events.XMLEvent;
  * 
  * @author bbennett
  */
-class Processor {
+class XMLEventProcessor {
+	private static final String TEXT_SUFFIX = "/text()";
+	private static final String ATTR_PREFIX = "/@";
 	private static final char SLASH = '/';
-	private Stack<String> stack = new Stack<String>();
+	private final Stack<String> stack = new Stack<String>();
 	private String bufferedText = null;
 	private static final Pattern NON_BLANK_PATTERN = Pattern.compile("\\S");
 
@@ -47,9 +49,9 @@ class Processor {
 		if (event.isStartElement()) {
 			bufferedText = null;
 			StartElement element = (StartElement) event;
-			stack.push(element.getName().toString());
+			addXPathToStack(element.getName().toString());
 
-			String xpath = getPath(stack);
+			String xpath = stack.peek();
 			/*
 			 * This flags the start of the element. We will flag again if
 			 * element contains text.
@@ -65,23 +67,21 @@ class Processor {
 				String attName = (prefix == null || prefix.trim().length() == 0 ? ""
 						: prefix + ":")
 						+ name.getLocalPart();
-				paths.put(xpath + "/@" + attName, attribute.getValue());
+				paths.put(xpath + ATTR_PREFIX + attName, attribute.getValue());
 			}
 		} else if (event.isEndElement()) {
 			EndElement element = event.asEndElement();
-			String xpath = getPath(stack);
-			String startName = stack.pop();
-			if (!element.getName().toString().equals(startName)) {
+			String xpath = stack.pop();
+			if (!xpath.endsWith(SLASH + element.getName().toString())) {
 				throw new RuntimeException("Element mismatch! Started "
-						+ startName + " but ended "
+						+ xpath + " but ended "
 						+ element.getName().toString());
 			}
 			if (bufferedText != null
 					&& NON_BLANK_PATTERN.matcher(bufferedText).find()) {
-				paths.put(xpath + "/text()", bufferedText);
+				paths.put(xpath + TEXT_SUFFIX, bufferedText);
 				bufferedText = null;
 			}
-			// System.out.println("Back to " + getPath(stack));
 		} else if (event.isCharacters()) {
 			Characters characters = (Characters) event;
 			bufferedText = characters.getData();
@@ -90,11 +90,12 @@ class Processor {
 		return paths;
 	}
 
-	private String getPath(Stack<String> stack) {
-		StringBuilder sb = new StringBuilder();
-		for (String string : stack) {
-			sb.append(SLASH).append(string);
+	private void addXPathToStack(String xpath) {
+		if (!this.stack.isEmpty()) {
+			String previous = this.stack.peek();
+			this.stack.push(previous + SLASH + xpath);
+		} else {
+			this.stack.push(SLASH + xpath);
 		}
-		return sb.toString();
 	}
 }
