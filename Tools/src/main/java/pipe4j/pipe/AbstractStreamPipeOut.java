@@ -1,28 +1,40 @@
 /*
  * Copyright (C) 2010 Bernardo O. Bennett
  * 
- * This file is part of Stream4j.
+ * This file is part of Pipe4j.
  * 
- * Stream4j is free software: you can redistribute it and/or modify it under the
+ * Pipe4j is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  * 
- * Stream4j is distributed in the hope that it will be useful, but WITHOUT ANY
+ * Pipe4j is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the Lesser GNU General Public License for more
  * details.
  * 
  * You should have received a copy of the Lesser GNU General Public License
- * along with Stream4j. If not, see <http://www.gnu.org/licenses/>.
+ * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
 package pipe4j.pipe;
 
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import pipe4j.core.Null;
+import pipe4j.pipe.file.FileOut;
 
+/**
+ * Abstract parent for "out" or "tail" pipes, which consume data rather than
+ * writing to the next pipe.
+ * 
+ * Example: {@link FileOut} pipe provides a {@link FileOutputStream}.
+ * 
+ * Implementations just need to provide the {@link OutputStream} implementation.
+ * 
+ * @author bbennett
+ */
 public abstract class AbstractStreamPipeOut extends
 		AbstractPipe<InputStream, Null> {
 
@@ -37,5 +49,10 @@ public abstract class AbstractStreamPipeOut extends
 		os.flush();
 	}
 
+	/**
+	 * @return OutputStream to consume data.
+	 * 
+	 * @throws Exception
+	 */
 	protected abstract OutputStream getOutputStream() throws Exception;
 }
