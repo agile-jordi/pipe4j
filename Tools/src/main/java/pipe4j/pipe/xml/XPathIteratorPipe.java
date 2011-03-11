@@ -25,6 +25,12 @@ import javax.xml.stream.events.XMLEvent;
 import pipe4j.core.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
+/**
+ * Reads {@link XMLEvent} instances from previous pipe and writes corresponding
+ * {@link XPathAndValue} instances to next pipe.
+ * 
+ * @author bbennett
+ */
 public class XPathIteratorPipe extends
 		AbstractPipe<BlockingBuffer<XMLEvent>, BlockingBuffer<XPathAndValue>> {
 	private final Processor processor = new Processor();

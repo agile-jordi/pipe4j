@@ -24,7 +24,7 @@ import pipe4j.core.Null;
 import pipe4j.core.PipeThread;
 
 /**
- * Connect object pipes with a {@link BlockingBuffer}. 
+ * Connect object pipes with a {@link BlockingBuffer}.
  * 
  * @author bbennett
  */

@@ -23,6 +23,12 @@ import java.io.OutputStream;
 
 import pipe4j.pipe.AbstractStreamPipe;
 
+/**
+ * Writes data read from previous pipe into next, while replicating data to the
+ * given {@link OutputStream}
+ * 
+ * @author bbennett
+ */
 public class TeePipe extends AbstractStreamPipe {
 	private final OutputStream teeStream;
 

@@ -26,6 +26,7 @@ import pipe4j.pipe.AbstractStreamPipe;
 
 /**
  * Applyes gunzip to stream.
+ * 
  * @author bbennett
  */
 public class GUnzipPipe extends AbstractStreamPipe {

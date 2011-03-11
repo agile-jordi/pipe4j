@@ -22,6 +22,11 @@ import java.io.InputStream;
 
 import pipe4j.pipe.AbstractStreamPipeIn;
 
+/**
+ * Feeds pipeline from stdin.
+ * 
+ * @author bbennett
+ */
 public class Stdin extends AbstractStreamPipeIn {
 	@Override
 	protected InputStream getInputStream() throws Exception {

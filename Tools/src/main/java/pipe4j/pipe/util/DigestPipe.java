@@ -25,6 +25,13 @@ import java.security.MessageDigest;
 
 import pipe4j.pipe.AbstractPipe;
 
+/**
+ * Digests {@link InputStream} with the configured algorithm and writes
+ * resulting hash compuation to {@link OutputStream}. Default algorithm set to
+ * MD5.
+ * 
+ * @author bbennett
+ */
 public class DigestPipe extends AbstractPipe<InputStream, OutputStream> {
 	private static final String HEXES = "0123456789abcdef";
 	private static final String defaultAlgorithm = "MD5";

@@ -40,7 +40,8 @@ public class PipeConnectorHelper {
 	/**
 	 * Register a connector implementation.
 	 * 
-	 * @param connector Connector implementation
+	 * @param connector
+	 *            Connector implementation
 	 */
 	public static void registerPipeConnector(PipeConnector connector) {
 		connectors.add(connector);
@@ -49,8 +50,10 @@ public class PipeConnectorHelper {
 	/**
 	 * Connect 2 pipe threads.
 	 * 
-	 * @param prevThread First pipe thread
-	 * @param nextThread Second pipe thread
+	 * @param prevThread
+	 *            First pipe thread
+	 * @param nextThread
+	 *            Second pipe thread
 	 */
 	public static void connect(PipeThread<Object, Object> prevThread,
 			PipeThread<Object, Object> nextThread) {

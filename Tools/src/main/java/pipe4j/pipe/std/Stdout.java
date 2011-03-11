@@ -22,6 +22,11 @@ import java.io.OutputStream;
 
 import pipe4j.pipe.AbstractStreamPipeOut;
 
+/**
+ * Writes pipeline result to stdout.
+ * 
+ * @author bbennett
+ */
 public class Stdout extends AbstractStreamPipeOut {
 	@Override
 	protected OutputStream getOutputStream() throws Exception {

@@ -21,6 +21,11 @@ package pipe4j.pipe.util;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * Forks data, writing to two separate {@link OutputStream} instances.
+ * 
+ * @author bbennett
+ */
 class TeeOutputStream extends OutputStream {
 	private final OutputStream tee, out;
 

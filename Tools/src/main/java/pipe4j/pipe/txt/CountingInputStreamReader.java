@@ -22,6 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * Delegates to given {@link InputStream} and counts the amount of chars read.
+ * 
+ * @author bbennett
+ */
 class CountingInputStreamReader extends InputStreamReader {
 	private int count = 0;
 

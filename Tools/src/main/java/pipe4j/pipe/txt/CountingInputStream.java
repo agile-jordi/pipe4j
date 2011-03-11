@@ -21,6 +21,11 @@ package pipe4j.pipe.txt;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Delegates to given {@link InputStream} and counts the amount of bytes read.
+ * 
+ * @author bbennett
+ */
 class CountingInputStream extends InputStream {
 	private final InputStream is;
 	private int count = 0;

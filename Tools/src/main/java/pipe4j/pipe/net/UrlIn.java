@@ -24,6 +24,11 @@ import java.net.URL;
 
 import pipe4j.pipe.AbstractStreamPipeIn;
 
+/**
+ * Pipe that reads from an {@link URL} and feeds pipeline.
+ * 
+ * @author bbennett
+ */
 public class UrlIn extends AbstractStreamPipeIn {
 	private String url;
 

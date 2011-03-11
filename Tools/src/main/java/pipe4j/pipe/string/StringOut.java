@@ -23,6 +23,11 @@ import java.io.OutputStream;
 
 import pipe4j.pipe.AbstractStreamPipeOut;
 
+/**
+ * Writes pipeline result into a {@link String}.
+ * 
+ * @author bbennett
+ */
 public class StringOut extends AbstractStreamPipeOut {
 	private ByteArrayOutputStream baos;
 

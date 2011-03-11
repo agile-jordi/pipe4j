@@ -27,6 +27,12 @@ import java.io.OutputStreamWriter;
 
 import pipe4j.pipe.AbstractPipe;
 
+/**
+ * Fixes eol character from {@link InputStream} for the configured platform and
+ * writed to {@link OutputStream}
+ * 
+ * @author bbennett
+ */
 public class FixEolPipe extends AbstractPipe<InputStream, OutputStream> {
 	public enum Platform {
 		DOS, UNIX, MAC, AUTO

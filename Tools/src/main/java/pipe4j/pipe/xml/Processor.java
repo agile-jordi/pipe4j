@@ -31,6 +31,11 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+/**
+ * Buffers {@link XMLEvent} instances and returns map of xpath => value.
+ * 
+ * @author bbennett
+ */
 class Processor {
 	private static final char SLASH = '/';
 	private Stack<String> stack = new Stack<String>();

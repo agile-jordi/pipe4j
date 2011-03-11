@@ -27,6 +27,12 @@ import java.util.regex.Pattern;
 
 import pipe4j.pipe.AbstractPipe;
 
+/**
+ * Counts lines, words, chars and bytes from {@link InputStream} and writes
+ * result to {@link OutputStream}.
+ * 
+ * @author bbennett
+ */
 public class WordCountPipe extends AbstractPipe<InputStream, OutputStream> {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {

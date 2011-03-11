@@ -1,11 +1,3 @@
-package pipe4j.pipe.string;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import pipe4j.pipe.AbstractStreamPipeIn;
-
 /*
  * Copyright (C) 2010 Bernardo O. Bennett
  * 
@@ -23,6 +15,19 @@ import pipe4j.pipe.AbstractStreamPipeIn;
  * 
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
+ */
+package pipe4j.pipe.string;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import pipe4j.pipe.AbstractStreamPipeIn;
+
+/**
+ * Feeds pipeline with the contents of a {@link String}.
+ * 
+ * @author bbennett
  */
 public class StringIn extends AbstractStreamPipeIn {
 	private String source;

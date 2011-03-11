@@ -27,6 +27,12 @@ import javax.xml.stream.events.XMLEvent;
 import pipe4j.core.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
+/**
+ * Uses a {@link XMLEventReader} to read xml events from {@link InputStream} and
+ * write to object buffer output.
+ * 
+ * @author bbennett
+ */
 public class XMLEventPipe extends
 		AbstractPipe<InputStream, BlockingBuffer<XMLEvent>> {
 

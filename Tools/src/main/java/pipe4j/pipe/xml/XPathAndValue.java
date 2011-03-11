@@ -18,6 +18,11 @@
  */
 package pipe4j.pipe.xml;
 
+/**
+ * DTO to hold an XPath and value, if any.
+ * 
+ * @author bbennett
+ */
 public class XPathAndValue {
 	private final String xpath;
 	private final String value;
