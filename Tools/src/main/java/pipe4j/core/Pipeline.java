@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import pipe4j.core.Result.Type;
 import pipe4j.core.connector.PipeConnectorHelper;
 
 /**
@@ -71,28 +72,20 @@ public class Pipeline {
 		}
 		pool.shutdown();
 
-		boolean terminated = false;
-		try {
-			if (timeoutMilliseconds <= 0) {
-				terminated = pool.awaitTermination(Long.MAX_VALUE,
-						TimeUnit.DAYS);
-			} else {
-				terminated = pool.awaitTermination(timeoutMilliseconds,
-						TimeUnit.MILLISECONDS);
-			}
-		} catch (InterruptedException e1) {
-		}
-
-		if (!terminated) {
-			pool.shutdownNow();
-		}
+		boolean aborted = abortIfNecessary(timeoutMilliseconds, pool,
+				callables);
 
 		List<Result> resultList = new ArrayList<Result>(pipeline.length);
 		PipelineInfo info = new PipelineInfo(resultList);
-		info.setTimeoutExceeded(!terminated);
+		info.setTimeoutExceeded(aborted);
+
 		for (Future<Result> future : futureList) {
 			try {
 				Result result = future.get();
+				
+				if (result.getType() == Type.FAILURE) {
+					info.setResult(Type.FAILURE);
+				}
 
 				// If exception happened, get first found
 				if (!info.hasError() && result.hasException()) {
@@ -107,7 +100,50 @@ public class Pipeline {
 			}
 		}
 
+		if (aborted) {
+			info.setResult(Type.FAILURE);
+		}
+
 		return info;
+	}
+
+	private static boolean abortIfNecessary(long timeoutMilliseconds,
+			ExecutorService pool,
+			List<CallablePipe<Closeable, Closeable>> callables) {
+		boolean terminated = false;
+		boolean rv = false;
+		try {
+			if (timeoutMilliseconds <= 0) {
+				terminated = pool.awaitTermination(Long.MAX_VALUE,
+						TimeUnit.DAYS);
+			} else {
+				terminated = pool.awaitTermination(timeoutMilliseconds,
+						TimeUnit.MILLISECONDS);
+			}
+		} catch (InterruptedException e1) {
+		}
+
+		// Timeout expired and pipeline is still running
+		if (!terminated) {
+			rv = true;
+			
+			// Be nice and request each pipe to cancel
+			for (CallablePipe<Closeable, Closeable> callablePipe : callables) {
+				callablePipe.getPipe().cancel();
+			}
+
+			// Check if pipes gracefully terminated
+			try {
+				terminated = pool.awaitTermination(1000, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+			}
+
+			// If not use brute force
+			if (!terminated) {
+				pool.shutdownNow();
+			}
+		}
+		return rv;
 	}
 
 	private static void connect(CallablePipe<Closeable, Closeable> previous,

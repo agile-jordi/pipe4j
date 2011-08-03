@@ -51,11 +51,6 @@ public class BlockingBufferImpl<E> implements BlockingBuffer<E> {
 	}
 
 	@Override
-	public void clear() {
-		queue.clear();
-	}
-
-	@Override
 	public void close() throws IOException {
 		if (this.closed.get()) {
 			return;

@@ -23,13 +23,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import pipe4j.core.Null;
-import pipe4j.pipe.file.FileIn;
 
 /**
  * Abstract parent for "in" or "head" pipes, which provide their own data
  * instead of reading from a previous pipe.
  * 
- * Example: {@link FileIn} pipe provides a {@link FileInputStream}.
+ * Example: FileIn pipe provides a {@link FileInputStream}.
  * 
  * Implementations just need to provide the {@link InputStream} implementation.
  * 

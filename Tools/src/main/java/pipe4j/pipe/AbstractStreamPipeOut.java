@@ -23,13 +23,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import pipe4j.core.Null;
-import pipe4j.pipe.file.FileOut;
 
 /**
  * Abstract parent for "out" or "tail" pipes, which consume data rather than
  * writing to the next pipe.
  * 
- * Example: {@link FileOut} pipe provides a {@link FileOutputStream}.
+ * Example: FileOut pipe provides a {@link FileOutputStream}.
  * 
  * Implementations just need to provide the {@link OutputStream} implementation.
  * 

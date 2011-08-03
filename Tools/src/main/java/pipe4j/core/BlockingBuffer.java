@@ -50,9 +50,4 @@ public interface BlockingBuffer<E> extends Closeable {
 	 *             if interrupted while waiting
 	 */
 	E take() throws InterruptedException;
-
-	/**
-	 * Removes all elements from buffer.
-	 */
-	void clear();
 }

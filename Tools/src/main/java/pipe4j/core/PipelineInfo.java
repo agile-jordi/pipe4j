@@ -20,6 +20,8 @@ package pipe4j.core;
 
 import java.util.List;
 
+import pipe4j.core.Result.Type;
+
 /**
  * DTO holding basic information of a pipeline execution.
  * 
@@ -29,10 +31,19 @@ public class PipelineInfo {
 	private List<Result> resultList;
 	private Exception exception;
 	private boolean timeoutExceeded = false;
+	private Result.Type result = Type.SUCCESS;
 
 	public PipelineInfo(List<Result> resultList) {
 		super();
 		this.resultList = resultList;
+	}
+	
+	public void setResult(Result.Type result) {
+		this.result = result;
+	}
+	
+	public Result.Type getResult() {
+		return result;
 	}
 
 	public List<Result> getResultList() {
