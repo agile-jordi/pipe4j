@@ -18,6 +18,9 @@
  */
 package pipe4j.core;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 /**
  * When declared as connector for the head and tail of a pipeline. Example:
  * FileIn will declare input as Null, as the input will be a file, and not the
@@ -27,12 +30,16 @@ package pipe4j.core;
  * 
  * @author bbennett
  */
-public final class Null {
+public final class Null implements Closeable {
 	/**
 	 * Singleton instance.
 	 */
 	public static final Null INSTANCE = new Null();
 
 	private Null() {
+	}
+
+	@Override
+	public void close() throws IOException {
 	}
 }

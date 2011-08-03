@@ -18,8 +18,9 @@
  */
 package pipe4j.core.connector;
 
-import pipe4j.core.Pipe;
-import pipe4j.core.PipeThread;
+import java.io.Closeable;
+
+import pipe4j.core.CallablePipe;
 
 /**
  * Responsible for connecting two pipes.
@@ -27,26 +28,9 @@ import pipe4j.core.PipeThread;
  * @author bbennett
  */
 public interface PipeConnector {
-	/**
-	 * @param prev
-	 *            First pipe
-	 * @param next
-	 *            Second pipe
-	 * @return True if this implementation supports connecting this pair of
-	 *         pipes
-	 */
-	boolean supports(Pipe<?, ?> prev, Pipe<?, ?> next);
+	boolean supports(CallablePipe<Closeable, Closeable> previous,
+			CallablePipe<Closeable, Closeable> callablePipe);
 
-	/**
-	 * Connect two pipes.
-	 * 
-	 * @param pipe1
-	 *            First pipe
-	 * @param pipe2
-	 *            Second pipe
-	 */
-	@SuppressWarnings("rawtypes")
-	void connect(PipeThread pipe1, PipeThread pipe2);
-
-	void close(Object in, Object out);
+	void connect(CallablePipe<Closeable, Closeable> pipe1,
+			CallablePipe<Closeable, Closeable> pipe2);
 }

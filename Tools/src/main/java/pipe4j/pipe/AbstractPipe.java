@@ -18,6 +18,7 @@
  */
 package pipe4j.pipe;
 
+import java.io.Closeable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import pipe4j.core.Pipe;
@@ -32,7 +33,8 @@ import pipe4j.core.Pipe;
  * @param <O>
  *            Pipe output type
  */
-public abstract class AbstractPipe<I, O> implements Pipe<I, O> {
+public abstract class AbstractPipe<I extends Closeable, O extends Closeable>
+		implements Pipe<I, O> {
 	private AtomicBoolean cancel = new AtomicBoolean(false);
 
 	@Override

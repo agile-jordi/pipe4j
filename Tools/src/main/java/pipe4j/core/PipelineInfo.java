@@ -18,22 +18,25 @@
  */
 package pipe4j.core;
 
+import java.util.List;
+
 /**
  * DTO holding basic information of a pipeline execution.
  * 
  * @author bbennett
  */
 public class PipelineInfo {
-	private final ThreadGroup threadGroup;
+	private List<Result> resultList;
 	private Exception exception;
+	private boolean timeoutExceeded = false;
 
-	public PipelineInfo(ThreadGroup threadGroup) {
+	public PipelineInfo(List<Result> resultList) {
 		super();
-		this.threadGroup = threadGroup;
+		this.resultList = resultList;
 	}
 
-	public ThreadGroup getThreadGroup() {
-		return threadGroup;
+	public List<Result> getResultList() {
+		return resultList;
 	}
 
 	public void setException(Exception exception) {
@@ -46,5 +49,13 @@ public class PipelineInfo {
 
 	public boolean hasError() {
 		return exception != null;
+	}
+
+	public void setTimeoutExceeded(boolean timeoutExceeded) {
+		this.timeoutExceeded = timeoutExceeded;
+	}
+
+	public boolean isTimeoutExceeded() {
+		return timeoutExceeded;
 	}
 }

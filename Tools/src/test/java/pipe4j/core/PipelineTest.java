@@ -52,38 +52,37 @@ public class PipelineTest extends TestCase {
 		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
 				new MiddlePipe(), stringOut);
 
-		checkResults(info, null);
+		checkResults(info, null, false);
 		assertEquals(sb.toString(), stringOut.getString());
 	}
 
 	public void testTimeout() throws Exception {
 		PipelineInfo info = Pipeline.run(100, new StringIn(sb.toString()),
 				new SleepPipe(5000), new StringOut());
-		checkResults(info, InterruptedException.class);
+		checkResults(info, InterruptedException.class, true);
 	}
 
 	public void testException() throws Exception {
 		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
 				new MiddlePipe(), new ExceptionPipe(), new StringOut());
-		checkResults(info, IOException.class);
+		checkResults(info, IOException.class, false);
 	}
 
 	public void testCloseReader() throws Exception {
 		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
 				new MiddlePipe(), new ReadClosingPipe(), new StringOut());
-		checkResults(info, IOException.class);
+		checkResults(info, IOException.class, false);
 	}
 
 	public void testCloseWriter() throws Exception {
 		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
 				new WriteClosingPipe(), new MiddlePipe(), new StringOut());
-		checkResults(info, IOException.class);
+		checkResults(info, IOException.class, false);
 	}
 
 	private void checkResults(PipelineInfo info,
-			Class<? extends Exception> clazz) {
-		assertEquals(0, info.getThreadGroup().activeCount());
-		assertEquals(0, info.getThreadGroup().activeGroupCount());
+			Class<? extends Exception> clazz, boolean timeout) {
+		assertEquals(timeout, info.isTimeoutExceeded());
 		if (clazz == null) {
 			assertFalse("No errors expected but got "
 					+ (info.getException() == null ? "null" : info

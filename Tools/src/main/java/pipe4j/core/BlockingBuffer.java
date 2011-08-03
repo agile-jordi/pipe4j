@@ -18,6 +18,8 @@
  */
 package pipe4j.core;
 
+import java.io.Closeable;
+
 /**
  * Ordered blocking buffer that supports null values for the purpose of flagging
  * that no more elements will be added to the buffer.
@@ -27,7 +29,7 @@ package pipe4j.core;
  * @param <E>
  *            Element type
  */
-public interface BlockingBuffer<E> {
+public interface BlockingBuffer<E> extends Closeable {
 	/**
 	 * Put element into buffer, waiting if necessary for space to become
 	 * available.

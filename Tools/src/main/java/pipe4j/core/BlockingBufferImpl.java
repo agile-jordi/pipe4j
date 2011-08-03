@@ -18,14 +18,20 @@
  */
 package pipe4j.core;
 
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BlockingBufferImpl<E> implements BlockingBuffer<E> {
+	private AtomicBoolean closed = new AtomicBoolean(false);
 	private BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(1);
 
 	@Override
 	public void put(E e) throws InterruptedException {
+		if (this.closed.get()) {
+			throw new IllegalStateException();
+		}
 		if (e == null) {
 			queue.put(Null.INSTANCE);
 		} else {
@@ -47,5 +53,18 @@ public class BlockingBufferImpl<E> implements BlockingBuffer<E> {
 	@Override
 	public void clear() {
 		queue.clear();
+	}
+
+	@Override
+	public void close() throws IOException {
+		if (this.closed.get()) {
+			return;
+		}
+
+		try {
+			put(null);
+		} catch (InterruptedException e) {
+		}
+		this.closed.set(true);
 	}
 }

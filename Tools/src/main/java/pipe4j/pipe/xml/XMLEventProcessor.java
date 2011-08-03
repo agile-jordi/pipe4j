@@ -73,9 +73,8 @@ class XMLEventProcessor {
 			EndElement element = event.asEndElement();
 			String xpath = stack.pop();
 			if (!xpath.endsWith(SLASH + element.getName().toString())) {
-				throw new RuntimeException("Element mismatch! Started "
-						+ xpath + " but ended "
-						+ element.getName().toString());
+				throw new RuntimeException("Element mismatch! Started " + xpath
+						+ " but ended " + element.getName().toString());
 			}
 			if (bufferedText != null
 					&& NON_BLANK_PATTERN.matcher(bufferedText).find()) {

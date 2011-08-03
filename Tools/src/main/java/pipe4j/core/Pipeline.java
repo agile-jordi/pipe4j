@@ -18,6 +18,15 @@
  */
 package pipe4j.core;
 
+import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import pipe4j.core.connector.PipeConnectorHelper;
 
 /**
@@ -25,81 +34,84 @@ import pipe4j.core.connector.PipeConnectorHelper;
  * 
  * @author bbennett
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Pipeline {
-	@SuppressWarnings("rawtypes")
 	public static PipelineInfo run(Pipe... pipeline) {
-		return run(-1, pipeline);
+		return run(0, pipeline);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
-	public static PipelineInfo run(long timeoutMilis, Pipe... pipeline) {
+	public static PipelineInfo run(long timeoutMilliseconds, Pipe... pipeline) {
 		if (pipeline == null || pipeline.length < 2) {
 			throw new IllegalArgumentException("Need at least 2 pipes!");
 		}
 
-		final long timestamp = System.currentTimeMillis();
-		ThreadGroup threadGroup = new ThreadGroup("Pipeline");
+		List<CallablePipe<Closeable, Closeable>> callables = new ArrayList<CallablePipe<Closeable, Closeable>>(
+				pipeline.length);
+		CallablePipe<Closeable, Closeable> previous = new CallablePipe<Closeable, Closeable>(
+				pipeline[0]);
+		callables.add(previous);
+		previous.setIn(Null.INSTANCE);
 
-		PipeThread[] threads = new PipeThread[pipeline.length];
-		threads[0] = new PipeThread(pipeline[0]);
-		threads[0].setIn(Null.INSTANCE);
-		for (int i = 1; i < pipeline.length; i++) {
-			threads[i] = new PipeThread(pipeline[i]);
-			PipeConnectorHelper.connect(threads[i - 1], threads[i]);
+		for (Pipe<Closeable, Closeable> pipe : pipeline) {
+			if (pipe == pipeline[0])
+				continue;
+			CallablePipe<Closeable, Closeable> callablePipe = new CallablePipe<Closeable, Closeable>(
+					pipe);
+			callables.add(callablePipe);
+			connect(previous, callablePipe);
+			previous = callablePipe;
 		}
-		threads[threads.length - 1].setOut(Null.INSTANCE);
+		previous.setOut(Null.INSTANCE);
 
-		for (Thread thread : threads) {
-			thread.start();
+		ExecutorService pool = Executors.newFixedThreadPool(pipeline.length);
+		List<Future<Result>> futureList = new ArrayList<Future<Result>>(
+				pipeline.length);
+		for (CallablePipe<Closeable, Closeable> callablePipe : callables) {
+			futureList.add(pool.submit(callablePipe));
 		}
+		pool.shutdown();
 
-		for (PipeThread thread : threads) {
-			if (timeoutMilis > 0) {
-				// Wait for the requested perid, minus elapsed time
-				long discountedTimeout = Math
-						.max(0, timeoutMilis
-								- (System.currentTimeMillis() - timestamp));
-				try {
-					thread.join(discountedTimeout);
-				} catch (InterruptedException e) {
-				}
-				if (thread.isAlive()) {
-					thread.getPipe().cancel();
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException ignored) {
-					}
-				}
-
-				if (thread.isAlive()) {
-					thread.interrupt();
-					thread.close();
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException ignored) {
-					}
-				}
-
-				if (thread.isAlive()) {
-					thread.stop(new InterruptedException("Thread stopped!"));
-				}
+		boolean terminated = false;
+		try {
+			if (timeoutMilliseconds <= 0) {
+				terminated = pool.awaitTermination(Long.MAX_VALUE,
+						TimeUnit.DAYS);
 			} else {
-				// Wait forever
-				try {
-					thread.join();
-				} catch (InterruptedException e) {
+				terminated = pool.awaitTermination(timeoutMilliseconds,
+						TimeUnit.MILLISECONDS);
+			}
+		} catch (InterruptedException e1) {
+		}
+
+		if (!terminated) {
+			pool.shutdownNow();
+		}
+
+		List<Result> resultList = new ArrayList<Result>(pipeline.length);
+		PipelineInfo info = new PipelineInfo(resultList);
+		info.setTimeoutExceeded(!terminated);
+		for (Future<Result> future : futureList) {
+			try {
+				Result result = future.get();
+
+				// If exception happened, get first found
+				if (!info.hasError() && result.hasException()) {
+					info.setException(result.getException());
 				}
+				resultList.add(result);
+			} catch (InterruptedException e) {
+				// TODO
+			} catch (ExecutionException e) {
+				// If exception was thrown, it was caught and stored inside
+				// Result
 			}
 		}
 
-		// If exception happened, get first found
-		PipelineInfo info = new PipelineInfo(threadGroup);
-		for (int i = 0; i < threads.length; i++) {
-			if (threads[i].hasError()) {
-				info.setException(threads[i].getException());
-				break;
-			}
-		}
 		return info;
+	}
+
+	private static void connect(CallablePipe<Closeable, Closeable> previous,
+			CallablePipe<Closeable, Closeable> callablePipe) {
+		PipeConnectorHelper.connect(previous, callablePipe);
 	}
 }

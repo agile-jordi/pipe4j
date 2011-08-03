@@ -18,10 +18,11 @@
  */
 package pipe4j.core.connector;
 
+import java.io.Closeable;
 import java.util.Collection;
 import java.util.HashSet;
 
-import pipe4j.core.PipeThread;
+import pipe4j.core.CallablePipe;
 
 /**
  * Register pipe connector implementations and offers utility method to connect
@@ -50,26 +51,27 @@ public class PipeConnectorHelper {
 	/**
 	 * Connect 2 pipe threads.
 	 * 
-	 * @param prevThread
-	 *            First pipe thread
-	 * @param nextThread
-	 *            Second pipe thread
+	 * @param previous
+	 *            First callable pipe
+	 * @param callablePipe
+	 *            Second callable pipe
 	 */
-	public static void connect(PipeThread<Object, Object> prevThread,
-			PipeThread<Object, Object> nextThread) {
+	public static void connect(CallablePipe<Closeable, Closeable> previous,
+			CallablePipe<Closeable, Closeable> callablePipe) {
 		PipeConnector connector = null;
+
 		for (PipeConnector conn : connectors) {
-			if (conn.supports(prevThread.getPipe(), nextThread.getPipe())) {
+			if (conn.supports(previous, callablePipe)) {
 				connector = conn;
 				break;
 			}
 		}
 		if (connector == null) {
 			throw new IllegalArgumentException("Don't know how to connect "
-					+ prevThread.getPipe().toString() + " with "
-					+ nextThread.getPipe().toString());
+					+ previous.getPipe().toString() + " with "
+					+ callablePipe.getPipe().toString());
 		}
 
-		connector.connect(prevThread, nextThread);
+		connector.connect(previous, callablePipe);
 	}
 }

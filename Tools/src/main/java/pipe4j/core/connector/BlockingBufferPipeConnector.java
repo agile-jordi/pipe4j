@@ -18,15 +18,16 @@
  */
 package pipe4j.core.connector;
 
+import java.io.Closeable;
+
 import pipe4j.core.BlockingBuffer;
 import pipe4j.core.BlockingBufferImpl;
-import pipe4j.core.Null;
-import pipe4j.core.PipeThread;
+import pipe4j.core.CallablePipe;
 
 /**
  * Connect object pipes with a {@link BlockingBuffer}.
  * 
- * @author bbennett
+ * @author bbennetts
  */
 public class BlockingBufferPipeConnector extends AbstractPipeConnector {
 	@Override
@@ -35,24 +36,11 @@ public class BlockingBufferPipeConnector extends AbstractPipeConnector {
 				&& BlockingBuffer.class.isAssignableFrom(out);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void connect(PipeThread pipe1, PipeThread pipe2) {
+	public void connect(CallablePipe<Closeable, Closeable> pipe1,
+			CallablePipe<Closeable, Closeable> pipe2) {
 		BlockingBuffer<Object> queue = new BlockingBufferImpl<Object>();
 		pipe1.setOut(queue);
 		pipe2.setIn(queue);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public void close(Object in, Object out) {
-		BlockingBuffer bqi = (BlockingBuffer) in;
-		bqi.clear();
-
-		BlockingBuffer bqo = (BlockingBuffer) out;
-		try {
-			bqo.put(Null.INSTANCE);
-		} catch (InterruptedException ignored) {
-		}
 	}
 }

@@ -18,9 +18,10 @@
  */
 package pipe4j.core.connector;
 
+import java.io.Closeable;
 import java.lang.reflect.Method;
 
-import pipe4j.core.Pipe;
+import pipe4j.core.CallablePipe;
 
 /**
  * Abstract parent for connector implementations with utility methods.
@@ -42,9 +43,10 @@ public abstract class AbstractPipeConnector implements PipeConnector {
 	}
 
 	@Override
-	public boolean supports(Pipe<?, ?> prev, Pipe<?, ?> next) {
-		Method prevMethod = getRunMethod(prev.getClass());
-		Method nextMethod = getRunMethod(next.getClass());
+	public boolean supports(CallablePipe<Closeable, Closeable> prev,
+			CallablePipe<Closeable, Closeable> next) {
+		Method prevMethod = getRunMethod(prev.getPipe().getClass());
+		Method nextMethod = getRunMethod(next.getPipe().getClass());
 
 		Class<?> out = prevMethod.getParameterTypes()[1];
 		Class<?> in = nextMethod.getParameterTypes()[0];
