@@ -24,7 +24,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.XMLEvent;
 
-import pipe4j.core.BlockingBuffer;
+import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
 /**

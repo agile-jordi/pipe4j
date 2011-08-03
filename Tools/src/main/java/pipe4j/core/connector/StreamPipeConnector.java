@@ -24,6 +24,8 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 import pipe4j.core.CallablePipe;
+import pipe4j.core.connector.debug.DebugPipedInputStream;
+import pipe4j.core.connector.debug.DebugPipedOutputStream;
 
 /**
  * Connects stream pipes through a pair of connected {@link PipedInputStream}
@@ -40,11 +42,13 @@ public class StreamPipeConnector extends AbstractPipeConnector {
 
 	@Override
 	public void connect(CallablePipe<Closeable, Closeable> pipe1,
-			CallablePipe<Closeable, Closeable> pipe2) {
-		PipedInputStream in = new PipedInputStream();
+			CallablePipe<Closeable, Closeable> pipe2, boolean debug) {
+		PipedInputStream in = debug ? new DebugPipedInputStream()
+				: new PipedInputStream();
 		PipedOutputStream out;
 		try {
-			out = new PipedOutputStream(in);
+			out = debug ? new DebugPipedOutputStream(in)
+					: new PipedOutputStream(in);
 		} catch (IOException e) {
 			// will never happen
 			throw new RuntimeException(e);

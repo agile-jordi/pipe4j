@@ -22,8 +22,8 @@ import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.Iterator;
 
-import pipe4j.core.BlockingBuffer;
 import pipe4j.core.Null;
+import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
 /**

@@ -32,5 +32,5 @@ public interface PipeConnector {
 			CallablePipe<Closeable, Closeable> callablePipe);
 
 	void connect(CallablePipe<Closeable, Closeable> pipe1,
-			CallablePipe<Closeable, Closeable> pipe2);
+			CallablePipe<Closeable, Closeable> pipe2, boolean debug);
 }

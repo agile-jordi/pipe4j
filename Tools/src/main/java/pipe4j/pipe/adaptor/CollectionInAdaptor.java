@@ -21,8 +21,8 @@ package pipe4j.pipe.adaptor;
 import java.util.Collection;
 import java.util.Iterator;
 
-import pipe4j.core.BlockingBuffer;
 import pipe4j.core.Null;
+import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
 public class CollectionInAdaptor extends

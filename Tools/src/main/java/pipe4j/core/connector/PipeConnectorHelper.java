@@ -57,7 +57,7 @@ public class PipeConnectorHelper {
 	 *            Second callable pipe
 	 */
 	public static void connect(CallablePipe<Closeable, Closeable> previous,
-			CallablePipe<Closeable, Closeable> callablePipe) {
+			CallablePipe<Closeable, Closeable> callablePipe, boolean debug) {
 		PipeConnector connector = null;
 
 		for (PipeConnector conn : connectors) {
@@ -72,6 +72,6 @@ public class PipeConnectorHelper {
 					+ callablePipe.getPipe().toString());
 		}
 
-		connector.connect(previous, callablePipe);
+		connector.connect(previous, callablePipe, debug);
 	}
 }

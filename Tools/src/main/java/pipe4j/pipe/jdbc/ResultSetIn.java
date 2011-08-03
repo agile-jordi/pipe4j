@@ -21,8 +21,8 @@ package pipe4j.pipe.jdbc;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
-import pipe4j.core.BlockingBuffer;
 import pipe4j.core.Null;
+import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
 /**

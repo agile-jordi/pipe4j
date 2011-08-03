@@ -42,6 +42,11 @@ public class Pipeline {
 	}
 
 	public static PipelineInfo run(long timeoutMilliseconds, Pipe... pipeline) {
+		return run(timeoutMilliseconds, false, pipeline);
+	}
+
+	public static PipelineInfo run(long timeoutMilliseconds, boolean debug,
+			Pipe... pipeline) {
 		if (pipeline == null || pipeline.length < 2) {
 			throw new IllegalArgumentException("Need at least 2 pipes!");
 		}
@@ -59,7 +64,7 @@ public class Pipeline {
 			CallablePipe<Closeable, Closeable> callablePipe = new CallablePipe<Closeable, Closeable>(
 					pipe);
 			callables.add(callablePipe);
-			connect(previous, callablePipe);
+			connect(previous, callablePipe, debug);
 			previous = callablePipe;
 		}
 		previous.setOut(Null.INSTANCE);
@@ -72,8 +77,7 @@ public class Pipeline {
 		}
 		pool.shutdown();
 
-		boolean aborted = abortIfNecessary(timeoutMilliseconds, pool,
-				callables);
+		boolean aborted = abortIfNecessary(timeoutMilliseconds, pool, callables);
 
 		List<Result> resultList = new ArrayList<Result>(pipeline.length);
 		PipelineInfo info = new PipelineInfo(resultList);
@@ -82,7 +86,7 @@ public class Pipeline {
 		for (Future<Result> future : futureList) {
 			try {
 				Result result = future.get();
-				
+
 				if (result.getType() == Type.FAILURE) {
 					info.setResult(Type.FAILURE);
 				}
@@ -126,7 +130,7 @@ public class Pipeline {
 		// Timeout expired and pipeline is still running
 		if (!terminated) {
 			rv = true;
-			
+
 			// Be nice and request each pipe to cancel
 			for (CallablePipe<Closeable, Closeable> callablePipe : callables) {
 				callablePipe.getPipe().cancel();
@@ -147,7 +151,7 @@ public class Pipeline {
 	}
 
 	private static void connect(CallablePipe<Closeable, Closeable> previous,
-			CallablePipe<Closeable, Closeable> callablePipe) {
-		PipeConnectorHelper.connect(previous, callablePipe);
+			CallablePipe<Closeable, Closeable> callablePipe, boolean debug) {
+		PipeConnectorHelper.connect(previous, callablePipe, debug);
 	}
 }

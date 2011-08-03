@@ -20,8 +20,6 @@ package pipe4j.core.connector;
 
 import java.io.Closeable;
 
-import pipe4j.core.BlockingBuffer;
-import pipe4j.core.BlockingBufferImpl;
 import pipe4j.core.CallablePipe;
 
 /**
@@ -38,7 +36,7 @@ public class BlockingBufferPipeConnector extends AbstractPipeConnector {
 
 	@Override
 	public void connect(CallablePipe<Closeable, Closeable> pipe1,
-			CallablePipe<Closeable, Closeable> pipe2) {
+			CallablePipe<Closeable, Closeable> pipe2, boolean debug) {
 		BlockingBuffer<Object> queue = new BlockingBufferImpl<Object>();
 		pipe1.setOut(queue);
 		pipe2.setIn(queue);

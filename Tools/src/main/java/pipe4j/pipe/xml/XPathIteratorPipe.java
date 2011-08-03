@@ -22,7 +22,7 @@ import java.util.Map;
 
 import javax.xml.stream.events.XMLEvent;
 
-import pipe4j.core.BlockingBuffer;
+import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
 /**

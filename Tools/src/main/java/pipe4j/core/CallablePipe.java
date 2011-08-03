@@ -23,6 +23,8 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import pipe4j.core.connector.ConnectorDecorator;
+
 public class CallablePipe<I extends Closeable, O extends Closeable> implements
 		Callable<Result> {
 	private I in;

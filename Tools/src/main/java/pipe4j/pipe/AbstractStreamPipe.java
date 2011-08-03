@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import pipe4j.core.ConnectorDecorator;
+import pipe4j.core.connector.ConnectorDecorator;
 
 /**
  * Abstract parent of most stream pipe implementations. Implements reading from

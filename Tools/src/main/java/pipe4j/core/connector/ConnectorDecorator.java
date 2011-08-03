@@ -16,38 +16,41 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.core;
+package pipe4j.core.connector;
 
-import java.io.Closeable;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
- * Ordered blocking buffer that supports null values for the purpose of flagging
- * that no more elements will be added to the buffer.
+ * Used by pipes that need to wrap input or output. Example: wrapping the
+ * {@link OutputStream} with a {@link GZIPOutputStream}.
  * 
  * @author bbennett
  * 
- * @param <E>
- *            Element type
+ * @param <I>
+ *            Pipe input
+ * @param <O>
+ *            Pipe output
  */
-public interface BlockingBuffer<E> extends Closeable {
+public interface ConnectorDecorator<I, O> {
 	/**
-	 * Put element into buffer, waiting if necessary for space to become
-	 * available.
+	 * Decorate the pipe input.
 	 * 
-	 * @param e
-	 *            the element to add
-	 * @throws InterruptedException
-	 *             if interrupted while waiting
+	 * @param in
+	 *            Pipe input
+	 * @return decorated input
+	 * @throws IOException
 	 */
-	void put(E e) throws InterruptedException;
+	I decorateIn(I in) throws IOException;
 
 	/**
-	 * Removes element from buffer, waiting if necessary until an element
-	 * becomes available.
+	 * Decorate the pipe output.
 	 * 
-	 * @return the head of this queue
-	 * @throws InterruptedException
-	 *             if interrupted while waiting
+	 * @param out
+	 *            Pipe output
+	 * @return decorated output
+	 * @throws IOException
 	 */
-	E take() throws InterruptedException;
+	O decorateOut(O out) throws IOException;
 }

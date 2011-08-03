@@ -16,50 +16,34 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.core;
+package pipe4j.core.connector.debug;
 
-import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
+import pipe4j.core.connector.BlockingBufferImpl;
 
-public class BlockingBufferImpl<E> implements BlockingBuffer<E> {
-	private AtomicBoolean closed = new AtomicBoolean(false);
-	private BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(1);
+public class DebugBlockingBufferImpl<E> extends BlockingBufferImpl<E> {
+	private long totalPutWaitTimeMilliseconds = 0l;
+	private long totalTakeWaitTimeMilliseconds = 0l;
 
+	public synchronized long getTotalPutWaitTimeMilliseconds() {
+		return totalPutWaitTimeMilliseconds;
+	}
+	
+	public synchronized long getTotalTakeWaitTimeMilliseconds() {
+		return totalTakeWaitTimeMilliseconds;
+	}
+	
 	@Override
 	public void put(E e) throws InterruptedException {
-		if (this.closed.get()) {
-			throw new IllegalStateException();
-		}
-		if (e == null) {
-			queue.put(Null.INSTANCE);
-		} else {
-			queue.put(e);
-		}
+		final long currentTime = System.currentTimeMillis();
+		super.put(e);
+		totalPutWaitTimeMilliseconds += System.currentTimeMillis() - currentTime;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public E take() throws InterruptedException {
-		Object take = queue.take();
-		if (take == Null.INSTANCE) {
-			return null;
-		}
-
-		return (E) take;
-	}
-
-	@Override
-	public void close() throws IOException {
-		if (this.closed.get()) {
-			return;
-		}
-
-		try {
-			put(null);
-		} catch (InterruptedException e) {
-		}
-		this.closed.set(true);
+		final long currentTime = System.currentTimeMillis();
+		E rv = super.take();
+		totalTakeWaitTimeMilliseconds += System.currentTimeMillis() - currentTime;
+		return rv;
 	}
 }
