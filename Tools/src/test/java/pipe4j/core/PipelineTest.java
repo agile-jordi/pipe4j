@@ -41,7 +41,7 @@ public class PipelineTest extends TestCase {
 
 	public void testInvalidArgs() throws Exception {
 		try {
-			Pipeline.run(null);
+			Pipeline.run((Pipe[]) null);
 			fail("Expected IllegalArgumentException!");
 		} catch (IllegalArgumentException expected) {
 		}
