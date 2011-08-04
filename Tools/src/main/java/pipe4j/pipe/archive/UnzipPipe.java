@@ -24,14 +24,14 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import pipe4j.pipe.AbstractStreamPipe;
+import pipe4j.pipe.StreamPipe;
 
 /**
  * Unzips the first entry of the stream.
  * 
  * @author bbennett
  */
-public class UnzipPipe extends AbstractStreamPipe {
+public class UnzipPipe extends StreamPipe {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
 		ZipInputStream in = (ZipInputStream) is;

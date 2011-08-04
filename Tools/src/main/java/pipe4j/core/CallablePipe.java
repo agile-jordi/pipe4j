@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import pipe4j.core.connector.ConnectorDecorator;
+import pipe4j.core.connector.profile.Profiled;
 
 public class CallablePipe<I extends Closeable, O extends Closeable> implements
 		Callable<Result> {
@@ -57,6 +58,9 @@ public class CallablePipe<I extends Closeable, O extends Closeable> implements
 
 	@Override
 	public Result call() throws Exception {
+		ResultImpl result;
+		long startTimestamp, endTimestamp;
+		String pipeName = pipe.getClass().getSimpleName();
 		try {
 			if (pipe instanceof ConnectorDecorator) {
 				ConnectorDecorator<I, O> decorator = (ConnectorDecorator<I, O>) pipe;
@@ -64,9 +68,13 @@ public class CallablePipe<I extends Closeable, O extends Closeable> implements
 				this.out = decorator.decorateOut(out);
 			}
 
+			startTimestamp = System.currentTimeMillis();
 			pipe.run(in, out);
+			endTimestamp = System.currentTimeMillis();
+			result = new ResultImpl(pipeName, Result.Type.SUCCESS);
 		} catch (Exception e) {
-			ResultImpl result = new ResultImpl(Result.Type.FAILURE);
+			endTimestamp = System.currentTimeMillis();
+			result = new ResultImpl(pipeName, Result.Type.FAILURE);
 			result.setException(e);
 			return result;
 		} finally {
@@ -74,7 +82,19 @@ public class CallablePipe<I extends Closeable, O extends Closeable> implements
 			close(out);
 		}
 
-		return new ResultImpl(Result.Type.SUCCESS);
+		result.setStartTimestamp(startTimestamp);
+		result.setEndTimestamp(endTimestamp);
+
+		if (in instanceof Profiled) {
+			result.setReadWaitTimeMilliseconds(((Profiled) in)
+					.getReadWaitTimeMilliseconds());
+		}
+
+		if (out instanceof Profiled) {
+			result.setWriteWaitTimeMilliseconds(((Profiled) out)
+					.getWriteWaitTimeMilliseconds());
+		}
+		return result;
 	}
 
 	private void close(Closeable closeable) {

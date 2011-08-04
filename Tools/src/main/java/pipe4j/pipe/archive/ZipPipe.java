@@ -25,14 +25,14 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import pipe4j.pipe.AbstractStreamPipe;
+import pipe4j.pipe.StreamPipe;
 
 /**
  * Zips stream into one entry.
  * 
  * @author bbennett
  */
-public class ZipPipe extends AbstractStreamPipe {
+public class ZipPipe extends StreamPipe {
 	private final String entryName;
 	private int level = Deflater.DEFAULT_COMPRESSION;
 

@@ -21,7 +21,7 @@ package pipe4j.pipe.util;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import pipe4j.pipe.AbstractStreamPipe;
+import pipe4j.pipe.StreamPipe;
 
 /**
  * Writes data read from previous pipe into next, while replicating data to the
@@ -29,7 +29,7 @@ import pipe4j.pipe.AbstractStreamPipe;
  * 
  * @author bbennett
  */
-public class TeePipe extends AbstractStreamPipe {
+public class TeePipe extends StreamPipe {
 	private final OutputStream teeStream;
 
 	public TeePipe(OutputStream teeStream) {

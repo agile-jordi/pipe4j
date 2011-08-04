@@ -21,6 +21,7 @@ package pipe4j.core;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import pipe4j.pipe.StreamPipe;
 import pipe4j.pipe.string.StringIn;
 import pipe4j.pipe.string.StringOut;
 
@@ -50,7 +51,7 @@ public class PipelineTest extends TestCase {
 	public void testSimple() throws Exception {
 		StringOut stringOut = new StringOut();
 		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
-				new MiddlePipe(), stringOut);
+				new StreamPipe(), stringOut);
 
 		checkResults(info, null, false);
 		assertEquals(sb.toString(), stringOut.getString());
@@ -66,19 +67,19 @@ public class PipelineTest extends TestCase {
 
 	public void testException() throws Exception {
 		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
-				new MiddlePipe(), new ExceptionPipe(), new StringOut());
+				new StreamPipe(), new ExceptionPipe(), new StringOut());
 		checkResults(info, IOException.class, false);
 	}
 
 	public void testCloseReader() throws Exception {
 		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
-				new MiddlePipe(), new ReadClosingPipe(), new StringOut());
+				new StreamPipe(), new ReadClosingPipe(), new StringOut());
 		checkResults(info, IOException.class, false);
 	}
 
 	public void testCloseWriter() throws Exception {
 		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
-				new WriteClosingPipe(), new MiddlePipe(), new StringOut());
+				new WriteClosingPipe(), new StreamPipe(), new StringOut());
 		checkResults(info, IOException.class, false);
 	}
 

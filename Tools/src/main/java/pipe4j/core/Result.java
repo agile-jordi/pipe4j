@@ -28,4 +28,14 @@ public interface Result {
 	boolean hasException();
 
 	Exception getException();
+
+	long getEndTimestamp();
+
+	long getStartTimestamp();
+
+	long getWriteWaitTimeMilliseconds();
+
+	long getReadWaitTimeMilliseconds();
+
+	String getPipeName();
 }

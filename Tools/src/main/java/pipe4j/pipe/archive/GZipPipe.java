@@ -23,14 +23,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
-import pipe4j.pipe.AbstractStreamPipe;
+import pipe4j.pipe.StreamPipe;
 
 /**
  * Applies gzip to stream.
  * 
  * @author bbennett
  */
-public class GZipPipe extends AbstractStreamPipe {
+public class GZipPipe extends StreamPipe {
 	@Override
 	public void run(InputStream is, OutputStream os) throws Exception {
 		super.run(is, os);

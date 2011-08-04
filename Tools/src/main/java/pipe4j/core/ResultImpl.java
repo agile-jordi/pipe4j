@@ -21,10 +21,21 @@ package pipe4j.core;
 public class ResultImpl implements Result {
 	private final Type type;
 	private Exception exception;
+	private long startTimestamp;
+	private long endTimestamp;
+	private long readWaitTimeMilliseconds;
+	private long writeWaitTimeMilliseconds;
+	private final String pipeName;
 
-	public ResultImpl(Type type) {
+	public ResultImpl(String pipeName, Type type) {
 		super();
+		this.pipeName = pipeName;
 		this.type = type;
+	}
+	
+	@Override
+	public String getPipeName() {
+		return this.pipeName;
 	}
 
 	@Override
@@ -44,5 +55,41 @@ public class ResultImpl implements Result {
 	@Override
 	public Type getType() {
 		return type;
+	}
+	
+	@Override
+	public long getStartTimestamp() {
+		return startTimestamp;
+	}
+
+	public void setStartTimestamp(long startTimestamp) {
+		this.startTimestamp = startTimestamp;
+	}
+
+	@Override
+	public long getEndTimestamp() {
+		return endTimestamp;
+	}
+
+	public void setEndTimestamp(long endTimestamp) {
+		this.endTimestamp = endTimestamp;
+	}
+
+	@Override
+	public long getReadWaitTimeMilliseconds() {
+		return readWaitTimeMilliseconds;
+	}
+
+	public void setReadWaitTimeMilliseconds(long readWaitTimeMilliseconds) {
+		this.readWaitTimeMilliseconds = readWaitTimeMilliseconds;
+	}
+
+	@Override
+	public long getWriteWaitTimeMilliseconds() {
+		return writeWaitTimeMilliseconds;
+	}
+
+	public void setWriteWaitTimeMilliseconds(long writeWaitTimeMilliseconds) {
+		this.writeWaitTimeMilliseconds = writeWaitTimeMilliseconds;
 	}
 }

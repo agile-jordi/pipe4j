@@ -33,7 +33,7 @@ import pipe4j.core.connector.ConnectorDecorator;
  * 
  * @author bbennett
  */
-public abstract class AbstractStreamPipe extends
+public class StreamPipe extends
 		AbstractPipe<InputStream, OutputStream> implements
 		ConnectorDecorator<InputStream, OutputStream> {
 

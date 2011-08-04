@@ -72,15 +72,20 @@ public class Pipeline {
 		ExecutorService pool = Executors.newFixedThreadPool(pipeline.length);
 		List<Future<Result>> futureList = new ArrayList<Future<Result>>(
 				pipeline.length);
+		
+		final long startTimestamp = System.currentTimeMillis();
 		for (CallablePipe<Closeable, Closeable> callablePipe : callables) {
 			futureList.add(pool.submit(callablePipe));
 		}
 		pool.shutdown();
 
 		boolean aborted = abortIfNecessary(timeoutMilliseconds, pool, callables);
-
+		final long endTimestamp = System.currentTimeMillis();
+		
 		List<Result> resultList = new ArrayList<Result>(pipeline.length);
 		PipelineInfo info = new PipelineInfo(resultList);
+		info.setStartTimestamp(startTimestamp);
+		info.setEndTimestamp(endTimestamp);
 		info.setTimeoutExceeded(aborted);
 
 		for (Future<Result> future : futureList) {

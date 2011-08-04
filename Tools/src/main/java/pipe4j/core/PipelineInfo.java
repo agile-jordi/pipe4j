@@ -32,6 +32,8 @@ public class PipelineInfo {
 	private Exception exception;
 	private boolean timeoutExceeded = false;
 	private Result.Type result = Type.SUCCESS;
+	private long startTimestamp;
+	private long endTimestamp;
 
 	public PipelineInfo(List<Result> resultList) {
 		super();
@@ -68,5 +70,21 @@ public class PipelineInfo {
 
 	public boolean isTimeoutExceeded() {
 		return timeoutExceeded;
+	}
+
+	public long getStartTimestamp() {
+		return startTimestamp;
+	}
+
+	public void setStartTimestamp(long startTimestamp) {
+		this.startTimestamp = startTimestamp;
+	}
+
+	public long getEndTimestamp() {
+		return endTimestamp;
+	}
+
+	public void setEndTimestamp(long endTimestamp) {
+		this.endTimestamp = endTimestamp;
 	}
 }

@@ -22,14 +22,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
-import pipe4j.pipe.AbstractStreamPipe;
+import pipe4j.pipe.StreamPipe;
 
 /**
  * Applyes gunzip to stream.
  * 
  * @author bbennett
  */
-public class GUnzipPipe extends AbstractStreamPipe {
+public class GUnzipPipe extends StreamPipe {
 	@Override
 	public InputStream decorateIn(InputStream in) throws IOException {
 		return new GZIPInputStream(in);

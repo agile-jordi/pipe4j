@@ -21,7 +21,9 @@ package pipe4j.core;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class SleepPipe extends MiddlePipe {
+import pipe4j.pipe.StreamPipe;
+
+public class SleepPipe extends StreamPipe {
 	private long millis;
 
 	public SleepPipe(long millis) {
