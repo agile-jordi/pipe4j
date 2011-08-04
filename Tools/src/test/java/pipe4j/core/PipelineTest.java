@@ -57,9 +57,11 @@ public class PipelineTest extends TestCase {
 	}
 
 	public void testTimeout() throws Exception {
-		PipelineInfo info = Pipeline.run(100, new StringIn(sb.toString()),
-				new SleepPipe(5000), new StringOut());
+		StringOut stringOut = new StringOut();
+		PipelineInfo info = Pipeline.run(1000, new StringIn(sb.toString()),
+				new SleepPipe(5000), stringOut);
 		checkResults(info, InterruptedException.class, true);
+		assertEquals(sb.toString(), stringOut.getString());
 	}
 
 	public void testException() throws Exception {

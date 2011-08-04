@@ -24,8 +24,8 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 import pipe4j.core.CallablePipe;
-import pipe4j.core.connector.debug.DebugPipedInputStream;
-import pipe4j.core.connector.debug.DebugPipedOutputStream;
+import pipe4j.core.connector.profile.DebugPipedInputStream;
+import pipe4j.core.connector.profile.DebugPipedOutputStream;
 
 /**
  * Connects stream pipes through a pair of connected {@link PipedInputStream}

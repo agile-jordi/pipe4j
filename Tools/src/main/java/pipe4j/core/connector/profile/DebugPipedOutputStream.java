@@ -1,36 +1,39 @@
-package pipe4j.core.connector.debug;
+package pipe4j.core.connector.profile;
 
 import java.io.IOException;
 import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
-public class DebugPipedInputStream extends PipedInputStream {
+public class DebugPipedOutputStream extends PipedOutputStream {
 	private long totalWaitTimeMilliseconds = 0l;
+
+	public DebugPipedOutputStream(PipedInputStream in) throws IOException {
+		super(in);
+	}
 
 	public synchronized long getTotalWaitTimeMilliseconds() {
 		return totalWaitTimeMilliseconds;
 	}
 
 	@Override
-	public synchronized int read() throws IOException {
+	public synchronized void write(byte[] b) throws IOException {
 		final long currentTime = System.currentTimeMillis();
-		final int rv = super.read();
+		super.write(b);
 		totalWaitTimeMilliseconds += System.currentTimeMillis() - currentTime;
-		return rv;
 	}
 
 	@Override
-	public synchronized int read(byte[] b) throws IOException {
+	public synchronized void write(byte[] b, int off, int len)
+			throws IOException {
 		final long currentTime = System.currentTimeMillis();
-		final int rv = super.read(b);
+		super.write(b, off, len);
 		totalWaitTimeMilliseconds += System.currentTimeMillis() - currentTime;
-		return rv;
 	}
 
 	@Override
-	public synchronized int read(byte[] b, int off, int len) throws IOException {
+	public synchronized void write(int b) throws IOException {
 		final long currentTime = System.currentTimeMillis();
-		final int rv = super.read(b, off, len);
+		super.write(b);
 		totalWaitTimeMilliseconds += System.currentTimeMillis() - currentTime;
-		return rv;
 	}
 }

@@ -16,7 +16,7 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.core.connector.debug;
+package pipe4j.core.connector.profile;
 
 import pipe4j.core.connector.BlockingBufferImpl;
 
