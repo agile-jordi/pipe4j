@@ -59,7 +59,7 @@ public class CallablePipe<I extends Closeable, O extends Closeable> implements
 	@Override
 	public Result call() throws Exception {
 		ResultImpl result;
-		long startTimestamp, endTimestamp;
+		long endTimestamp, startTimestamp = 0;
 		String pipeName = pipe.getClass().getSimpleName();
 		try {
 			if (pipe instanceof ConnectorDecorator) {
@@ -76,10 +76,9 @@ public class CallablePipe<I extends Closeable, O extends Closeable> implements
 			endTimestamp = System.currentTimeMillis();
 			result = new ResultImpl(pipeName, Result.Type.FAILURE);
 			result.setException(e);
-			return result;
 		} finally {
-			close(in);
 			close(out);
+			close(in);
 		}
 
 		result.setStartTimestamp(startTimestamp);

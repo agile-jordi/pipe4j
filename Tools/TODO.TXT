@@ -1,6 +1,5 @@
 Y pipes
 Test T + Y pipeline
 When sink dies and source still has data, pipeline freezes forever.
-Inspect data flow?
 Benchmark and try to optimize connectors.
 Templates to receive/provide data to be read/written
