@@ -18,8 +18,6 @@
  */
 package pipe4j.pipe.xml;
 
-import java.util.Map;
-
 import javax.xml.stream.events.XMLEvent;
 
 import pipe4j.core.connector.BlockingBuffer;
@@ -40,9 +38,8 @@ public class XPathIteratorPipe extends
 			BlockingBuffer<XPathAndValue> out) throws Exception {
 		XMLEvent event;
 		while (!cancelled() && (event = in.take()) != null) {
-			Map<String, String> result = processor.process(event);
-			for (Map.Entry<String, String> entry : result.entrySet()) {
-				out.put(new XPathAndValue(entry.getKey(), entry.getValue()));
+			for (XPathAndValue xpathAndValue : processor.process(event)) {
+				out.put(xpathAndValue);
 			}
 		}
 	}

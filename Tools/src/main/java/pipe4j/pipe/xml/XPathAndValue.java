@@ -23,14 +23,23 @@ package pipe4j.pipe.xml;
  * 
  * @author bbennett
  */
-public class XPathAndValue {
+public class XPathAndValue implements Comparable<XPathAndValue> {
+
 	private final String xpath;
 	private final String value;
+	private final int line;
+	private final int column;
 
 	public XPathAndValue(String xpath, String value) {
+		this(xpath, value, -1, -1);
+	}
+
+	public XPathAndValue(String xpath, String value, int line, int column) {
 		super();
 		this.xpath = xpath;
 		this.value = value;
+		this.line = line;
+		this.column = column;
 	}
 
 	public String getValue() {
@@ -39,6 +48,14 @@ public class XPathAndValue {
 
 	public String getXpath() {
 		return xpath;
+	}
+
+	public int getLine() {
+		return line;
+	}
+
+	public int getColumn() {
+		return column;
 	}
 
 	@Override
@@ -75,5 +92,23 @@ public class XPathAndValue {
 	@Override
 	public String toString() {
 		return "XPathAndValue [xpath=" + xpath + ", value=" + value + "]";
+	}
+
+	@Override
+	public int compareTo(XPathAndValue that) {
+		if (that == null) {
+			return 0;
+		}
+		
+		String xpath1 = this.xpath == null ? "" : this.xpath;
+		String xpath2 = that.xpath == null ? "" : that.xpath;
+		int rv = xpath1.compareTo(xpath2);
+		
+		if (rv == 0) {
+			String value1 = this.value == null ? "" : this.value;
+			String value2 = that.value == null ? "" : that.value;
+			rv = value1.compareTo(value2);
+		}
+		return rv;
 	}
 }

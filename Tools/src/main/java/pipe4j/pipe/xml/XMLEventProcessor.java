@@ -18,10 +18,10 @@
  */
 package pipe4j.pipe.xml;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Stack;
-import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
@@ -44,19 +44,22 @@ class XMLEventProcessor {
 	private String bufferedText = null;
 	private static final Pattern NON_BLANK_PATTERN = Pattern.compile("\\S");
 
-	Map<String, String> process(XMLEvent event) {
-		Map<String, String> paths = new TreeMap<String, String>();
+	public Collection<XPathAndValue> process(XMLEvent event) {
+		int lineNumber = event.getLocation().getLineNumber();
+		int columnNumber = event.getLocation().getColumnNumber();
+
+		Collection<XPathAndValue> paths = new ArrayList<XPathAndValue>(16);
 		if (event.isStartElement()) {
 			bufferedText = null;
 			StartElement element = (StartElement) event;
-			addXPathToStack(element.getName().toString());
+			stack.push(element.getName().toString());
 
-			String xpath = stack.peek();
+			String xpath = getPath(stack);
 			/*
 			 * This flags the start of the element. We will flag again if
 			 * element contains text.
 			 */
-			paths.put(xpath, null);
+			paths.add(new XPathAndValue(xpath, null, lineNumber, columnNumber));
 
 			@SuppressWarnings("unchecked")
 			Iterator<Attribute> iterator = element.getAttributes();
@@ -67,18 +70,22 @@ class XMLEventProcessor {
 				String attName = (prefix == null || prefix.trim().length() == 0 ? ""
 						: prefix + ":")
 						+ name.getLocalPart();
-				paths.put(xpath + ATTR_PREFIX + attName, attribute.getValue());
+				paths.add(new XPathAndValue(xpath + ATTR_PREFIX + attName, attribute
+						.getValue(), lineNumber, columnNumber));
 			}
 		} else if (event.isEndElement()) {
 			EndElement element = event.asEndElement();
-			String xpath = stack.pop();
-			if (!xpath.endsWith(SLASH + element.getName().toString())) {
-				throw new RuntimeException("Element mismatch! Started " + xpath
-						+ " but ended " + element.getName().toString());
+			String xpath = getPath(stack);
+			String startName = stack.pop();
+			if (!element.getName().toString().equals(startName)) {
+				throw new RuntimeException("Element mismatch! Started "
+						+ startName + " but ended "
+						+ element.getName().toString());
 			}
 			if (bufferedText != null
 					&& NON_BLANK_PATTERN.matcher(bufferedText).find()) {
-				paths.put(xpath + TEXT_SUFFIX, bufferedText);
+				paths.add(new XPathAndValue(xpath + TEXT_SUFFIX, bufferedText,
+						lineNumber, columnNumber));
 				bufferedText = null;
 			}
 		} else if (event.isCharacters()) {
@@ -89,12 +96,11 @@ class XMLEventProcessor {
 		return paths;
 	}
 
-	private void addXPathToStack(String xpath) {
-		if (!this.stack.isEmpty()) {
-			String previous = this.stack.peek();
-			this.stack.push(previous + SLASH + xpath);
-		} else {
-			this.stack.push(SLASH + xpath);
+	private String getPath(Stack<String> stack) {
+		StringBuilder sb = new StringBuilder(128);
+		for (String string : stack) {
+			sb.append(SLASH).append(string);
 		}
+		return sb.toString();
 	}
 }
