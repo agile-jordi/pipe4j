@@ -18,6 +18,9 @@
  */
 package pipe4j.pipe.xml;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.xml.stream.events.XMLEvent;
 
 import pipe4j.core.connector.BlockingBuffer;
@@ -32,6 +35,19 @@ import pipe4j.pipe.AbstractPipe;
 public class XPathIteratorPipe extends
 		AbstractPipe<BlockingBuffer<XMLEvent>, BlockingBuffer<XPathAndValue>> {
 	private final XMLEventProcessor processor = new XMLEventProcessor();
+	private Collection<Ignore> ignoreList = new ArrayList<Ignore>();
+
+	public XPathIteratorPipe() {
+		this(new ArrayList<Ignore>());
+	}
+
+	public XPathIteratorPipe(Collection<Ignore> ignoreList) {
+		this.ignoreList = ignoreList;
+	}
+
+	public void addIgnore(Ignore ignore) {
+		this.ignoreList.add(ignore);
+	}
 
 	@Override
 	public void run(BlockingBuffer<XMLEvent> in,
@@ -39,7 +55,15 @@ public class XPathIteratorPipe extends
 		XMLEvent event;
 		while (!cancelled() && (event = in.take()) != null) {
 			for (XPathAndValue xpathAndValue : processor.process(event)) {
-				out.put(xpathAndValue);
+				boolean shouldIgnore = false;
+				for (Ignore ignore : ignoreList) {
+					shouldIgnore = ignore.shouldIgnore(xpathAndValue);
+					break;
+				}
+
+				if (!shouldIgnore) {
+					out.put(xpathAndValue);
+				}
 			}
 		}
 	}
