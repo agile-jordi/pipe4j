@@ -24,9 +24,6 @@ public class Ignore {
 	private Pattern xpathPattern;
 	private Pattern valuePattern;
 
-	public Ignore() {
-	}
-
 	public Ignore(String xpath) {
 		this.xpathPattern = Pattern.compile(xpath);
 	}
