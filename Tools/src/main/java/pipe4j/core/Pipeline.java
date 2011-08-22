@@ -21,14 +21,9 @@ package pipe4j.core;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import pipe4j.core.Result.Type;
 import pipe4j.core.connector.PipeConnectorHelper;
+import pipe4j.core.executor.PipelineExecutor;
 
 /**
  * Utility class to assemble and execute pipelines.
@@ -69,90 +64,7 @@ public class Pipeline {
 		}
 		previous.setOut(Null.INSTANCE);
 
-		ExecutorService pool = Executors.newFixedThreadPool(pipeline.length);
-		List<Future<Result>> futureList = new ArrayList<Future<Result>>(
-				pipeline.length);
-		
-		final long startTimestamp = System.currentTimeMillis();
-		for (CallablePipe<Closeable, Closeable> callablePipe : callables) {
-			futureList.add(pool.submit(callablePipe));
-		}
-		pool.shutdown();
-
-		boolean aborted = abortIfNecessary(timeoutMilliseconds, pool, callables);
-		final long endTimestamp = System.currentTimeMillis();
-		
-		List<Result> resultList = new ArrayList<Result>(pipeline.length);
-		PipelineInfo info = new PipelineInfo(resultList);
-		info.setStartTimestamp(startTimestamp);
-		info.setEndTimestamp(endTimestamp);
-		info.setTimeoutExceeded(aborted);
-
-		for (Future<Result> future : futureList) {
-			try {
-				Result result = future.get();
-
-				if (result.getType() == Type.FAILURE) {
-					info.setResult(Type.FAILURE);
-				}
-
-				// If exception happened, get first found
-				if (!info.hasError() && result.hasException()) {
-					info.setException(result.getException());
-				}
-				resultList.add(result);
-			} catch (InterruptedException e) {
-				// TODO
-			} catch (ExecutionException e) {
-				// If exception was thrown, it was caught and stored inside
-				// Result
-			}
-		}
-
-		if (aborted) {
-			info.setResult(Type.FAILURE);
-		}
-
-		return info;
-	}
-
-	private static boolean abortIfNecessary(long timeoutMilliseconds,
-			ExecutorService pool,
-			List<CallablePipe<Closeable, Closeable>> callables) {
-		boolean terminated = false;
-		boolean rv = false;
-		try {
-			if (timeoutMilliseconds <= 0) {
-				terminated = pool.awaitTermination(Long.MAX_VALUE,
-						TimeUnit.DAYS);
-			} else {
-				terminated = pool.awaitTermination(timeoutMilliseconds,
-						TimeUnit.MILLISECONDS);
-			}
-		} catch (InterruptedException e1) {
-		}
-
-		// Timeout expired and pipeline is still running
-		if (!terminated) {
-			rv = true;
-
-			// Be nice and request each pipe to cancel
-			for (CallablePipe<Closeable, Closeable> callablePipe : callables) {
-				callablePipe.getPipe().cancel();
-			}
-
-			// Check if pipes gracefully terminated
-			try {
-				terminated = pool.awaitTermination(1000, TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-			}
-
-			// If not use brute force
-			if (!terminated) {
-				pool.shutdownNow();
-			}
-		}
-		return rv;
+		return PipelineExecutor.execute(timeoutMilliseconds, callables);
 	}
 
 	private static void connect(CallablePipe<Closeable, Closeable> previous,
