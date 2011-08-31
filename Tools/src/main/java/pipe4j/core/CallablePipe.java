@@ -20,6 +20,8 @@ package pipe4j.core;
 
 import java.util.concurrent.Callable;
 
+import pipe4j.core.connector.profile.Profiled;
+
 public class CallablePipe implements Callable<Result> {
 	private final Pipe pipe;
 	private final Connections connections;
@@ -54,6 +56,31 @@ public class CallablePipe implements Callable<Result> {
 		result.setStartTimestamp(startTimestamp);
 		result.setEndTimestamp(endTimestamp);
 
+		long readWaitTimeMilliseconds = result.getReadWaitTimeMilliseconds();
+		long writeWaitTimeMilliseconds = result.getWriteWaitTimeMilliseconds();
+
+		if (connections.getIntputStream() instanceof Profiled) {
+			readWaitTimeMilliseconds += ((Profiled) connections
+					.getIntputStream()).getReadWaitTimeMilliseconds();
+		}
+
+		if (connections.getInputBuffer() instanceof Profiled) {
+			readWaitTimeMilliseconds += ((Profiled) connections
+					.getInputBuffer()).getReadWaitTimeMilliseconds();
+		}
+
+		if (connections.getOutputStream() instanceof Profiled) {
+			writeWaitTimeMilliseconds += ((Profiled) connections
+					.getOutputStream()).getWriteWaitTimeMilliseconds();
+		}
+
+		if (connections.getOutputBuffer() instanceof Profiled) {
+			writeWaitTimeMilliseconds += ((Profiled) connections
+					.getOutputBuffer()).getWriteWaitTimeMilliseconds();
+		}
+
+		result.setReadWaitTimeMilliseconds(readWaitTimeMilliseconds);
+		result.setWriteWaitTimeMilliseconds(writeWaitTimeMilliseconds);
 		return result;
 	}
 }

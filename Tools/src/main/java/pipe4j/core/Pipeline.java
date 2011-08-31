@@ -26,6 +26,9 @@ import java.util.List;
 
 import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.core.connector.BlockingBufferImpl;
+import pipe4j.core.connector.profile.DebugBlockingBufferImpl;
+import pipe4j.core.connector.profile.DebugPipedInputStream;
+import pipe4j.core.connector.profile.DebugPipedOutputStream;
 import pipe4j.core.executor.PipelineExecutor;
 
 /**
@@ -60,7 +63,7 @@ public class Pipeline {
 			if (pipe == pipeline[0])
 				continue;
 			ConnectionsImpl connections = new ConnectionsImpl();
-			connectDefaultChannels(previousConnections, connections);
+			connectDefaultChannels(previousConnections, connections, debug);
 			CallablePipe callablePipe = new CallablePipe(pipe, connections);
 			callables.add(callablePipe);
 			previous = callablePipe;
@@ -71,16 +74,19 @@ public class Pipeline {
 	}
 
 	private static void connectDefaultChannels(ConnectionsImpl c1,
-			ConnectionsImpl c2) {
-		PipedInputStream pis = new PipedInputStream();
+			ConnectionsImpl c2, boolean debug) {
+		PipedInputStream pis = debug ? new DebugPipedInputStream()
+				: new PipedInputStream();
 		PipedOutputStream pos = null;
 		try {
-			pos = new PipedOutputStream(pis);
+			pos = debug ? new DebugPipedOutputStream(pis)
+					: new PipedOutputStream(pis);
 		} catch (IOException wontHappen) {
 		}
 		c1.setOutputStream(pos);
 		c2.setIntputStream(pis);
-		BlockingBuffer buffer = new BlockingBufferImpl();
+		BlockingBuffer buffer = debug ? new DebugBlockingBufferImpl()
+				: new BlockingBufferImpl();
 
 		c1.setOutputBuffer(buffer);
 		c2.setInputBuffer(buffer);

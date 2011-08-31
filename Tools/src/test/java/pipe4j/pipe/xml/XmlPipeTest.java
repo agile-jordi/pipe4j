@@ -30,10 +30,12 @@ public class XmlPipeTest extends TestCase {
 	public void testXml() throws Exception {
 		CollectionOutAdaptor coll = new CollectionOutAdaptor();
 		String xml = "<?xml version=\"1.0\"?>"
-				+ "<a><c>foo</c><b x=\"1\"/><i>no</i></a>";
+				+ "<a><c>foo</c><b x=\"1\"/><i>no</i><ignore/></a>";
 
+		XPathIteratorPipe xPathIteratorPipe = new XPathIteratorPipe();
+		xPathIteratorPipe.addIgnore(new Ignore("/a/ignore"));
 		Pipeline.run(new StringIn(xml), new XMLEventPipe(),
-				new XPathIteratorPipe(), coll);
+				xPathIteratorPipe, coll);
 
 		Collection<XPathAndValue> expected = new ArrayList<XPathAndValue>();
 		expected.add(new XPathAndValue("/a", null));
