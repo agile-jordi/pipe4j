@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import junit.framework.TestCase;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 
 public class CollectionAdaptorTest extends TestCase {
 	public void testAdaptor() throws Exception {
@@ -32,7 +32,7 @@ public class CollectionAdaptorTest extends TestCase {
 		}
 
 		CollectionOutAdaptor collectionOutAdaptor = new CollectionOutAdaptor();
-		Pipeline.run(new CollectionInAdaptor(coll), collectionOutAdaptor);
+		LinearPipeline.run(new CollectionInAdaptor(coll), collectionOutAdaptor);
 
 		assertEquals(coll, collectionOutAdaptor.getCollection());
 	}

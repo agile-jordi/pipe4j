@@ -34,21 +34,44 @@ public interface Connections extends Closeable {
 	/**
 	 * @return Default output stream or null if not available
 	 */
-	public abstract OutputStream getOutputStream();
+	OutputStream getOutputStream();
 
 	/**
 	 * @return Default input stream or null if not available
 	 */
-	public abstract InputStream getIntputStream();
+	InputStream getIntputStream();
 
 	/**
 	 * @return Default input buffer or null if not available
 	 */
-	public abstract BlockingBuffer getInputBuffer();
+	BlockingBuffer getInputBuffer();
 
 	/**
 	 * @return Default output buffer or null if not available
 	 */
-	public abstract BlockingBuffer getOutputBuffer();
+	BlockingBuffer getOutputBuffer();
 
+	OutputStream getNamedOutputStream(String name);
+
+	InputStream getNamedInputStream(String name);
+
+	BlockingBuffer getNamedInputBuffer(String name);
+
+	BlockingBuffer getNamedOutputBuffer(String name);
+
+	void setNamedInputStream(String name, InputStream inputStream);
+
+	void setNamedOutputStream(String name, OutputStream outputStream);
+
+	void setNamedOutputBuffer(String name, BlockingBuffer outputBuffer);
+
+	void setOutputBuffer(BlockingBuffer outputBuffer);
+
+	void setNamedInputBuffer(String name, BlockingBuffer inputBuffer);
+
+	void setInputBuffer(BlockingBuffer inputBuffer);
+
+	void setInputStream(InputStream inputStream);
+
+	void setOutputStream(OutputStream outputStream);
 }

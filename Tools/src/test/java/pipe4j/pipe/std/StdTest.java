@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 import junit.framework.TestCase;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 import pipe4j.pipe.string.StringIn;
 import pipe4j.pipe.string.StringOut;
 
@@ -57,20 +57,20 @@ public class StdTest extends TestCase {
 		System.setIn(in);
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new Stdin(), stringOut);
+		LinearPipeline.run(new Stdin(), stringOut);
 		assertEquals(source, stringOut.getString());
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(out));
 
-		Pipeline.run(new StringIn(source), new Stdout());
+		LinearPipeline.run(new StringIn(source), new Stdout());
 
 		assertEquals(source, new String(out.toByteArray()));
 
 		ByteArrayOutputStream err = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(err));
 
-		Pipeline.run(new StringIn(source), new Stderr());
+		LinearPipeline.run(new StringIn(source), new Stderr());
 
 		assertEquals(source, new String(out.toByteArray()));
 

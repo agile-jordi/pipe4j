@@ -20,7 +20,7 @@ package pipe4j.pipe.net;
 
 import http.NanoHTTPD;
 import junit.framework.TestCase;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 import pipe4j.core.TestUtils;
 import pipe4j.pipe.string.StringOut;
 import pipe4j.pipe.util.DigestPipe;
@@ -42,8 +42,8 @@ public class GetUrlPipeTest extends TestCase {
 
 	public void testGetUrlPipe() throws Exception {
 		StringOut stringIn = new StringOut();
-		Pipeline.run(
-				new UrlIn("http://localhost:8080/src/test/java/sample.txt"),
+		LinearPipeline.run(new UrlIn(
+				"http://localhost:8080/src/test/java/sample.txt"),
 				new DigestPipe(), stringIn);
 
 		assertEquals(TestUtils.txtMD5, stringIn.getString());

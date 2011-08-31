@@ -20,7 +20,7 @@ package pipe4j.core.connector.profile;
 
 import junit.framework.TestCase;
 import pipe4j.core.DelayedMiddlePipe;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 import pipe4j.core.PipelineInfo;
 import pipe4j.core.TestUtils;
 import pipe4j.pipe.file.FileIn;
@@ -30,7 +30,7 @@ import pipe4j.pipe.util.DigestPipe;
 public class ProfileTest extends TestCase {
 	public void testProfile() throws Exception {
 		StringOut stringOut = new StringOut();
-		PipelineInfo info = Pipeline.run(-1, true, new FileIn(
+		PipelineInfo info = LinearPipeline.run(-1, true, new FileIn(
 				TestUtils.txtOutFilePath), new DelayedMiddlePipe(200),
 				new DigestPipe(), stringOut);
 

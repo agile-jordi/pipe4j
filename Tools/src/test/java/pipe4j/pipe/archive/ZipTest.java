@@ -21,7 +21,7 @@ package pipe4j.pipe.archive;
 import java.io.File;
 
 import junit.framework.TestCase;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 import pipe4j.core.TestUtils;
 import pipe4j.pipe.file.FileIn;
 import pipe4j.pipe.file.FileOut;
@@ -36,25 +36,25 @@ public class ZipTest extends TestCase {
 	}
 
 	public void testZip() throws Exception {
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath),
-				new ZipPipe("foo.txt"), new UnzipPipe(), new FileOut(
-						TestUtils.txtOutFilePath));
+		LinearPipeline.run(new FileIn(TestUtils.txtInFilePath), new ZipPipe(
+				"foo.txt"), new UnzipPipe(), new FileOut(
+				TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new DigestPipe(),
-				stringOut);
+		LinearPipeline.run(new FileIn(TestUtils.txtInFilePath),
+				new DigestPipe(), stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}
 
 	public void testZipMaxCompression() throws Exception {
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new ZipPipe(
+		LinearPipeline.run(new FileIn(TestUtils.txtInFilePath), new ZipPipe(
 				"foo.txt", 9), new UnzipPipe(), new FileOut(
 				TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new DigestPipe(),
-				stringOut);
+		LinearPipeline.run(new FileIn(TestUtils.txtInFilePath),
+				new DigestPipe(), stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}

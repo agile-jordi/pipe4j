@@ -16,22 +16,32 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.pipe.util;
+package pipe4j.core;
 
-import java.io.ByteArrayOutputStream;
+import java.util.List;
 
-import junit.framework.TestCase;
-import pipe4j.core.LinearPipeline;
-import pipe4j.core.TestUtils;
-import pipe4j.pipe.file.FileIn;
-import pipe4j.pipe.string.StringOut;
+import pipe4j.core.builder.LinearPipelineBuilder;
+import pipe4j.core.executor.PipelineExecutor;
 
-public class TeePipeTest extends TestCase {
-	public void testTee() throws Exception {
-		StringOut stringOut = new StringOut();
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		LinearPipeline.run(new FileIn(TestUtils.txtInFilePath), new TeePipe(
-				baos), stringOut);
-		assertEquals(stringOut.getString(), new String(baos.toByteArray()));
+/**
+ * Utility class to assemble and execute pipelines.
+ * 
+ * @author bbennett
+ */
+public class LinearPipeline {
+	public static PipelineInfo run(Pipe... pipeline) {
+		return run(0, pipeline);
+	}
+
+	public static PipelineInfo run(long timeoutMilliseconds, Pipe... pipeline) {
+		return run(timeoutMilliseconds, false, pipeline);
+	}
+
+	public static PipelineInfo run(long timeoutMilliseconds, boolean debug,
+			Pipe... pipeline) {
+		List<CallablePipe> callables = new LinearPipelineBuilder(debug,
+				pipeline).build();
+
+		return PipelineExecutor.execute(timeoutMilliseconds, callables);
 	}
 }

@@ -19,7 +19,7 @@
 package pipe4j.pipe.txt;
 
 import junit.framework.TestCase;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 import pipe4j.pipe.string.StringIn;
 import pipe4j.pipe.string.StringOut;
 import pipe4j.pipe.txt.FixEolPipe.Platform;
@@ -29,22 +29,22 @@ public class FixEolPipeTest extends TestCase {
 
 	public void testFixEolPipe() throws Exception {
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new StringIn(source), new FixEolPipe(Platform.UNIX),
+		LinearPipeline.run(new StringIn(source), new FixEolPipe(Platform.UNIX),
 				stringOut);
 
 		assertEquals("foo\nbar", stringOut.getString());
 
-		Pipeline.run(new StringIn(source), new FixEolPipe(Platform.UNIX),
+		LinearPipeline.run(new StringIn(source), new FixEolPipe(Platform.UNIX),
 				new FixEolPipe(Platform.DOS), stringOut);
 
 		assertEquals(source, stringOut.getString());
 
-		Pipeline.run(new StringIn(source), new FixEolPipe(Platform.MAC),
+		LinearPipeline.run(new StringIn(source), new FixEolPipe(Platform.MAC),
 				stringOut);
 
 		assertEquals("foo\rbar", stringOut.getString());
 
-		Pipeline.run(new StringIn(source), new FixEolPipe(Platform.MAC),
+		LinearPipeline.run(new StringIn(source), new FixEolPipe(Platform.MAC),
 				new FixEolPipe(Platform.DOS), stringOut);
 
 		assertEquals(source, stringOut.getString());

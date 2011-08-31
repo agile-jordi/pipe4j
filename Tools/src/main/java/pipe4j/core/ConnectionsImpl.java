@@ -18,9 +18,14 @@
  */
 package pipe4j.core;
 
+import java.io.Closeable;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import pipe4j.core.connector.BlockingBuffer;
 
@@ -30,87 +35,137 @@ import pipe4j.core.connector.BlockingBuffer;
  * @author bbennett
  */
 public class ConnectionsImpl implements Connections {
-	private OutputStream outputStream;
-	private InputStream intputStream;
-	private BlockingBuffer inputBuffer;
-	private BlockingBuffer outputBuffer;
+	private static final String DEFAULT_STREAM = "default_stream";
+	private static final String DEFAULT_BUFFER = "default_buffer";
+	private static final String INPUT_PREFIX = "input_";
+	private static final String OUTPUT_PREFIX = "output_";
+
+	private Map<String, Closeable> closeableMap = Collections
+			.synchronizedMap(new HashMap<String, Closeable>());
 
 	public ConnectionsImpl() {
 	}
 
 	@Override
 	public OutputStream getOutputStream() {
-		return outputStream;
+		return getNamedOutputStream(DEFAULT_STREAM);
 	}
 
+	@Override
 	public void setOutputStream(OutputStream outputStream) {
-		this.outputStream = outputStream;
+		setNamedOutputStream(DEFAULT_STREAM, outputStream);
 	}
 
 	@Override
 	public InputStream getIntputStream() {
-		return intputStream;
+		return getNamedInputStream(DEFAULT_STREAM);
 	}
 
-	public void setIntputStream(InputStream intputStream) {
-		this.intputStream = intputStream;
+	@Override
+	public void setInputStream(InputStream inputStream) {
+		setNamedInputStream(DEFAULT_STREAM, inputStream);
 	}
 
 	@Override
 	public BlockingBuffer getInputBuffer() {
-		return inputBuffer;
+		return getNamedInputBuffer(DEFAULT_BUFFER);
 	}
 
+	@Override
 	public void setInputBuffer(BlockingBuffer inputBuffer) {
-		this.inputBuffer = inputBuffer;
+		setNamedInputBuffer(DEFAULT_BUFFER, inputBuffer);
+	}
+
+	@Override
+	public void setNamedInputBuffer(String name, BlockingBuffer inputBuffer) {
+		put(INPUT_PREFIX + name, inputBuffer);
 	}
 
 	@Override
 	public BlockingBuffer getOutputBuffer() {
-		return outputBuffer;
+		return getNamedOutputBuffer(DEFAULT_BUFFER);
 	}
 
+	@Override
 	public void setOutputBuffer(BlockingBuffer outputBuffer) {
-		this.outputBuffer = outputBuffer;
+		setNamedOutputBuffer(DEFAULT_BUFFER, outputBuffer);
+	}
+
+	@Override
+	public void setNamedOutputBuffer(String name, BlockingBuffer outputBuffer) {
+		put(OUTPUT_PREFIX + name, outputBuffer);
 	}
 
 	@Override
 	public void close() throws IOException {
 		IOException firstException = null;
-		if (this.outputBuffer != null) {
-			try {
-				this.outputBuffer.close();
-			} catch (IOException ioe) {
-				firstException = ioe;
-			}
-		}
 
-		if (this.outputStream != null) {
-			try {
-				this.outputStream.flush();
-			} catch (IOException ioe) {
-				if (firstException == null)
-					firstException = ioe;
-			}
+		synchronized (closeableMap) {
+			for (Closeable closeable : closeableMap.values()) {
+				if (closeable != null) {
 
-			try {
-				this.outputStream.close();
-			} catch (IOException ioe) {
-				if (firstException == null)
-					firstException = ioe;
-			}
-		}
+					synchronized (closeable) {
+						if (closeable instanceof Flushable) {
+							try {
+								((Flushable) closeable).flush();
+							} catch (IOException ioe) {
+								if (firstException == null)
+									firstException = ioe;
+							}
+						}
 
-		if (this.intputStream != null) {
-			try {
-				this.intputStream.close();
-			} catch (IOException ioe) {
-				if (firstException == null)
-					firstException = ioe;
+						try {
+							closeable.close();
+						} catch (IOException ioe) {
+							if (firstException == null)
+								firstException = ioe;
+						}
+					}
+				}
 			}
 		}
 
 		if (firstException != null)
 			throw firstException;
+	}
+
+	@Override
+	public OutputStream getNamedOutputStream(String name) {
+		return (OutputStream) this.closeableMap.get(OUTPUT_PREFIX + name);
+	}
+
+	@Override
+	public void setNamedOutputStream(String name, OutputStream outputStream) {
+		put(OUTPUT_PREFIX + name, outputStream);
+	}
+
+	@Override
+	public InputStream getNamedInputStream(String name) {
+		return (InputStream) this.closeableMap.get(INPUT_PREFIX + name);
+	}
+
+	@Override
+	public void setNamedInputStream(String name, InputStream inputStream) {
+		put(INPUT_PREFIX + name, inputStream);
+	}
+
+	@Override
+	public BlockingBuffer getNamedInputBuffer(String name) {
+		return (BlockingBuffer) this.closeableMap.get(INPUT_PREFIX + name);
+	}
+
+	@Override
+	public BlockingBuffer getNamedOutputBuffer(String name) {
+		return (BlockingBuffer) this.closeableMap.get(OUTPUT_PREFIX + name);
+	}
+
+	private void put(String name, Closeable closeable) {
+		synchronized (closeableMap) {
+			if (this.closeableMap.containsKey(name)) {
+				throw new IllegalArgumentException("Connection \"" + name
+						+ "\" already defined");
+			}
+			this.closeableMap.put(name, closeable);
+		}
 	}
 }

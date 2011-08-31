@@ -24,20 +24,20 @@ public class BlockingBufferTest extends TestCase {
 	public void testClosed() throws Exception {
 		BlockingBuffer buffer = new BlockingBufferImpl();
 		buffer.close();
-		
+
 		try {
 			buffer.put(new Object());
 			fail();
 		} catch (IllegalStateException expected) {
 		}
 	}
-	
+
 	public void testCloseTwice() throws Exception {
 		BlockingBuffer buffer = new BlockingBufferImpl();
 		buffer.close();
 		buffer.close();
 	}
-	
+
 	public void testNull() throws Exception {
 		BlockingBuffer buffer = new BlockingBufferImpl();
 		buffer.put(null);

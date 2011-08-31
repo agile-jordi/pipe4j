@@ -21,7 +21,7 @@ package pipe4j.pipe.file;
 import java.io.File;
 
 import junit.framework.TestCase;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 import pipe4j.core.TestUtils;
 import pipe4j.pipe.string.StringOut;
 import pipe4j.pipe.util.DigestPipe;
@@ -34,12 +34,12 @@ public class FileTest extends TestCase {
 	}
 
 	public void testFile() throws Exception {
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new FileOut(
+		LinearPipeline.run(new FileIn(TestUtils.txtInFilePath), new FileOut(
 				TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtOutFilePath), new DigestPipe(),
-				stringOut);
+		LinearPipeline.run(new FileIn(TestUtils.txtOutFilePath),
+				new DigestPipe(), stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}

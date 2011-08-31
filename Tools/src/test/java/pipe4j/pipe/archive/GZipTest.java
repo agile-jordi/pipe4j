@@ -21,7 +21,7 @@ package pipe4j.pipe.archive;
 import java.io.File;
 
 import junit.framework.TestCase;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 import pipe4j.core.TestUtils;
 import pipe4j.pipe.file.FileIn;
 import pipe4j.pipe.file.FileOut;
@@ -36,12 +36,12 @@ public class GZipTest extends TestCase {
 	}
 
 	public void testGZip() throws Exception {
-		Pipeline.run(new FileIn(TestUtils.txtInFilePath), new GZipPipe(),
+		LinearPipeline.run(new FileIn(TestUtils.txtInFilePath), new GZipPipe(),
 				new GUnzipPipe(), new FileOut(TestUtils.txtOutFilePath));
 
 		StringOut stringOut = new StringOut();
-		Pipeline.run(new FileIn(TestUtils.txtOutFilePath), new DigestPipe(),
-				stringOut);
+		LinearPipeline.run(new FileIn(TestUtils.txtOutFilePath),
+				new DigestPipe(), stringOut);
 
 		assertEquals(TestUtils.txtMD5, stringOut.getString());
 	}

@@ -41,7 +41,7 @@ public class PipelineTest extends TestCase {
 
 	public void testInvalidArgs() throws Exception {
 		try {
-			Pipeline.run((Pipe[]) null);
+			LinearPipeline.run((Pipe[]) null);
 			fail("Expected IllegalArgumentException!");
 		} catch (IllegalArgumentException expected) {
 		}
@@ -49,7 +49,7 @@ public class PipelineTest extends TestCase {
 
 	public void testSimple() throws Exception {
 		StringOut stringOut = new StringOut();
-		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
+		PipelineInfo info = LinearPipeline.run(new StringIn(sb.toString()),
 				new StreamPipe(), stringOut);
 
 		checkResults(info, null, false);
@@ -58,26 +58,26 @@ public class PipelineTest extends TestCase {
 
 	public void testTimeout() throws Exception {
 		StringOut stringOut = new StringOut();
-		PipelineInfo info = Pipeline.run(1000, new StringIn(sb.toString()),
-				new SleepPipe(5000), stringOut);
+		PipelineInfo info = LinearPipeline.run(1000,
+				new StringIn(sb.toString()), new SleepPipe(5000), stringOut);
 		checkResults(info, InterruptedException.class, true);
 		assertEquals(sb.toString(), stringOut.getString());
 	}
 
 	public void testException() throws Exception {
-		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
+		PipelineInfo info = LinearPipeline.run(new StringIn(sb.toString()),
 				new StreamPipe(), new ExceptionPipe(), new StringOut());
 		checkResults(info, IOException.class, false);
 	}
 
 	public void testCloseReader() throws Exception {
-		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
+		PipelineInfo info = LinearPipeline.run(new StringIn(sb.toString()),
 				new StreamPipe(), new ReadClosingPipe(), new StringOut());
 		checkResults(info, IOException.class, false);
 	}
 
 	public void testCloseWriter() throws Exception {
-		PipelineInfo info = Pipeline.run(new StringIn(sb.toString()),
+		PipelineInfo info = LinearPipeline.run(new StringIn(sb.toString()),
 				new WriteClosingPipe(), new StreamPipe(), new StringOut());
 		checkResults(info, IOException.class, false);
 	}

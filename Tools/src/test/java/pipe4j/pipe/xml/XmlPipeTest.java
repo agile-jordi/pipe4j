@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import junit.framework.TestCase;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 import pipe4j.pipe.adaptor.CollectionOutAdaptor;
 import pipe4j.pipe.string.StringIn;
 
@@ -34,7 +34,7 @@ public class XmlPipeTest extends TestCase {
 
 		XPathIteratorPipe xPathIteratorPipe = new XPathIteratorPipe();
 		xPathIteratorPipe.addIgnore(new Ignore("/a/ignore"));
-		Pipeline.run(new StringIn(xml), new XMLEventPipe(),
+		LinearPipeline.run(new StringIn(xml), new XMLEventPipe(),
 				xPathIteratorPipe, coll);
 
 		Collection<XPathAndValue> expected = new ArrayList<XPathAndValue>();

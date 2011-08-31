@@ -35,6 +35,10 @@ public class CallablePipe implements Callable<Result> {
 		this.pipe.cancel();
 	}
 
+	public Connections getConnections() {
+		return connections;
+	}
+
 	@Override
 	public Result call() throws Exception {
 		ResultImpl result;

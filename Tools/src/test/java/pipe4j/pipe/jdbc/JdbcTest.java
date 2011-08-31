@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 
 import org.hsqldb.jdbcDriver;
 
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 import pipe4j.pipe.adaptor.CollectionInAdaptor;
 
 public class JdbcTest extends TestCase {
@@ -65,7 +65,7 @@ public class JdbcTest extends TestCase {
 		for (int i = 1; i <= 10; i++) {
 			coll.add(i);
 		}
-		Pipeline.run(new CollectionInAdaptor(coll),
+		LinearPipeline.run(new CollectionInAdaptor(coll),
 				new PreparedStatementOut(ps));
 		ps.close();
 
@@ -86,7 +86,7 @@ public class JdbcTest extends TestCase {
 			coll.add(innerColl);
 		}
 
-		Pipeline.run(new CollectionInAdaptor(coll),
+		LinearPipeline.run(new CollectionInAdaptor(coll),
 				new PreparedStatementOut(ps));
 		ps.close();
 
@@ -101,7 +101,8 @@ public class JdbcTest extends TestCase {
 	public void testAutoCommit() throws Exception {
 		ResultSet rs = conn.prepareStatement("select y from x").executeQuery();
 		PreparedStatement ps = conn.prepareStatement("insert into x values(?)");
-		Pipeline.run(new ResultSetIn(rs), new PreparedStatementOut(ps, 3, true));
+		LinearPipeline.run(new ResultSetIn(rs), new PreparedStatementOut(ps, 3,
+				true));
 		rs.close();
 		ps.close();
 		conn.rollback(); // all data should have been committed by
@@ -141,7 +142,7 @@ public class JdbcTest extends TestCase {
 
 		rs = conn.prepareStatement("select y from x").executeQuery();
 		PreparedStatement ps = conn.prepareStatement("insert into x values(?)");
-		Pipeline.run(new ResultSetIn(rs), new PreparedStatementOut(ps));
+		LinearPipeline.run(new ResultSetIn(rs), new PreparedStatementOut(ps));
 		rs.close();
 		ps.close();
 		conn.rollback(); // all data should be lost

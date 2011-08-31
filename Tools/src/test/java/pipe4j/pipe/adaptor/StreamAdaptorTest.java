@@ -22,13 +22,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
-import pipe4j.core.Pipeline;
+import pipe4j.core.LinearPipeline;
 
 public class StreamAdaptorTest extends TestCase {
 	public void testAdaptor() throws Exception {
 		String s = "foo bar";
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Pipeline.run(
+		LinearPipeline.run(
 				new InputStreamAdaptor(new ByteArrayInputStream(s.getBytes())),
 				new OutputStreamAdaptor(baos));
 

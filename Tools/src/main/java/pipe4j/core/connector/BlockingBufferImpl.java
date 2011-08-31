@@ -34,14 +34,14 @@ public class BlockingBufferImpl implements BlockingBuffer {
 	 * Used to flag null, as the underlying queue does not support nulls.
 	 */
 	private Object NULL = new Object();
-	
+
 	/**
-	 * True if buffer is closed and should not accept any more objects. 
+	 * True if buffer is closed and should not accept any more objects.
 	 */
 	private AtomicBoolean closed = new AtomicBoolean(false);
-	
+
 	/**
-	 * Underlying blocking queue. 
+	 * Underlying blocking queue.
 	 */
 	private BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(1);
 
