@@ -18,20 +18,14 @@
  */
 package pipe4j.core;
 
-import java.io.Closeable;
-
 /**
  * Base interface for all pipes. Input and Output types will be declared by
  * implementations.
  * 
  * @author bbennett
  * 
- * @param <I>
- *            Input type
- * @param <O>
- *            Output type
  */
-public interface Pipe<I extends Closeable, O extends Closeable> {
+public interface Pipe {
 	/**
 	 * Run the pipe. Implementations should loop the following steps:
 	 * 
@@ -42,13 +36,11 @@ public interface Pipe<I extends Closeable, O extends Closeable> {
 	 * <li>Write to output.</li>
 	 * </ol>
 	 * 
-	 * @param in
-	 *            Pipe input
-	 * @param out
-	 *            Pipe output
+	 * @param connections
+	 *            Connection holder
 	 * @throws Exception
 	 */
-	void run(I in, O out) throws Exception;
+	void run(Connections connections) throws Exception;
 
 	/**
 	 * Request execution to be canceled.

@@ -18,18 +18,20 @@
  */
 package pipe4j.pipe.std;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
-import pipe4j.pipe.AbstractStreamPipeOut;
+import pipe4j.pipe.SimpleStreamDecoratorPipe;
 
 /**
  * Writes pipeline result to stdout.
  * 
  * @author bbennett
  */
-public class Stdout extends AbstractStreamPipeOut {
+public class Stdout extends SimpleStreamDecoratorPipe {
 	@Override
-	protected OutputStream getOutputStream() throws Exception {
+	protected OutputStream getDecoratedOutputStream(OutputStream outputStream)
+			throws IOException {
 		return System.out;
 	}
 }

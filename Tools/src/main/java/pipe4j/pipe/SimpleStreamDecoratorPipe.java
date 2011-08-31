@@ -16,21 +16,33 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.core.connector;
+package pipe4j.pipe;
 
-import java.io.Closeable;
-
-import pipe4j.core.CallablePipe;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * Responsible for connecting two pipes.
+ * Convenient super class for pipes reading and writing byte streams, which only
+ * need to transform data by wrapping input and/or output.
  * 
  * @author bbennett
  */
-public interface PipeConnector {
-	boolean supports(CallablePipe<Closeable, Closeable> previous,
-			CallablePipe<Closeable, Closeable> callablePipe);
+public class SimpleStreamDecoratorPipe extends SimpleStreamPipe {
+	@Override
+	protected void run(InputStream inputStream, OutputStream outputStream)
+			throws Exception {
+		transfer(getDecoratedInputStream(inputStream),
+				getDecoratedOutputStream(outputStream));
+	}
 
-	void connect(CallablePipe<Closeable, Closeable> pipe1,
-			CallablePipe<Closeable, Closeable> pipe2, boolean debug);
+	protected OutputStream getDecoratedOutputStream(OutputStream outputStream)
+			throws IOException {
+		return outputStream;
+	}
+
+	protected InputStream getDecoratedInputStream(InputStream inputStream)
+			throws IOException {
+		return inputStream;
+	}
 }

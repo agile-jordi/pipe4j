@@ -22,17 +22,15 @@ import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.Iterator;
 
-import pipe4j.core.Null;
 import pipe4j.core.connector.BlockingBuffer;
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.SimpleObjectPipe;
 
 /**
  * Inserts objects into database using the provided {@link PreparedStatement}.
  * 
  * @author bbennett
  */
-public class PreparedStatementOut extends
-		AbstractPipe<BlockingBuffer<Object>, Null> {
+public class PreparedStatementOut extends SimpleObjectPipe {
 	private final PreparedStatement preparedStatement;
 	private int batchSize = 10;
 	private boolean commitBatch = false;
@@ -55,10 +53,11 @@ public class PreparedStatementOut extends
 	}
 
 	@Override
-	public void run(BlockingBuffer<Object> in, Null out) throws Exception {
+	protected void run(BlockingBuffer inputBuffer, BlockingBuffer outputBuffer)
+			throws Exception {
 		Object obj;
 		int count = 0;
-		while (!cancelled() && (obj = in.take()) != null) {
+		while (!cancelled() && (obj = inputBuffer.take()) != null) {
 			if (obj instanceof Object[]) {
 				Object[] row = (Object[]) obj;
 				for (int i = 0; i < row.length; i++) {

@@ -41,8 +41,7 @@ public class DebugPipedOutputStream extends PipedOutputStream implements
 	}
 
 	@Override
-	public void write(byte[] b, int off, int len)
-			throws IOException {
+	public void write(byte[] b, int off, int len) throws IOException {
 		final long currentTime = System.currentTimeMillis();
 		super.write(b, off, len);
 		writeWaitTimeMilliseconds += System.currentTimeMillis() - currentTime;

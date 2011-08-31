@@ -18,7 +18,6 @@
  */
 package pipe4j.core.executor;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -34,13 +33,13 @@ import pipe4j.core.Result.Type;
 
 public class PipelineExecutor {
 	public static PipelineInfo execute(long timeoutMilliseconds,
-			List<CallablePipe<Closeable, Closeable>> callables) {
+			List<CallablePipe> callables) {
 		ExecutorService pool = Executors.newFixedThreadPool(callables.size());
 		List<Future<Result>> futureList = new ArrayList<Future<Result>>(
 				callables.size());
 
 		final long startTimestamp = System.currentTimeMillis();
-		for (CallablePipe<Closeable, Closeable> callablePipe : callables) {
+		for (CallablePipe callablePipe : callables) {
 			futureList.add(pool.submit(callablePipe));
 		}
 		pool.shutdown();
@@ -83,8 +82,7 @@ public class PipelineExecutor {
 	}
 
 	private static boolean abortIfNecessary(long timeoutMilliseconds,
-			ExecutorService pool,
-			List<CallablePipe<Closeable, Closeable>> callables) {
+			ExecutorService pool, List<CallablePipe> callables) {
 		boolean terminated = false;
 		boolean rv = false;
 		try {
@@ -103,8 +101,8 @@ public class PipelineExecutor {
 			rv = true;
 
 			// Be nice and request each pipe to cancel
-			for (CallablePipe<Closeable, Closeable> callablePipe : callables) {
-				callablePipe.getPipe().cancel();
+			for (CallablePipe callablePipe : callables) {
+				callablePipe.cancel();
 			}
 
 			// Check if pipes gracefully terminated

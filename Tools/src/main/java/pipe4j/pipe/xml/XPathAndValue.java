@@ -99,11 +99,11 @@ public class XPathAndValue implements Comparable<XPathAndValue> {
 		if (that == null) {
 			return 0;
 		}
-		
+
 		String xpath1 = this.xpath == null ? "" : this.xpath;
 		String xpath2 = that.xpath == null ? "" : that.xpath;
 		int rv = xpath1.compareTo(xpath2);
-		
+
 		if (rv == 0) {
 			String value1 = this.value == null ? "" : this.value;
 			String value2 = that.value == null ? "" : that.value;

@@ -16,30 +16,22 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.core;
+package pipe4j.pipe;
 
-import java.io.Closeable;
-import java.io.IOException;
+import pipe4j.core.Connections;
+import pipe4j.core.connector.BlockingBuffer;
 
 /**
- * When declared as connector for the head and tail of a pipeline. Example:
- * FileIn will declare input as Null, as the input will be a file, and not the
- * output from a previous pipe.
- * 
- * Also used in object pipes to flag that no more objects will be produced.
+ * Convenient super class for pipes reading and writing objects.
  * 
  * @author bbennett
  */
-public final class Null implements Closeable {
-	/**
-	 * Singleton instance.
-	 */
-	public static final Null INSTANCE = new Null();
-
-	private Null() {
-	}
-
+public abstract class SimpleObjectPipe extends AbstractPipe {
 	@Override
-	public void close() throws IOException {
+	public void run(Connections connections) throws Exception {
+		run(connections.getInputBuffer(), connections.getOutputBuffer());
 	}
+
+	protected abstract void run(BlockingBuffer inputBuffer,
+			BlockingBuffer outputBuffer) throws Exception;
 }

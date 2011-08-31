@@ -21,9 +21,9 @@ package pipe4j.core;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import pipe4j.pipe.StreamPipe;
+import pipe4j.pipe.SimpleStreamPipe;
 
-public class SleepPipe extends StreamPipe {
+public class SleepPipe extends SimpleStreamPipe {
 	private long millis;
 
 	public SleepPipe(long millis) {
@@ -32,8 +32,9 @@ public class SleepPipe extends StreamPipe {
 	}
 
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		super.run(is, os);
+	protected void run(InputStream inputStream, OutputStream outputStream)
+			throws Exception {
+		transfer(inputStream, outputStream);
 		Thread.sleep(millis);
 	}
 }

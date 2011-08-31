@@ -23,14 +23,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import pipe4j.pipe.AbstractStreamPipeIn;
+import pipe4j.pipe.SimpleStreamDecoratorPipe;
 
 /**
  * Head pipe providing data from a file.
  * 
  * @author bbennett
  */
-public class FileIn extends AbstractStreamPipeIn {
+public class FileIn extends SimpleStreamDecoratorPipe {
 	private File file;
 
 	public FileIn(String filepath) throws IOException {
@@ -42,7 +42,8 @@ public class FileIn extends AbstractStreamPipeIn {
 	}
 
 	@Override
-	protected InputStream getInputStream() throws Exception {
+	protected InputStream getDecoratedInputStream(InputStream inputStream)
+			throws IOException {
 		if (!file.exists()) {
 			throw new IllegalArgumentException("File not found: "
 					+ file.getAbsolutePath());

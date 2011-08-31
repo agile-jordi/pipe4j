@@ -22,8 +22,8 @@ import java.io.InputStream;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.events.XMLEvent;
 
+import pipe4j.core.Connections;
 import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
@@ -33,26 +33,26 @@ import pipe4j.pipe.AbstractPipe;
  * 
  * @author bbennett
  */
-public class XMLEventPipe extends
-		AbstractPipe<InputStream, BlockingBuffer<XMLEvent>> {
+public class XMLEventPipe extends AbstractPipe {
 	private final XMLInputFactory factory;
-	
+
 	public XMLEventPipe() {
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		factory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
 		this.factory = factory;
 	}
-	
+
 	public XMLEventPipe(XMLInputFactory factory) {
 		this.factory = factory;
 	}
-	
+
 	@Override
-	public void run(InputStream in, BlockingBuffer<XMLEvent> out)
-			throws Exception {
-		XMLEventReader reader = factory.createXMLEventReader(in);
+	public void run(Connections connections) throws Exception {
+		XMLEventReader reader = factory.createXMLEventReader(connections
+				.getIntputStream());
+		BlockingBuffer outputBuffer = connections.getOutputBuffer();
 		while (!cancelled() && reader.hasNext()) {
-			out.put(reader.nextEvent());
+			outputBuffer.put(reader.nextEvent());
 		}
 	}
 }

@@ -18,11 +18,14 @@
  */
 package pipe4j.core;
 
-import java.io.Closeable;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import pipe4j.core.connector.PipeConnectorHelper;
+import pipe4j.core.connector.BlockingBuffer;
+import pipe4j.core.connector.BlockingBufferImpl;
 import pipe4j.core.executor.PipelineExecutor;
 
 /**
@@ -30,7 +33,6 @@ import pipe4j.core.executor.PipelineExecutor;
  * 
  * @author bbennett
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Pipeline {
 	public static PipelineInfo run(Pipe... pipeline) {
 		return run(0, pipeline);
@@ -46,29 +48,41 @@ public class Pipeline {
 			throw new IllegalArgumentException("Need at least 2 pipes!");
 		}
 
-		List<CallablePipe<Closeable, Closeable>> callables = new ArrayList<CallablePipe<Closeable, Closeable>>(
+		List<CallablePipe> callables = new ArrayList<CallablePipe>(
 				pipeline.length);
-		CallablePipe<Closeable, Closeable> previous = new CallablePipe<Closeable, Closeable>(
-				pipeline[0]);
-		callables.add(previous);
-		previous.setIn(Null.INSTANCE);
 
-		for (Pipe<Closeable, Closeable> pipe : pipeline) {
+		ConnectionsImpl previousConnections = new ConnectionsImpl();
+		CallablePipe previous = new CallablePipe(pipeline[0],
+				previousConnections);
+		callables.add(previous);
+
+		for (Pipe pipe : pipeline) {
 			if (pipe == pipeline[0])
 				continue;
-			CallablePipe<Closeable, Closeable> callablePipe = new CallablePipe<Closeable, Closeable>(
-					pipe);
+			ConnectionsImpl connections = new ConnectionsImpl();
+			connectDefaultChannels(previousConnections, connections);
+			CallablePipe callablePipe = new CallablePipe(pipe, connections);
 			callables.add(callablePipe);
-			connect(previous, callablePipe, debug);
 			previous = callablePipe;
+			previousConnections = connections;
 		}
-		previous.setOut(Null.INSTANCE);
 
 		return PipelineExecutor.execute(timeoutMilliseconds, callables);
 	}
 
-	private static void connect(CallablePipe<Closeable, Closeable> previous,
-			CallablePipe<Closeable, Closeable> callablePipe, boolean debug) {
-		PipeConnectorHelper.connect(previous, callablePipe, debug);
+	private static void connectDefaultChannels(ConnectionsImpl c1,
+			ConnectionsImpl c2) {
+		PipedInputStream pis = new PipedInputStream();
+		PipedOutputStream pos = null;
+		try {
+			pos = new PipedOutputStream(pis);
+		} catch (IOException wontHappen) {
+		}
+		c1.setOutputStream(pos);
+		c2.setIntputStream(pis);
+		BlockingBuffer buffer = new BlockingBufferImpl();
+
+		c1.setOutputBuffer(buffer);
+		c2.setInputBuffer(buffer);
 	}
 }

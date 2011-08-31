@@ -18,40 +18,33 @@
  */
 package pipe4j.pipe;
 
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import pipe4j.core.Null;
+import pipe4j.core.Connections;
 
 /**
- * Abstract parent for "in" or "head" pipes, which provide their own data
- * instead of reading from a previous pipe.
- * 
- * Example: FileIn pipe provides a {@link FileInputStream}.
- * 
- * Implementations just need to provide the {@link InputStream} implementation.
+ * Convenient super class for pipes reading and writing byte streams.
  * 
  * @author bbennett
  */
-public abstract class AbstractStreamPipeIn extends
-		AbstractPipe<Null, OutputStream> {
-
+public abstract class SimpleStreamPipe extends AbstractPipe {
 	@Override
-	public void run(Null in, OutputStream out) throws Exception {
-		byte[] buffer = new byte[8192];
-		int bytesRead;
-		InputStream is = getInputStream();
-		while (!cancelled() && (bytesRead = is.read(buffer)) != -1) {
-			out.write(buffer, 0, bytesRead);
-		}
-		out.flush();
+	public void run(Connections connections) throws Exception {
+		run(connections.getIntputStream(), connections.getOutputStream());
 	}
 
-	/**
-	 * @return InputStream providing data.
-	 * 
-	 * @throws Exception
-	 */
-	protected abstract InputStream getInputStream() throws Exception;
+	protected abstract void run(InputStream inputStream,
+			OutputStream outputStream) throws Exception;
+
+	protected void transfer(InputStream inputStream, OutputStream outputStream)
+			throws IOException {
+		byte[] buffer = new byte[8192];
+		int bytesRead;
+		while (!cancelled() && (bytesRead = inputStream.read(buffer)) != -1) {
+			outputStream.write(buffer, 0, bytesRead);
+		}
+		outputStream.flush();
+	}
 }

@@ -20,9 +20,9 @@ package pipe4j.pipe.adaptor;
 
 import java.io.InputStream;
 
-import pipe4j.pipe.AbstractStreamPipeIn;
+import pipe4j.pipe.SimpleStreamDecoratorPipe;
 
-public class InputStreamAdaptor extends AbstractStreamPipeIn {
+public class InputStreamAdaptor extends SimpleStreamDecoratorPipe {
 	private final InputStream inputStream;
 
 	public InputStreamAdaptor(InputStream inputStream) {
@@ -31,7 +31,7 @@ public class InputStreamAdaptor extends AbstractStreamPipeIn {
 	}
 
 	@Override
-	public InputStream getInputStream() {
-		return inputStream;
+	protected InputStream getDecoratedInputStream(InputStream ignored) {
+		return this.inputStream;
 	}
 }

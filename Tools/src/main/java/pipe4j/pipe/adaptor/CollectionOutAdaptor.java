@@ -21,12 +21,10 @@ package pipe4j.pipe.adaptor;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import pipe4j.core.Null;
 import pipe4j.core.connector.BlockingBuffer;
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.SimpleObjectPipe;
 
-public class CollectionOutAdaptor extends
-		AbstractPipe<BlockingBuffer<Object>, Null> {
+public class CollectionOutAdaptor extends SimpleObjectPipe {
 	private Collection<Object> collection = new ArrayList<Object>();
 
 	public Collection<Object> getCollection() {
@@ -34,9 +32,10 @@ public class CollectionOutAdaptor extends
 	}
 
 	@Override
-	public void run(BlockingBuffer<Object> in, Null out) throws Exception {
+	protected void run(BlockingBuffer inputBuffer, BlockingBuffer outputBuffer)
+			throws Exception {
 		Object o;
-		while (!cancelled() && (o = in.take()) != null) {
+		while (!cancelled() && (o = inputBuffer.take()) != null) {
 			this.collection.add(o);
 		}
 	}

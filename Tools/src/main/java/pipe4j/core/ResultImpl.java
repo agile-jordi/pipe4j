@@ -32,7 +32,7 @@ public class ResultImpl implements Result {
 		this.pipeName = pipeName;
 		this.type = type;
 	}
-	
+
 	@Override
 	public String getPipeName() {
 		return this.pipeName;
@@ -56,7 +56,7 @@ public class ResultImpl implements Result {
 	public Type getType() {
 		return type;
 	}
-	
+
 	@Override
 	public long getStartTimestamp() {
 		return startTimestamp;

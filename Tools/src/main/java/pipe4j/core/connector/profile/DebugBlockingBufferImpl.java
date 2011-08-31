@@ -20,7 +20,8 @@ package pipe4j.core.connector.profile;
 
 import pipe4j.core.connector.BlockingBufferImpl;
 
-public class DebugBlockingBufferImpl<E> extends BlockingBufferImpl<E> implements Profiled {
+public class DebugBlockingBufferImpl extends BlockingBufferImpl implements
+		Profiled {
 	private long readWaitTimeMilliseconds = 0l;
 	private long writeWaitTimeMilliseconds = 0l;
 
@@ -35,16 +36,16 @@ public class DebugBlockingBufferImpl<E> extends BlockingBufferImpl<E> implements
 	}
 
 	@Override
-	public void put(E e) throws InterruptedException {
+	public void put(Object o) throws InterruptedException {
 		final long currentTime = System.currentTimeMillis();
-		super.put(e);
+		super.put(o);
 		readWaitTimeMilliseconds += System.currentTimeMillis() - currentTime;
 	}
 
 	@Override
-	public E take() throws InterruptedException {
+	public Object take() throws InterruptedException {
 		final long currentTime = System.currentTimeMillis();
-		E rv = super.take();
+		Object rv = super.take();
 		writeWaitTimeMilliseconds += System.currentTimeMillis() - currentTime;
 		return rv;
 	}

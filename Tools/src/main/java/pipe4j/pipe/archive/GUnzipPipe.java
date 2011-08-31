@@ -18,20 +18,23 @@
  */
 package pipe4j.pipe.archive;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 
-import pipe4j.pipe.StreamPipe;
+import pipe4j.pipe.SimpleStreamPipe;
 
 /**
  * Applyes gunzip to stream.
  * 
  * @author bbennett
  */
-public class GUnzipPipe extends StreamPipe {
+public class GUnzipPipe extends SimpleStreamPipe {
 	@Override
-	public InputStream decorateIn(InputStream in) throws IOException {
-		return new GZIPInputStream(in);
+	protected void run(InputStream inputStream, OutputStream outputStream)
+			throws Exception {
+		GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+		transfer(gzipInputStream, outputStream);
+		gzipInputStream.close();
 	}
 }

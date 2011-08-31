@@ -25,21 +25,18 @@ import java.io.Closeable;
  * that no more elements will be added to the buffer.
  * 
  * @author bbennett
- * 
- * @param <E>
- *            Element type
  */
-public interface BlockingBuffer<E> extends Closeable {
+public interface BlockingBuffer extends Closeable {
 	/**
 	 * Put element into buffer, waiting if necessary for space to become
 	 * available.
 	 * 
-	 * @param e
+	 * @param o
 	 *            the element to add
 	 * @throws InterruptedException
 	 *             if interrupted while waiting
 	 */
-	void put(E e) throws InterruptedException;
+	void put(Object o) throws InterruptedException;
 
 	/**
 	 * Removes element from buffer, waiting if necessary until an element
@@ -49,5 +46,5 @@ public interface BlockingBuffer<E> extends Closeable {
 	 * @throws InterruptedException
 	 *             if interrupted while waiting
 	 */
-	E take() throws InterruptedException;
+	Object take() throws InterruptedException;
 }

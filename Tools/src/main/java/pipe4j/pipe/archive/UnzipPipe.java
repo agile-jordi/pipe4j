@@ -24,27 +24,23 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import pipe4j.pipe.StreamPipe;
+import pipe4j.pipe.SimpleStreamPipe;
 
 /**
  * Unzips the first entry of the stream.
  * 
  * @author bbennett
  */
-public class UnzipPipe extends StreamPipe {
+public class UnzipPipe extends SimpleStreamPipe {
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		ZipInputStream in = (ZipInputStream) is;
-		ZipEntry ze = in.getNextEntry();
+	protected void run(InputStream inputStream, OutputStream outputStream)
+			throws Exception {
+		ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+		ZipEntry ze = zipInputStream.getNextEntry();
 		if (ze == null) {
 			throw new IOException("Zip stream has no entry!");
 		}
-		super.run(in, os);
-		in.closeEntry();
-	}
-
-	@Override
-	public InputStream decorateIn(InputStream in) throws IOException {
-		return new ZipInputStream(in);
+		transfer(zipInputStream, outputStream);
+		zipInputStream.closeEntry();
 	}
 }

@@ -21,7 +21,6 @@ package pipe4j.core;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import pipe4j.pipe.StreamPipe;
 import pipe4j.pipe.string.StringIn;
 import pipe4j.pipe.string.StringOut;
 

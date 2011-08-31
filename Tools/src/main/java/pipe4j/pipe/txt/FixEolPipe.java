@@ -25,7 +25,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.SimpleStreamPipe;
 
 /**
  * Fixes eol character from {@link InputStream} for the configured platform and
@@ -33,7 +33,7 @@ import pipe4j.pipe.AbstractPipe;
  * 
  * @author bbennett
  */
-public class FixEolPipe extends AbstractPipe<InputStream, OutputStream> {
+public class FixEolPipe extends SimpleStreamPipe {
 	public enum Platform {
 		DOS, UNIX, MAC, AUTO
 	}
@@ -49,9 +49,12 @@ public class FixEolPipe extends AbstractPipe<InputStream, OutputStream> {
 	}
 
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
+	protected void run(InputStream inputStream, OutputStream outputStream)
+			throws Exception {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				inputStream));
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+				outputStream));
 
 		final String eol;
 		switch (this.platform) {

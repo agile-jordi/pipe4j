@@ -23,7 +23,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.security.MessageDigest;
 
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.SimpleStreamPipe;
 
 /**
  * Digests {@link InputStream} with the configured algorithm and writes
@@ -32,7 +32,7 @@ import pipe4j.pipe.AbstractPipe;
  * 
  * @author bbennett
  */
-public class DigestPipe extends AbstractPipe<InputStream, OutputStream> {
+public class DigestPipe extends SimpleStreamPipe {
 	private static final String HEXES = "0123456789abcdef";
 	private static final String defaultAlgorithm = "MD5";
 	private String algorithm;
@@ -47,12 +47,13 @@ public class DigestPipe extends AbstractPipe<InputStream, OutputStream> {
 	}
 
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
+	protected void run(InputStream inputStream, OutputStream outputStream)
+			throws Exception {
 		MessageDigest md = MessageDigest.getInstance(algorithm);
 		byte[] buffer = new byte[8192];
 
 		int numRead;
-		while (!cancelled() && (numRead = is.read(buffer)) != -1) {
+		while (!cancelled() && (numRead = inputStream.read(buffer)) != -1) {
 			md.update(buffer, 0, numRead);
 		}
 
@@ -61,7 +62,7 @@ public class DigestPipe extends AbstractPipe<InputStream, OutputStream> {
 		}
 
 		String checksum = getHex(md.digest());
-		OutputStreamWriter writer = new OutputStreamWriter(os);
+		OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 		writer.write(checksum);
 		writer.flush();
 	}

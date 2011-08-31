@@ -16,29 +16,39 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.core.connector;
+package pipe4j.core;
 
 import java.io.Closeable;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import pipe4j.core.CallablePipe;
+import pipe4j.core.connector.BlockingBuffer;
 
 /**
- * Connect object pipes with a {@link BlockingBuffer}.
+ * Facade of communication channels available for the associated pipe.
  * 
- * @author bbennetts
+ * @author bbennett
  */
-public class BlockingBufferPipeConnector extends AbstractPipeConnector {
-	@Override
-	protected boolean supports(Class<?> in, Class<?> out) {
-		return BlockingBuffer.class.isAssignableFrom(in)
-				&& BlockingBuffer.class.isAssignableFrom(out);
-	}
+public interface Connections extends Closeable {
 
-	@Override
-	public void connect(CallablePipe<Closeable, Closeable> pipe1,
-			CallablePipe<Closeable, Closeable> pipe2, boolean debug) {
-		BlockingBuffer<Object> queue = new BlockingBufferImpl<Object>();
-		pipe1.setOut(queue);
-		pipe2.setIn(queue);
-	}
+	/**
+	 * @return Default output stream or null if not available
+	 */
+	public abstract OutputStream getOutputStream();
+
+	/**
+	 * @return Default input stream or null if not available
+	 */
+	public abstract InputStream getIntputStream();
+
+	/**
+	 * @return Default input buffer or null if not available
+	 */
+	public abstract BlockingBuffer getInputBuffer();
+
+	/**
+	 * @return Default output buffer or null if not available
+	 */
+	public abstract BlockingBuffer getOutputBuffer();
+
 }

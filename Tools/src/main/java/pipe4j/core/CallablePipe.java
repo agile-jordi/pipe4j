@@ -18,42 +18,19 @@
  */
 package pipe4j.core;
 
-import java.io.Closeable;
-import java.io.Flushable;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import pipe4j.core.connector.ConnectorDecorator;
-import pipe4j.core.connector.profile.Profiled;
+public class CallablePipe implements Callable<Result> {
+	private final Pipe pipe;
+	private final Connections connections;
 
-public class CallablePipe<I extends Closeable, O extends Closeable> implements
-		Callable<Result> {
-	private I in;
-	private O out;
-	private final Pipe<I, O> pipe;
-
-	public CallablePipe(Pipe<I, O> pipe) {
+	public CallablePipe(Pipe pipe, Connections connections) {
 		this.pipe = pipe;
+		this.connections = connections;
 	}
 
-	public I getIn() {
-		return in;
-	}
-
-	public void setIn(I in) {
-		this.in = in;
-	}
-
-	public O getOut() {
-		return out;
-	}
-
-	public void setOut(O out) {
-		this.out = out;
-	}
-
-	public Pipe<I, O> getPipe() {
-		return pipe;
+	public void cancel() {
+		this.pipe.cancel();
 	}
 
 	@Override
@@ -62,14 +39,8 @@ public class CallablePipe<I extends Closeable, O extends Closeable> implements
 		long endTimestamp, startTimestamp = 0;
 		String pipeName = pipe.getClass().getSimpleName();
 		try {
-			if (pipe instanceof ConnectorDecorator) {
-				ConnectorDecorator<I, O> decorator = (ConnectorDecorator<I, O>) pipe;
-				this.in = decorator.decorateIn(in);
-				this.out = decorator.decorateOut(out);
-			}
-
 			startTimestamp = System.currentTimeMillis();
-			pipe.run(in, out);
+			pipe.run(this.connections);
 			endTimestamp = System.currentTimeMillis();
 			result = new ResultImpl(pipeName, Result.Type.SUCCESS);
 		} catch (Exception e) {
@@ -77,36 +48,12 @@ public class CallablePipe<I extends Closeable, O extends Closeable> implements
 			result = new ResultImpl(pipeName, Result.Type.FAILURE);
 			result.setException(e);
 		} finally {
-			close(out);
-			close(in);
+			this.connections.close();
 		}
 
 		result.setStartTimestamp(startTimestamp);
 		result.setEndTimestamp(endTimestamp);
 
-		if (in instanceof Profiled) {
-			result.setReadWaitTimeMilliseconds(((Profiled) in)
-					.getReadWaitTimeMilliseconds());
-		}
-
-		if (out instanceof Profiled) {
-			result.setWriteWaitTimeMilliseconds(((Profiled) out)
-					.getWriteWaitTimeMilliseconds());
-		}
 		return result;
-	}
-
-	private void close(Closeable closeable) {
-		if (closeable instanceof Flushable) {
-			try {
-				((Flushable) closeable).flush();
-			} catch (IOException e) {
-			}
-		}
-
-		try {
-			closeable.close();
-		} catch (IOException e1) {
-		}
 	}
 }

@@ -18,7 +18,6 @@
  */
 package pipe4j.pipe;
 
-import java.io.Closeable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import pipe4j.core.Pipe;
@@ -27,14 +26,8 @@ import pipe4j.core.Pipe;
  * Utility abstract parent for most pipe implementations. Supports cancel flag.
  * 
  * @author bbennett
- * 
- * @param <I>
- *            Pipe input type
- * @param <O>
- *            Pipe output type
  */
-public abstract class AbstractPipe<I extends Closeable, O extends Closeable>
-		implements Pipe<I, O> {
+public abstract class AbstractPipe implements Pipe {
 	private AtomicBoolean cancel = new AtomicBoolean(false);
 
 	@Override

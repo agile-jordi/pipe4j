@@ -22,14 +22,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import pipe4j.pipe.AbstractStreamPipeIn;
+import pipe4j.pipe.SimpleStreamDecoratorPipe;
 
 /**
  * Feeds pipeline with the contents of a {@link String}.
  * 
  * @author bbennett
  */
-public class StringIn extends AbstractStreamPipeIn {
+public class StringIn extends SimpleStreamDecoratorPipe {
 	private String source;
 
 	public StringIn(String source) throws IOException {
@@ -37,7 +37,8 @@ public class StringIn extends AbstractStreamPipeIn {
 	}
 
 	@Override
-	protected InputStream getInputStream() throws Exception {
+	protected InputStream getDecoratedInputStream(InputStream inputStream)
+			throws IOException {
 		return new ByteArrayInputStream(source.getBytes());
 	}
 }

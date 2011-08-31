@@ -70,8 +70,8 @@ class XMLEventProcessor {
 				String attName = (prefix == null || prefix.trim().length() == 0 ? ""
 						: prefix + ":")
 						+ name.getLocalPart();
-				paths.add(new XPathAndValue(xpath + ATTR_PREFIX + attName, attribute
-						.getValue(), lineNumber, columnNumber));
+				paths.add(new XPathAndValue(xpath + ATTR_PREFIX + attName,
+						attribute.getValue(), lineNumber, columnNumber));
 			}
 		} else if (event.isEndElement()) {
 			EndElement element = event.asEndElement();

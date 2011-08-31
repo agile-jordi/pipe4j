@@ -21,24 +21,22 @@ package pipe4j.pipe.adaptor;
 import java.util.Collection;
 import java.util.Iterator;
 
-import pipe4j.core.Null;
 import pipe4j.core.connector.BlockingBuffer;
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.SimpleObjectPipe;
 
-public class CollectionInAdaptor extends
-		AbstractPipe<Null, BlockingBuffer<Object>> {
+public class CollectionInAdaptor extends SimpleObjectPipe {
 	private final Collection<?> collection;
 
 	public CollectionInAdaptor(Collection<?> collection) {
-		super();
 		this.collection = collection;
 	}
 
 	@Override
-	public void run(Null in, BlockingBuffer<Object> out) throws Exception {
+	protected void run(BlockingBuffer inputBuffer, BlockingBuffer outputBuffer)
+			throws Exception {
 		for (Iterator<?> iterator = collection.iterator(); !cancelled()
 				&& iterator.hasNext();) {
-			out.put(iterator.next());
+			outputBuffer.put(iterator.next());
 		}
 	}
 }

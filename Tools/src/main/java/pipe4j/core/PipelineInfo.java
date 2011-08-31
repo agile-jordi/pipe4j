@@ -39,11 +39,11 @@ public class PipelineInfo {
 		super();
 		this.resultList = resultList;
 	}
-	
+
 	public void setResult(Result.Type result) {
 		this.result = result;
 	}
-	
+
 	public Result.Type getResult() {
 		return result;
 	}

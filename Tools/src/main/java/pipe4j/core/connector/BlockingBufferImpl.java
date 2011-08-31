@@ -23,33 +23,48 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import pipe4j.core.Null;
-
-public class BlockingBufferImpl<E> implements BlockingBuffer<E> {
+/**
+ * Standard implementation of the BlockingBuffer interface.
+ * 
+ * @author bbennett
+ * 
+ */
+public class BlockingBufferImpl implements BlockingBuffer {
+	/**
+	 * Used to flag null, as the underlying queue does not support nulls.
+	 */
+	private Object NULL = new Object();
+	
+	/**
+	 * True if buffer is closed and should not accept any more objects. 
+	 */
 	private AtomicBoolean closed = new AtomicBoolean(false);
+	
+	/**
+	 * Underlying blocking queue. 
+	 */
 	private BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(1);
 
 	@Override
-	public void put(E e) throws InterruptedException {
+	public void put(Object o) throws InterruptedException {
 		if (this.closed.get()) {
 			throw new IllegalStateException();
 		}
-		if (e == null) {
-			queue.put(Null.INSTANCE);
+		if (o == null) {
+			queue.put(NULL);
 		} else {
-			queue.put(e);
+			queue.put(o);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public E take() throws InterruptedException {
+	public Object take() throws InterruptedException {
 		Object take = queue.take();
-		if (take == Null.INSTANCE) {
+		if (take == NULL) {
 			return null;
 		}
 
-		return (E) take;
+		return take;
 	}
 
 	@Override

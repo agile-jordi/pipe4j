@@ -18,21 +18,20 @@
  */
 package pipe4j.pipe.archive;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import pipe4j.pipe.StreamPipe;
+import pipe4j.pipe.SimpleStreamPipe;
 
 /**
  * Zips stream into one entry.
  * 
  * @author bbennett
  */
-public class ZipPipe extends StreamPipe {
+public class ZipPipe extends SimpleStreamPipe {
 	private final String entryName;
 	private int level = Deflater.DEFAULT_COMPRESSION;
 
@@ -48,17 +47,13 @@ public class ZipPipe extends StreamPipe {
 	}
 
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		ZipOutputStream out = (ZipOutputStream) os;
-		out.putNextEntry(new ZipEntry(entryName));
-		out.setLevel(level);
-		super.run(is, out);
-		out.closeEntry();
-		out.finish();
-	}
-
-	@Override
-	public OutputStream decorateOut(OutputStream out) throws IOException {
-		return new ZipOutputStream(out);
+	protected void run(InputStream inputStream, OutputStream outputStream)
+			throws Exception {
+		ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+		zipOutputStream.putNextEntry(new ZipEntry(entryName));
+		zipOutputStream.setLevel(level);
+		transfer(inputStream, zipOutputStream);
+		zipOutputStream.closeEntry();
+		zipOutputStream.finish();
 	}
 }

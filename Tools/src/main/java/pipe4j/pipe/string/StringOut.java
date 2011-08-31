@@ -19,16 +19,17 @@
 package pipe4j.pipe.string;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
-import pipe4j.pipe.AbstractStreamPipeOut;
+import pipe4j.pipe.SimpleStreamDecoratorPipe;
 
 /**
  * Writes pipeline result into a {@link String}.
  * 
  * @author bbennett
  */
-public class StringOut extends AbstractStreamPipeOut {
+public class StringOut extends SimpleStreamDecoratorPipe {
 	private ByteArrayOutputStream baos;
 
 	public String getString() {
@@ -36,7 +37,8 @@ public class StringOut extends AbstractStreamPipeOut {
 	}
 
 	@Override
-	protected OutputStream getOutputStream() throws Exception {
+	protected OutputStream getDecoratedOutputStream(OutputStream outputStream)
+			throws IOException {
 		baos = new ByteArrayOutputStream();
 		return baos;
 	}

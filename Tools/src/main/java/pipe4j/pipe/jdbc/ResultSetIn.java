@@ -21,16 +21,15 @@ package pipe4j.pipe.jdbc;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
-import pipe4j.core.Null;
 import pipe4j.core.connector.BlockingBuffer;
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.SimpleObjectPipe;
 
 /**
  * Feeds pipeline with objects read from {@link ResultSet}.
  * 
  * @author bbennett
  */
-public class ResultSetIn extends AbstractPipe<Null, BlockingBuffer<Object>> {
+public class ResultSetIn extends SimpleObjectPipe {
 	private final ResultSet resultSet;
 
 	public ResultSetIn(ResultSet resultSet) {
@@ -39,7 +38,8 @@ public class ResultSetIn extends AbstractPipe<Null, BlockingBuffer<Object>> {
 	}
 
 	@Override
-	public void run(Null in, BlockingBuffer<Object> out) throws Exception {
+	protected void run(BlockingBuffer inputBuffer, BlockingBuffer outputBuffer)
+			throws Exception {
 		ResultSetMetaData md = resultSet.getMetaData();
 		int columnCount = md.getColumnCount();
 		Object[] row;
@@ -49,7 +49,7 @@ public class ResultSetIn extends AbstractPipe<Null, BlockingBuffer<Object>> {
 			for (int i = 0; i < row.length; i++) {
 				row[i] = resultSet.getObject(i + 1);
 			}
-			out.put(row);
+			outputBuffer.put(row);
 		}
 	}
 }

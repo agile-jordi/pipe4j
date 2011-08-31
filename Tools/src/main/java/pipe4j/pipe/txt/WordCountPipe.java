@@ -25,7 +25,7 @@ import java.io.OutputStreamWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import pipe4j.pipe.AbstractPipe;
+import pipe4j.pipe.SimpleStreamPipe;
 
 /**
  * Counts lines, words, chars and bytes from {@link InputStream} and writes
@@ -33,15 +33,16 @@ import pipe4j.pipe.AbstractPipe;
  * 
  * @author bbennett
  */
-public class WordCountPipe extends AbstractPipe<InputStream, OutputStream> {
+public class WordCountPipe extends SimpleStreamPipe {
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
+	protected void run(InputStream inputStream, OutputStream outputStream)
+			throws Exception {
 		int totalBytes = 0;
 		int totalWords = 0;
 		int totalLines = 0;
 		int totalChars = 0;
 
-		CountingInputStream cis = new CountingInputStream(is);
+		CountingInputStream cis = new CountingInputStream(inputStream);
 		CountingInputStreamReader cisr = new CountingInputStreamReader(cis);
 		BufferedReader reader = new BufferedReader(cisr);
 
@@ -57,7 +58,7 @@ public class WordCountPipe extends AbstractPipe<InputStream, OutputStream> {
 
 		totalChars = cisr.getCount();
 		totalBytes = cis.getCount();
-		OutputStreamWriter writer = new OutputStreamWriter(os);
+		OutputStreamWriter writer = new OutputStreamWriter(outputStream);
 		writer.write(totalLines + "\t" + totalWords + "\t" + totalChars + "\t"
 				+ totalBytes);
 		writer.flush();

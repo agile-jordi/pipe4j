@@ -3,9 +3,9 @@ package pipe4j.core;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import pipe4j.pipe.StreamPipe;
+import pipe4j.pipe.SimpleStreamPipe;
 
-public class DelayedMiddlePipe extends StreamPipe {
+public class DelayedMiddlePipe extends SimpleStreamPipe {
 	private final long delayMilliseconds;
 
 	public DelayedMiddlePipe(long delayMilliseconds) {

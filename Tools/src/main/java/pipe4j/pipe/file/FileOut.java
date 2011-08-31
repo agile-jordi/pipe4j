@@ -23,14 +23,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import pipe4j.pipe.AbstractStreamPipeOut;
+import pipe4j.pipe.SimpleStreamDecoratorPipe;
 
 /**
  * Tail pipe writing data to a file.
  * 
  * @author bbennett
  */
-public class FileOut extends AbstractStreamPipeOut {
+public class FileOut extends SimpleStreamDecoratorPipe {
 	private File file;
 
 	public FileOut(String filepath) throws IOException {
@@ -42,7 +42,8 @@ public class FileOut extends AbstractStreamPipeOut {
 	}
 
 	@Override
-	protected OutputStream getOutputStream() throws Exception {
+	protected OutputStream getDecoratedOutputStream(OutputStream outputStream)
+			throws IOException {
 		if (file.exists()) {
 			if (file.isDirectory()) {
 				throw new IllegalArgumentException(

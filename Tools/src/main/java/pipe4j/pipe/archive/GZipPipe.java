@@ -18,27 +18,23 @@ package pipe4j.pipe.archive;
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
-import pipe4j.pipe.StreamPipe;
+import pipe4j.pipe.SimpleStreamPipe;
 
 /**
  * Applies gzip to stream.
  * 
  * @author bbennett
  */
-public class GZipPipe extends StreamPipe {
+public class GZipPipe extends SimpleStreamPipe {
 	@Override
-	public void run(InputStream is, OutputStream os) throws Exception {
-		super.run(is, os);
-		((GZIPOutputStream) os).finish();
-	}
-
-	@Override
-	public OutputStream decorateOut(OutputStream out) throws IOException {
-		return new GZIPOutputStream(out);
+	protected void run(InputStream inputStream, OutputStream outputStream)
+			throws Exception {
+		GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+		transfer(inputStream, gzipOutputStream);
+		gzipOutputStream.finish();
 	}
 }
