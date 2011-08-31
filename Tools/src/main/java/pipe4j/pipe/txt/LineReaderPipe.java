@@ -16,24 +16,27 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.core.builder;
+package pipe4j.pipe.txt;
 
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
-import pipe4j.core.CallablePipe;
-import pipe4j.core.executor.PipelineExecutor;
+import pipe4j.core.Connections;
+import pipe4j.core.connector.BlockingBuffer;
+import pipe4j.pipe.AbstractPipe;
 
-/**
- * Common interface for pipeline builders.
- * 
- * @author bbennett
- */
-public interface PipelineBuilder {
-	String DEFAULT_CONNECTION = null;
-	
-	/**
-	 * @return Runnable representation of pipeline.
-	 * @see PipelineExecutor
-	 */
-	List<CallablePipe> build();
+public class LineReaderPipe extends AbstractPipe {
+	@Override
+	public void run(Connections connections) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				connections.getIntputStream()));
+		
+		BlockingBuffer outputBuffer = connections.getOutputBuffer();
+		
+		String line;
+		while (!cancelled() && ((line = br.readLine()) != null)) {
+			outputBuffer.put(line);
+		}
+		br.close();
+	}
 }

@@ -65,11 +65,12 @@ public class NonLinearPipelineBuilder implements PipelineBuilder {
 	}
 
 	public void createStreamConnection(Pipe source, Pipe sink) {
-		createStreamConnection(source, sink, null);
+		createStreamConnection(source, DEFAULT_CONNECTION, sink,
+				DEFAULT_CONNECTION);
 	}
 
-	public void createStreamConnection(Pipe source, Pipe sink,
-			String connectionName) {
+	public void createStreamConnection(Pipe source,
+			String sourceConnectionName, Pipe sink, String sinkConnectionName) {
 		CallablePipe sourceCallable = addPipe(source);
 		CallablePipe sinkCallable = addPipe(sink);
 
@@ -82,37 +83,47 @@ public class NonLinearPipelineBuilder implements PipelineBuilder {
 		} catch (IOException wontHappen) {
 		}
 
-		if (connectionName == null) {
-			sinkCallable.getConnections().setInputStream(pis);
+		if (sourceConnectionName == DEFAULT_CONNECTION) {
 			sourceCallable.getConnections().setOutputStream(pos);
 		} else {
-			sinkCallable.getConnections().setNamedInputStream(connectionName,
-					pis);
 			sourceCallable.getConnections().setNamedOutputStream(
-					connectionName, pos);
+					sourceConnectionName, pos);
 		}
+
+		if (sinkConnectionName == DEFAULT_CONNECTION) {
+			sinkCallable.getConnections().setInputStream(pis);
+		} else {
+			sinkCallable.getConnections().setNamedInputStream(
+					sinkConnectionName, pis);
+		}
+
 	}
 
 	public void createObjectConnection(Pipe source, Pipe sink) {
-		createObjectConnection(source, sink, null);
+		createObjectConnection(source, DEFAULT_CONNECTION, sink,
+				DEFAULT_CONNECTION);
 	}
 
-	public void createObjectConnection(Pipe source, Pipe sink,
-			String connectionName) {
+	public void createObjectConnection(Pipe source,
+			String sourceConnectionName, Pipe sink, String sinkConnectionName) {
 		CallablePipe sourceCallable = addPipe(source);
 		CallablePipe sinkCallable = addPipe(sink);
 
 		BlockingBuffer buffer = debug ? new DebugBlockingBufferImpl()
 				: new BlockingBufferImpl();
 
-		if (connectionName == null) {
-			sinkCallable.getConnections().setInputBuffer(buffer);
+		if (sourceConnectionName == DEFAULT_CONNECTION) {
 			sourceCallable.getConnections().setOutputBuffer(buffer);
 		} else {
-			sinkCallable.getConnections().setNamedInputBuffer(connectionName,
-					buffer);
 			sourceCallable.getConnections().setNamedOutputBuffer(
-					connectionName, buffer);
+					sourceConnectionName, buffer);
+		}
+
+		if (sinkConnectionName == DEFAULT_CONNECTION) {
+			sinkCallable.getConnections().setInputBuffer(buffer);
+		} else {
+			sinkCallable.getConnections().setNamedInputBuffer(
+					sinkConnectionName, buffer);
 		}
 	}
 
