@@ -18,7 +18,7 @@
  */
 package pipe4j.core;
 
-public interface Result {
+public interface Result extends ExceptionWrapper {
 	enum Type {
 		SUCCESS, FAILURE
 	};
@@ -26,8 +26,6 @@ public interface Result {
 	Result.Type getType();
 
 	boolean hasException();
-
-	Exception getException();
 
 	long getEndTimestamp();
 

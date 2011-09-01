@@ -18,8 +18,6 @@
  */
 package pipe4j.pipe.compare;
 
-import java.io.IOException;
-
 import junit.framework.TestCase;
 import pipe4j.core.Pipe;
 import pipe4j.core.TestUtils;
@@ -45,7 +43,7 @@ public class TextLineComparatorPipeTest extends TestCase {
 		assertEquals("different", out.getString());
 	}
 
-	private StringOut compare(Pipe input1, Pipe input2) throws IOException {
+	private StringOut compare(Pipe input1, Pipe input2) throws Exception {
 		NonLinearPipelineBuilder builder = new NonLinearPipelineBuilder();
 
 		LineReaderPipe lineReaderOne = new LineReaderPipe();

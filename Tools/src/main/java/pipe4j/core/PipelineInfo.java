@@ -29,8 +29,6 @@ import pipe4j.core.Result.Type;
  */
 public class PipelineInfo {
 	private List<Result> resultList;
-	private Exception exception;
-	private boolean timeoutExceeded = false;
 	private Result.Type result = Type.SUCCESS;
 	private long startTimestamp;
 	private long endTimestamp;
@@ -50,26 +48,6 @@ public class PipelineInfo {
 
 	public List<Result> getResultList() {
 		return resultList;
-	}
-
-	public void setException(Exception exception) {
-		this.exception = exception;
-	}
-
-	public Exception getException() {
-		return exception;
-	}
-
-	public boolean hasError() {
-		return exception != null;
-	}
-
-	public void setTimeoutExceeded(boolean timeoutExceeded) {
-		this.timeoutExceeded = timeoutExceeded;
-	}
-
-	public boolean isTimeoutExceeded() {
-		return timeoutExceeded;
 	}
 
 	public long getStartTimestamp() {

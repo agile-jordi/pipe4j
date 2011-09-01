@@ -18,8 +18,6 @@
  */
 package pipe4j.pipe.archive;
 
-import java.io.File;
-
 import junit.framework.TestCase;
 import pipe4j.core.LinearPipeline;
 import pipe4j.core.TestUtils;
@@ -29,12 +27,6 @@ import pipe4j.pipe.string.StringOut;
 import pipe4j.pipe.util.DigestPipe;
 
 public class ZipTest extends TestCase {
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		new File(TestUtils.txtOutFilePath).delete();
-	}
-
 	public void testZip() throws Exception {
 		LinearPipeline.run(new FileIn(TestUtils.txtInFilePath), new ZipPipe(
 				"foo.txt"), new UnzipPipe(), new FileOut(

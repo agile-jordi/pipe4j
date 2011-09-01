@@ -33,7 +33,7 @@ import pipe4j.core.Result.Type;
 
 public class PipelineExecutor {
 	public static PipelineInfo execute(long timeoutMilliseconds,
-			List<CallablePipe> callables) {
+			List<CallablePipe> callables) throws PipelineExecutionException {
 		ExecutorService pool = Executors.newFixedThreadPool(callables.size());
 		List<Future<Result>> futureList = new ArrayList<Future<Result>>(
 				callables.size());
@@ -51,8 +51,8 @@ public class PipelineExecutor {
 		PipelineInfo info = new PipelineInfo(resultList);
 		info.setStartTimestamp(startTimestamp);
 		info.setEndTimestamp(endTimestamp);
-		info.setTimeoutExceeded(aborted);
 
+		PipelineExecutionException ex = new PipelineExecutionException();
 		for (Future<Result> future : futureList) {
 			try {
 				Result result = future.get();
@@ -61,10 +61,8 @@ public class PipelineExecutor {
 					info.setResult(Type.FAILURE);
 				}
 
-				// If exception happened, get first found
-				if (!info.hasError() && result.hasException()) {
-					info.setException(result.getException());
-				}
+				// Collect exceptions if any
+				ex.aggregate(result);
 				resultList.add(result);
 			} catch (InterruptedException e) {
 				// TODO
@@ -76,6 +74,11 @@ public class PipelineExecutor {
 
 		if (aborted) {
 			info.setResult(Type.FAILURE);
+		}
+
+		if (ex.hasExceptions()) {
+			ex.fillInStackTrace();
+			throw ex;
 		}
 
 		return info;

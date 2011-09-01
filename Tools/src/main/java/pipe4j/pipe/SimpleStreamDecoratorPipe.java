@@ -32,8 +32,38 @@ public class SimpleStreamDecoratorPipe extends SimpleStreamPipe {
 	@Override
 	protected void run(InputStream inputStream, OutputStream outputStream)
 			throws Exception {
-		transfer(getDecoratedInputStream(inputStream),
-				getDecoratedOutputStream(outputStream));
+		InputStream decoratedInputStream = getDecoratedInputStream(inputStream);
+		OutputStream decoratedOutputStream = getDecoratedOutputStream(outputStream);
+
+		transfer(decoratedInputStream, decoratedOutputStream);
+
+		Exception ex = null;
+		if (inputStream != decoratedInputStream) {
+			try {
+				decoratedInputStream.close();
+			} catch (Exception e) {
+				ex = e;
+			}
+		}
+
+		if (outputStream != decoratedOutputStream) {
+			try {
+				decoratedOutputStream.flush();
+			} catch (Exception e) {
+				if (ex == null)
+					ex = e;
+			}
+
+			try {
+				decoratedOutputStream.close();
+			} catch (Exception e) {
+				if (ex == null)
+					ex = e;
+			}
+		}
+
+		if (ex != null)
+			throw ex;
 	}
 
 	protected OutputStream getDecoratedOutputStream(OutputStream outputStream)

@@ -18,14 +18,18 @@
  */
 package pipe4j.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class ResultImpl implements Result {
 	private final Type type;
-	private Exception exception;
 	private long startTimestamp;
 	private long endTimestamp;
 	private long readWaitTimeMilliseconds;
 	private long writeWaitTimeMilliseconds;
 	private final String pipeName;
+	private List<Exception> exceptionList = new ArrayList<Exception>();
 
 	public ResultImpl(String pipeName, Type type) {
 		super();
@@ -40,16 +44,7 @@ public class ResultImpl implements Result {
 
 	@Override
 	public boolean hasException() {
-		return exception != null;
-	}
-
-	public void setException(Exception exception) {
-		this.exception = exception;
-	}
-
-	@Override
-	public Exception getException() {
-		return exception;
+		return !exceptionList.isEmpty();
 	}
 
 	@Override
@@ -91,5 +86,23 @@ public class ResultImpl implements Result {
 
 	public void setWriteWaitTimeMilliseconds(long writeWaitTimeMilliseconds) {
 		this.writeWaitTimeMilliseconds = writeWaitTimeMilliseconds;
+	}
+	
+	public void addException(Exception exception) {
+		this.exceptionList.add(exception);
+	}
+
+	public List<Exception> getExceptionList() {
+		return Collections.unmodifiableList(this.exceptionList);
+	}
+	
+	@Override
+	public void aggregate(ExceptionWrapper exceptionWrapper) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean hasExceptions() {
+		return !this.exceptionList.isEmpty();
 	}
 }

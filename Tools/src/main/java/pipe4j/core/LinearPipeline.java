@@ -21,6 +21,7 @@ package pipe4j.core;
 import java.util.List;
 
 import pipe4j.core.builder.LinearPipelineBuilder;
+import pipe4j.core.executor.PipelineExecutionException;
 import pipe4j.core.executor.PipelineExecutor;
 
 /**
@@ -29,16 +30,18 @@ import pipe4j.core.executor.PipelineExecutor;
  * @author bbennett
  */
 public class LinearPipeline {
-	public static PipelineInfo run(Pipe... pipeline) {
+	public static PipelineInfo run(Pipe... pipeline)
+			throws PipelineExecutionException {
 		return run(0, pipeline);
 	}
 
-	public static PipelineInfo run(long timeoutMilliseconds, Pipe... pipeline) {
+	public static PipelineInfo run(long timeoutMilliseconds, Pipe... pipeline)
+			throws PipelineExecutionException {
 		return run(timeoutMilliseconds, false, pipeline);
 	}
 
 	public static PipelineInfo run(long timeoutMilliseconds, boolean debug,
-			Pipe... pipeline) {
+			Pipe... pipeline) throws PipelineExecutionException {
 		List<CallablePipe> callables = new LinearPipelineBuilder(debug,
 				pipeline).build();
 

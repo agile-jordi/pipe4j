@@ -50,6 +50,10 @@ public class FileOut extends SimpleStreamDecoratorPipe {
 						"Destination cannot be a directory! Directory: "
 								+ this.file.getAbsolutePath());
 			}
+			if (!file.canWrite())
+				throw new IllegalArgumentException(
+						"No write privilege to delete existing file! File: "
+								+ this.file.getAbsolutePath());
 			if (!file.delete())
 				throw new IllegalArgumentException(
 						"Could not delete existing file! File: "

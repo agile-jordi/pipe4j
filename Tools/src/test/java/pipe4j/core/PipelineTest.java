@@ -21,6 +21,7 @@ package pipe4j.core;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import pipe4j.core.executor.PipelineExecutionException;
 import pipe4j.pipe.string.StringIn;
 import pipe4j.pipe.string.StringOut;
 
@@ -49,52 +50,62 @@ public class PipelineTest extends TestCase {
 
 	public void testSimple() throws Exception {
 		StringOut stringOut = new StringOut();
-		PipelineInfo info = LinearPipeline.run(new StringIn(sb.toString()),
-				new StreamPipe(), stringOut);
 
-		checkResults(info, null, false);
+		checkResults(null, 0, new StringIn(sb.toString()), new StreamPipe(),
+				stringOut);
 		assertEquals(sb.toString(), stringOut.getString());
 	}
 
 	public void testTimeout() throws Exception {
 		StringOut stringOut = new StringOut();
-		PipelineInfo info = LinearPipeline.run(1000,
+		checkResults(InterruptedException.class, 1000,
 				new StringIn(sb.toString()), new SleepPipe(5000), stringOut);
-		checkResults(info, InterruptedException.class, true);
 		assertEquals(sb.toString(), stringOut.getString());
 	}
 
 	public void testException() throws Exception {
-		PipelineInfo info = LinearPipeline.run(new StringIn(sb.toString()),
+		checkResults(IOException.class, 0, new StringIn(sb.toString()),
 				new StreamPipe(), new ExceptionPipe(), new StringOut());
-		checkResults(info, IOException.class, false);
 	}
 
 	public void testCloseReader() throws Exception {
-		PipelineInfo info = LinearPipeline.run(new StringIn(sb.toString()),
+		checkResults(IOException.class, 0, new StringIn(sb.toString()),
 				new StreamPipe(), new ReadClosingPipe(), new StringOut());
-		checkResults(info, IOException.class, false);
 	}
 
 	public void testCloseWriter() throws Exception {
-		PipelineInfo info = LinearPipeline.run(new StringIn(sb.toString()),
+		checkResults(IOException.class, 0, new StringIn(sb.toString()),
 				new WriteClosingPipe(), new StreamPipe(), new StringOut());
-		checkResults(info, IOException.class, false);
 	}
 
-	private void checkResults(PipelineInfo info,
-			Class<? extends Exception> clazz, boolean timeout) {
-		assertEquals(timeout, info.isTimeoutExceeded());
+	private void checkResults(Class<? extends Exception> clazz, long timeout,
+			Pipe... pipeline) {
+		PipelineExecutionException e = null;
+		try {
+			LinearPipeline.run(timeout, pipeline);
+		} catch (PipelineExecutionException ex) {
+			e = ex;
+		} catch (Exception ex) {
+			fail();
+		}
+
+		if (timeout > 0) {
+			assertNotNull(e);
+		}
+
 		if (clazz == null) {
 			assertFalse("No errors expected but got "
-					+ (info.getException() == null ? "null" : info
-							.getException().getClass().toString()),
-					info.hasError());
+					+ (e == null ? "null" : e.getClass().toString()), e != null);
 		} else {
-			assertTrue("Errors expected", info.hasError());
+			assertTrue("Errors expected", e != null);
+
+			boolean found = false;
+			for (Exception ex : e.getExceptionList()) {
+				if (ex.getClass().equals(clazz))
+					found = true;
+			}
 			assertTrue("Expected " + clazz.toString() + " but got "
-					+ info.getException().getClass().toString(), info
-					.getException().getClass().equals(clazz));
+					+ e.getClass().toString(), found);
 		}
 	}
 }
