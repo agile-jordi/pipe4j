@@ -102,7 +102,7 @@ public class JdbcTest extends TestCase {
 		ResultSet rs = conn.prepareStatement("select y from x").executeQuery();
 		PreparedStatement ps = conn.prepareStatement("insert into x values(?)");
 		LinearPipeline.run(new ResultSetIn(rs), new PreparedStatementOut(ps, 3,
-				true));
+				true, new GenericPreparedStatementObjectSetter()));
 		rs.close();
 		ps.close();
 		conn.rollback(); // all data should have been committed by
@@ -118,18 +118,21 @@ public class JdbcTest extends TestCase {
 
 	public void testInvalidCommitInterval() throws Exception {
 		try {
-			new PreparedStatementOut(null, 0, true);
+			new PreparedStatementOut(null, 0, true,
+					new GenericPreparedStatementObjectSetter());
 			fail("Should throw IllegalArgumentException!");
 		} catch (IllegalArgumentException expected) {
 		}
 
 		try {
-			new PreparedStatementOut(null, -1, true);
+			new PreparedStatementOut(null, -1, true,
+					new GenericPreparedStatementObjectSetter());
 			fail("Should throw IllegalArgumentException!");
 		} catch (IllegalArgumentException expected) {
 		}
 
-		new PreparedStatementOut(null, 1, true);
+		new PreparedStatementOut(null, 1, true,
+				new GenericPreparedStatementObjectSetter());
 	}
 
 	public void testNoAutoCommit() throws Exception {

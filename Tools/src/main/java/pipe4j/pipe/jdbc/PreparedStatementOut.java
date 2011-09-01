@@ -19,8 +19,6 @@
 package pipe4j.pipe.jdbc;
 
 import java.sql.PreparedStatement;
-import java.util.Collection;
-import java.util.Iterator;
 
 import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.pipe.SimpleObjectPipe;
@@ -34,22 +32,23 @@ public class PreparedStatementOut extends SimpleObjectPipe {
 	private final PreparedStatement preparedStatement;
 	private int batchSize = 10;
 	private boolean commitBatch = false;
+	private PreparedStatementObjectSetter setter = new GenericPreparedStatementObjectSetter();
 
 	public PreparedStatementOut(PreparedStatement preparedStatement) {
-		super();
 		this.preparedStatement = preparedStatement;
 	}
 
 	public PreparedStatementOut(PreparedStatement preparedStatement,
-			int commitInterval, boolean commitBatch) {
-		super();
-		this.preparedStatement = preparedStatement;
+			int commitInterval, boolean commitBatch,
+			PreparedStatementObjectSetter binder) {
+		this(preparedStatement);
 		if (commitInterval <= 0) {
 			throw new IllegalArgumentException(
 					"Commit interval must be higher than zero!");
 		}
 		this.batchSize = commitInterval;
 		this.commitBatch = commitBatch;
+		this.setter = binder;
 	}
 
 	@Override
@@ -58,20 +57,7 @@ public class PreparedStatementOut extends SimpleObjectPipe {
 		Object obj;
 		int count = 0;
 		while (!cancelled() && (obj = inputBuffer.take()) != null) {
-			if (obj instanceof Object[]) {
-				Object[] row = (Object[]) obj;
-				for (int i = 0; i < row.length; i++) {
-					this.preparedStatement.setObject(i + 1, row[i]);
-				}
-			} else if (obj instanceof Collection) {
-				Collection<?> row = (Collection<?>) obj;
-				int i = 1;
-				for (Iterator<?> iterator = row.iterator(); iterator.hasNext(); i++) {
-					this.preparedStatement.setObject(i, iterator.next());
-				}
-			} else {
-				this.preparedStatement.setObject(1, obj);
-			}
+			this.setter.setValues(this.preparedStatement, obj);
 			this.preparedStatement.addBatch();
 			if (++count % this.batchSize == 0) {
 				this.preparedStatement.executeBatch();

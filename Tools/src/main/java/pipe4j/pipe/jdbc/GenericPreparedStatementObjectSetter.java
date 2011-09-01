@@ -18,21 +18,33 @@
  */
 package pipe4j.pipe.jdbc;
 
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+import java.util.Collection;
 
 /**
- * Callback for transforming a ResultSet row into an object instance;
- *  
+ * Generic PreparedStatement setter.
+ * 
  * @author bbennett
  */
-public interface RecordTransformer {
-	/**
-	 * Read current row columns and return an object instance representing the values.
-	 * ResultSet.next() is expected to be called before this method.
-	 * 
-	 * @param resultSet ResultSet
-	 * @return Instance representing row values
-	 * @throws Exception on any error
-	 */
-	Object transformRecord(ResultSet resultSet) throws Exception;
+public class GenericPreparedStatementObjectSetter implements
+		PreparedStatementObjectSetter {
+
+	@Override
+	public void setValues(PreparedStatement preparedStatement, Object object)
+			throws Exception {
+		if (object instanceof Object[]) {
+			Object[] record = (Object[]) object;
+			for (int i = 0; i < record.length; i++) {
+				preparedStatement.setObject(i + 1, record[i]);
+			}
+		} else if (object instanceof Collection) {
+			Collection<?> row = (Collection<?>) object;
+			int i = 1;
+			for (Object o : row) {
+				preparedStatement.setObject(i, o);
+			}
+		} else {
+			preparedStatement.setObject(1, object);
+		}
+	}
 }
