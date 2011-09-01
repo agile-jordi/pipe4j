@@ -1,0 +1,46 @@
+What You Need
+
+    All you need to start using Pipe4j is to add the core jar file to your classpath (see download secion from website).
+    No configuration is required; Pipe4j does not use any configuration files.
+
+My First Pipeline
+
+	In this example we will emulate the following unix pipeline: 
+
+--------------------------------------------
+cat foo.txt | gzip -c > foo.gz
+--------------------------------------------
+
+    To achieve the same, our Pipe4j pipeline will be composed by three pipes: one to read the foo.txt file, one to gzip the stream and one to write the foo.gz file.
+    These three pipe implementations are shipped with Pipe4j, amongst many others. 
+    The implementation classes are: FileIn, GZipPipe and FileOut. The sample below shows how to build and run this pipeline using the LinearPipeline facade class:
+
+--------------------------------------------
+LinearPipeline.run(
+    new FileIn("foo.txt"), 
+    new GZipPipe(),
+    new FileOut("foo.gz"));
+--------------------------------------------
+
+    The following steps were performed in this example:
+    
+    [[1]] The three required pipe implementations where instantiated and passed to the facade
+    
+    [[2]] The facade called LinearPipelineBuilder to assemble a list of java.util.concurrent.Callable instances
+    
+    [[3]] The facade called PipelineExecutor, passing the list of Callable instances
+    
+    [[4]] The executor started three thread to run each Callable instance
+    
+    [[5]] Each thread executed a Callable instance, which is a wrapper that delegates work to the actual pipe doing some setup and cleanup before and after
+        
+    [[6]] Each pipe implementation is executed, reading data from the previous pipe, doing some work and writing data to the next pipe
+        
+    [[7]] The executor waited for all threads to complete
+    
+    [[8]] The executor returned a PipelineInfo instance with details of the execution, which in this example was ignored
+
+    []
+
+    As you may have guessed, the pipes communicated with each other through PipedInputStream and PipedOutputStream connected pairs.
+    The FileIn and FileOut pipes are the head and tail of the pipeline, so FileIn reads from an actual file and is not connected to a previous pipe, and FileOut writes to an actual file and is not connect to a following pipe.
