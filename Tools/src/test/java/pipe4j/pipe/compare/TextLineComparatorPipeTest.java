@@ -16,38 +16,54 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.core;
+package pipe4j.pipe.compare;
+
+import java.io.IOException;
 
 import junit.framework.TestCase;
+import pipe4j.core.Pipe;
+import pipe4j.core.TestUtils;
 import pipe4j.core.builder.NonLinearPipelineBuilder;
 import pipe4j.core.builder.PipelineBuilder;
 import pipe4j.core.executor.PipelineExecutor;
-import pipe4j.pipe.compare.TextLineComparatorPipe;
 import pipe4j.pipe.file.FileIn;
+import pipe4j.pipe.string.StringIn;
 import pipe4j.pipe.string.StringOut;
 import pipe4j.pipe.txt.LineReaderPipe;
 
-public class NonLinearPipelineTest extends TestCase {
-	public void testCompareCheckSum() throws Exception {
+public class TextLineComparatorPipeTest extends TestCase {
+	public void testCompareIdentical() throws Exception {
+		StringOut out = compare(new FileIn(TestUtils.txtInFilePath),
+				new FileIn(TestUtils.txtInFilePath));
+		assertEquals("identical", out.getString());
+	}
+
+	public void testCompareIDifferent() throws Exception {
+		StringIn input1 = new StringIn("foo\nfoo");
+		StringIn input2 = new StringIn("foo\nbar");
+		StringOut out = compare(input1, input2);
+		assertEquals("different", out.getString());
+	}
+
+	private StringOut compare(Pipe input1, Pipe input2) throws IOException {
 		NonLinearPipelineBuilder builder = new NonLinearPipelineBuilder();
-		
-		FileIn fileOne = new FileIn(TestUtils.txtInFilePath);
-		FileIn fileTwo = new FileIn(TestUtils.txtInFilePath);
+
 		LineReaderPipe lineReaderOne = new LineReaderPipe();
 		LineReaderPipe lineReaderTwo = new LineReaderPipe();
 		TextLineComparatorPipe comparator = new TextLineComparatorPipe();
 		StringOut out = new StringOut();
-		
-		builder.createStreamConnection(fileOne, lineReaderOne);
-		builder.createStreamConnection(fileTwo, lineReaderTwo);
-		
-		builder.createObjectConnection(lineReaderOne, PipelineBuilder.DEFAULT_CONNECTION, comparator, "one");
-		builder.createObjectConnection(lineReaderTwo, PipelineBuilder.DEFAULT_CONNECTION, comparator, "two");
-		
+
+		builder.createStreamConnection(input1, lineReaderOne);
+		builder.createStreamConnection(input2, lineReaderTwo);
+
+		builder.createObjectConnection(lineReaderOne,
+				PipelineBuilder.DEFAULT_CONNECTION, comparator, "one");
+		builder.createObjectConnection(lineReaderTwo,
+				PipelineBuilder.DEFAULT_CONNECTION, comparator, "two");
+
 		builder.createStreamConnection(comparator, out);
-		
+
 		PipelineExecutor.execute(0, builder.build());
-		
-		assertEquals("identical", out.getString());
+		return out;
 	}
 }

@@ -19,33 +19,27 @@
 package pipe4j.pipe.jdbc;
 
 import java.sql.ResultSet;
-
-import pipe4j.core.connector.BlockingBuffer;
-import pipe4j.pipe.SimpleObjectPipe;
+import java.sql.SQLException;
 
 /**
- * Feeds pipeline with objects read from {@link ResultSet}.
+ * Generic transformer that returns an object array with all record objects.
  * 
  * @author bbennett
  */
-public class ResultSetIn extends SimpleObjectPipe {
-	private final ResultSet resultSet;
-	private RecordTransformer recordTransformer;
-
-	public ResultSetIn(ResultSet resultSet) {
-		this(resultSet, new ObjectArrayRecordTransformer());
-	}
-
-	public ResultSetIn(ResultSet resultSet, RecordTransformer recordTransformer) {
-		this.resultSet = resultSet;
-		this.recordTransformer = recordTransformer;
-	}
+public class ObjectArrayRecordTransformer implements RecordTransformer {
+	private int columnCount = -1;
 
 	@Override
-	protected void run(BlockingBuffer inputBuffer, BlockingBuffer outputBuffer)
-			throws Exception {
-		while (!cancelled() && resultSet.next()) {
-			outputBuffer.put(recordTransformer.transformRecord(resultSet));
+	public Object transformRecord(ResultSet resultSet) throws SQLException {
+		if (this.columnCount <= 0) {
+			this.columnCount = resultSet.getMetaData().getColumnCount();
 		}
+
+		Object[] record = new Object[columnCount];
+		for (int i = 0; i < record.length; i++) {
+			record[i] = resultSet.getObject(i + 1);
+		}
+
+		return record;
 	}
 }
