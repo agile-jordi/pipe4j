@@ -32,7 +32,7 @@ import pipe4j.core.Connections;
 public abstract class SimpleStreamPipe extends AbstractPipe {
 	@Override
 	public void run(Connections connections) throws Exception {
-		run(connections.getIntputStream(), connections.getOutputStream());
+		run(connections.getInputStream(), connections.getOutputStream());
 	}
 
 	protected abstract void run(InputStream inputStream,

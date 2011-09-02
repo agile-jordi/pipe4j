@@ -54,8 +54,8 @@ public class LinearPipelineBuilder implements PipelineBuilder {
 		for (Pipe pipe : pipeline) {
 			if (pipe == pipeline[0])
 				continue;
-			builder.createObjectConnection(previous, pipe);
-			builder.createStreamConnection(previous, pipe);
+			builder.createDefaultObjectConnection(previous, pipe);
+			builder.createDefaultStreamConnection(previous, pipe);
 			previous = pipe;
 		}
 

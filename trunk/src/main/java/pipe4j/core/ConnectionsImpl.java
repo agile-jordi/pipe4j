@@ -57,7 +57,7 @@ public class ConnectionsImpl implements Connections {
 	}
 
 	@Override
-	public InputStream getIntputStream() {
+	public InputStream getInputStream() {
 		return getNamedInputStream(DEFAULT_STREAM);
 	}
 

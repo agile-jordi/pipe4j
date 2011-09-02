@@ -49,8 +49,8 @@ public class TextLineComparatorPipeTest extends TestCase {
 		LineReaderPipe lineReaderOne = new LineReaderPipe();
 		LineReaderPipe lineReaderTwo = new LineReaderPipe();
 
-		builder.createStreamConnection(input1, lineReaderOne);
-		builder.createStreamConnection(input2, lineReaderTwo);
+		builder.createDefaultStreamConnection(input1, lineReaderOne);
+		builder.createDefaultStreamConnection(input2, lineReaderTwo);
 
 		TextLineComparatorPipe comparator = new TextLineComparatorPipe();
 		builder.createObjectConnection(lineReaderOne,
@@ -61,7 +61,7 @@ public class TextLineComparatorPipeTest extends TestCase {
 				TextLineComparatorPipe.INPUT_TWO);
 
 		StringOut out = new StringOut();
-		builder.createStreamConnection(comparator, out);
+		builder.createDefaultStreamConnection(comparator, out);
 
 		PipelineExecutor.execute(0, builder.build());
 		return out;

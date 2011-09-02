@@ -29,7 +29,7 @@ public class LineReaderPipe extends AbstractPipe {
 	@Override
 	public void run(Connections connections) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(
-				connections.getIntputStream()));
+				connections.getInputStream()));
 		
 		BlockingBuffer outputBuffer = connections.getOutputBuffer();
 		

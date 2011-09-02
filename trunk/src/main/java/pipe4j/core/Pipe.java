@@ -43,7 +43,9 @@ public interface Pipe {
 	void run(Connections connections) throws Exception;
 
 	/**
-	 * Request execution to be canceled.
+	 * Requests that pipe stops execution, gracefully returning from the "run"
+	 * method and cleaning and resources it may have opened, except for the
+	 * connections managed by the Connections instance.
 	 */
 	void cancel();
 }
