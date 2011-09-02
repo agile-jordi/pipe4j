@@ -24,6 +24,11 @@ import java.util.Collection;
 import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.pipe.SimpleObjectPipe;
 
+/**
+ * Simple adaptor to capture objects produced by a pipeline into a collection.
+ * 
+ * @author bbennett
+ */
 public class CollectionOutAdaptor extends SimpleObjectPipe {
 	private Collection<Object> collection = new ArrayList<Object>();
 

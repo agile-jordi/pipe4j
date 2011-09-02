@@ -25,10 +25,13 @@ import pipe4j.core.connector.BlockingBuffer;
 import pipe4j.pipe.AbstractPipe;
 
 public class TextLineComparatorPipe extends AbstractPipe {
+	public static final String INPUT_TWO = "inputTwo";
+	public static final String INPUT_ONE = "inputOne";
+
 	@Override
 	public void run(Connections connections) throws Exception {
-		BlockingBuffer inputBufferOne = connections.getNamedInputBuffer("one");
-		BlockingBuffer inputBufferTwo = connections.getNamedInputBuffer("two");
+		BlockingBuffer inputBufferOne = connections.getNamedInputBuffer(INPUT_ONE);
+		BlockingBuffer inputBufferTwo = connections.getNamedInputBuffer(INPUT_TWO);
 
 		PrintWriter pw = new PrintWriter(connections.getOutputStream(), true);
 		String lineOne = (String) inputBufferOne.take();

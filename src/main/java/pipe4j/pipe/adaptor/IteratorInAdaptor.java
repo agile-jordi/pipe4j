@@ -16,41 +16,31 @@
  * You should have received a copy of the Lesser GNU General Public License
  * along with Pipe4j. If not, see <http://www.gnu.org/licenses/>.
  */
-package pipe4j.core.connector;
+package pipe4j.pipe.adaptor;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.zip.GZIPOutputStream;
+import java.util.Iterator;
+
+import pipe4j.core.connector.BlockingBuffer;
+import pipe4j.pipe.SimpleObjectPipe;
 
 /**
- * Used by pipes that need to wrap input or output. Example: wrapping the
- * {@link OutputStream} with a {@link GZIPOutputStream}.
+ * Simple adaptor to feed a pipeline with elements returned by a provided
+ * Iterator.
  * 
  * @author bbennett
- * 
- * @param <I>
- *            Pipe input
- * @param <O>
- *            Pipe output
  */
-public interface ConnectorDecorator<I, O> {
-	/**
-	 * Decorate the pipe input.
-	 * 
-	 * @param in
-	 *            Pipe input
-	 * @return decorated input
-	 * @throws IOException
-	 */
-	I decorateIn(I in) throws IOException;
+public class IteratorInAdaptor extends SimpleObjectPipe {
+	private final Iterator<?> iterator;
 
-	/**
-	 * Decorate the pipe output.
-	 * 
-	 * @param out
-	 *            Pipe output
-	 * @return decorated output
-	 * @throws IOException
-	 */
-	O decorateOut(O out) throws IOException;
+	public IteratorInAdaptor(Iterator<?> iterator) {
+		this.iterator = iterator;
+	}
+
+	@Override
+	protected void run(BlockingBuffer inputBuffer, BlockingBuffer outputBuffer)
+			throws Exception {
+		while (this.iterator.hasNext()) {
+			outputBuffer.put(iterator.next());
+		}
+	}
 }
