@@ -1,46 +1,237 @@
+Table of Contents
+
+    * {{{What_You_Need}What You Need}}
+    
+    * {{{My_First_Pipeline}My First Pipeline}}
+    
+    * {{{Object_Pipelines}Object Pipelines}}
+    
+    * {{{Verifying_Results}Verifying Results}}
+    
+    * {{{Timeout_and_Aborts}Timeout and Aborts}}
+    
+    * {{{Non-Linear_Pipelines}Non-Linear Pipelines}}
+    
+    * {{Performance}}
+
 What You Need
 
-    All you need to start using Pipe4j is to add the core jar file to your classpath (see download secion from website).
-    No configuration is required; Pipe4j does not use any configuration files.
+    All you need to start using Pipe4j is to add the core jar file to your 
+    classpath (see download secion from website). No configuration is 
+    required; Pipe4j does not use any configuration files.
 
 My First Pipeline
 
 	In this example we will emulate the following unix pipeline: 
 
---------------------------------------------
-cat foo.txt | gzip -c > foo.gz
---------------------------------------------
+=======================================================================
 
-    To achieve the same, our Pipe4j pipeline will be composed by three pipes: one to read the foo.txt file, one to gzip the stream and one to write the foo.gz file.
-    These three pipe implementations are shipped with Pipe4j, amongst many others. 
-    The implementation classes are: FileIn, GZipPipe and FileOut. The sample below shows how to build and run this pipeline using the LinearPipeline facade class:
+-----------------------------------------------------------------------
+    cat foo.txt | gzip -c > foo.gz
+-----------------------------------------------------------------------
 
---------------------------------------------
-LinearPipeline.run(
-    new FileIn("foo.txt"), 
-    new GZipPipe(),
-    new FileOut("foo.gz"));
---------------------------------------------
+=======================================================================
+
+    To achieve the same, our Pipe4j pipeline will be composed by three pipes: 
+    one to read the foo.txt file, one to gzip the stream and one to write the 
+    foo.gz file. These three pipe implementations are shipped with Pipe4j, 
+    amongst many others. The implementation classes are: FileIn, GZipPipe and 
+    FileOut. The sample below shows how to build and run this pipeline using 
+    the LinearPipeline facade class:
+
+=======================================================================
+
+-----------------------------------------------------------------------
+    LinearPipeline.run(
+        new FileIn("foo.txt"), 
+        new GZipPipe(),
+        new FileOut("foo.gz"));
+-----------------------------------------------------------------------
+
+=======================================================================
 
     The following steps were performed in this example:
     
-    [[1]] The three required pipe implementations where instantiated and passed to the facade
+    [[1]] The three required pipe implementations where instantiated and passed 
+    to the facade
     
-    [[2]] The facade called LinearPipelineBuilder to assemble a list of java.util.concurrent.Callable instances
+    [[2]] The facade called LinearPipelineBuilder to assemble a list of 
+    java.util.concurrent.Callable instances
     
-    [[3]] The facade called PipelineExecutor, passing the list of Callable instances
+    [[3]] The facade called PipelineExecutor, passing the list of Callable 
+    instances
     
     [[4]] The executor started three thread to run each Callable instance
     
-    [[5]] Each thread executed a Callable instance, which is a wrapper that delegates work to the actual pipe doing some setup and cleanup before and after
+    [[5]] Each thread executed a Callable instance, which is a wrapper that 
+    delegates work to the actual pipe doing some setup and cleanup before and after
         
-    [[6]] Each pipe implementation is executed, reading data from the previous pipe, doing some work and writing data to the next pipe
+    [[6]] Each pipe implementation is executed, reading data from the previous pipe, 
+    doing some work and writing data to the next pipe
         
     [[7]] The executor waited for all threads to complete
     
-    [[8]] The executor returned a PipelineInfo instance with details of the execution, which in this example was ignored
+    [[8]] The executor returned a PipelineInfo instance with details of the 
+    execution, which in this example was ignored
 
     []
 
-    As you may have guessed, the pipes communicated with each other through PipedInputStream and PipedOutputStream connected pairs.
-    The FileIn and FileOut pipes are the head and tail of the pipeline, so FileIn reads from an actual file and is not connected to a previous pipe, and FileOut writes to an actual file and is not connect to a following pipe.
+    As you may have guessed, the pipes communicated with each other through 
+    PipedInputStream and PipedOutputStream connected pairs. The FileIn and 
+    FileOut pipes are the head and tail of the pipeline, so FileIn reads 
+    from an actual file and is not connected to a previous pipe, and FileOut 
+    writes to an actual file and is not connect to a following pipe.
+
+Object Pipelines
+
+    Beside byte streams, pipes can also communicate by passing java objects 
+    around. Instead of InputStream and OutputStream, communication is handled 
+    by an instance of the BlockingBuffer interface. This is a very simple 
+    interface only two methods: "put" and "take". The "put" method is called 
+    to add (write) an object to the buffer, blocking the calling thread if the 
+    buffer is full. The "take" method on the other hand is called to remove 
+    (read) an object from the buffer, blocking the calling thread if the buffer 
+    happens to be empty. In the follow example a collection of objects will be 
+    written into a database table:
+
+=======================================================================
+
+-----------------------------------------------------------------------
+    PreparedStatement ps = conn.prepareStatement("insert into x values(?)");
+
+    Collection<Integer> coll = new ArrayList<Integer>();
+    for (int i = 1; i <= 10; i++) {
+	    coll.add(i);
+    }
+
+    LinearPipeline.run(new CollectionInAdaptor(coll),
+		new PreparedStatementOut(ps));
+		
+    ps.close();
+-----------------------------------------------------------------------
+
+=======================================================================
+
+    The steps performed are the same as the first example. What is different is 
+    the way the values (in this case Integer instances) were communicated 
+    between pipes. As serializing and deserializing the Integer instances would 
+    be costly, we prefer to pass forward the object references. The 
+    CollectionInAdaptor pipe is a head pipe, feeding the pipeline with the 
+    contents of the provided collection. For each object returned by the 
+    collection's Iterator a call to BlobkingBuffer.put(Object) is made.
+    The PreparedStatementOut pipe is a tail pipe, sinking the data produced by the 
+    pipeline to a database. This pipe will try to read as much objects as possible, 
+    calling BlockingBuffer.take(), and bind them to the provided prepared statement.
+    The statement will be executed in batches and by the end of the pipeline 
+    execution all the integers from the provided collection will be inserted into 
+    table "x".
+
+Verifying Results
+
+    TODO
+
+Timeout and Aborts
+
+    TODO
+
+Non-Linear Pipelines
+
+    All examples so far involved building and executing linear pipelines, where each 
+    pipe reads from the previous pipe and writes to the next pipe. Linear pipelines 
+    are structured as arrays or lists of pipes, where the flow of data is implicit 
+    by the ordered nature of the pipeline. Non-Linear pipelines on the other hand are 
+    structured like networks, where nodes can be connected to any number of other 
+    nodes. If one needs to run pipes that read and/or write from/to more that one pipe 
+    then non-linear pipelines is the way to go. These are flexible enough to model any 
+    sort of pipeline, including linear pipelines. The LinearPipeline facade delegates 
+    the building of the pipeline to LinearPipelineBuilder, which in turn delegates to 
+    NonLinearPipelineBuilder. The net result is a network of pipes that look like a 
+    ordered list of pipes.
+
+    The following example is a simple usage of a non-linear pipeline. Suppose we need 
+    to compare two text files line by line and provide a result in the end saying if 
+    the two files are "identical" or "different". This pipeline must be fed by two 
+    files, therefore it needs two head pipes.
+
+=======================================================================  
+  
+-----------------------------------------------------------------------
+    NonLinearPipelineBuilder builder = new NonLinearPipelineBuilder();
+
+    // The two heads of our pipeline
+    FileIn input1 = new FileIn("file1.txt");
+    FileIn input2 = new FileIn("file2.txt");
+
+    // Pipes to read stream into lines (String)
+    LineReaderPipe lineReaderOne = new LineReaderPipe();
+    LineReaderPipe lineReaderTwo = new LineReaderPipe();
+
+    // Add the file inputs and the line readers
+    // The pairs will be connected via InputStream and OutputStream pairs
+    builder.createStreamConnection(input1, lineReaderOne);
+    builder.createStreamConnection(input2, lineReaderTwo);
+
+    // Pipe to compare two String instances and write result
+    TextLineComparatorPipe comparator = new TextLineComparatorPipe();
+	
+    // Connect line readers to comparator pipe
+    builder.createObjectConnection(lineReaderOne, PipelineBuilder.DEFAULT_CONNECTION, comparator, TextLineComparatorPipe.INPUT_ONE);
+    builder.createObjectConnection(lineReaderTwo, PipelineBuilder.DEFAULT_CONNECTION, comparator, TextLineComparatorPipe.INPUT_TWO);
+
+    // Placeholder for result ("different" or "identical")
+    StringOut out = new StringOut();
+    builder.createStreamConnection(comparator, out);
+
+    // Ask builder for final representation of the pipeline and execute it!
+    PipelineExecutor.execute(0, builder.build());
+	
+    // Result was written to StringOut
+    System.out.println(out.getString());
+-----------------------------------------------------------------------
+
+=======================================================================
+
+Performance
+
+    Now, what was the advantage of writing this text comparison functionality using a 
+    pipeline?
+    
+    First you shouldn't have memory issues as you are processing data in chunks as 
+    opposed to loading the whole file in memory. The total memory used by a pipeline 
+    is usually the sum of the buffers (1 kilobyte for byte streams, undefined for object 
+    buffers) plus memory being used by each pipe.
+    
+    Second the pipeline performs faster because each pipe runs in parallel and has the 
+    illusion that the input data is promptly available to be read, and the next pipe is 
+    promptly available to receive the result. Once a pipeline is full (all pipes are 
+    processing some data and not waiting to read input), it is expected that data is 
+    produced at the tail of the pipeline in a speed matching the slowest pipe of the 
+    pipeline. In detail:
+
+    [[1]] The two files are being continuously read in parallel, only waiting if the 
+    line reader pipes are not fast enough to consume the data;
+
+    [[2]] The line readers are continuously transforming bytes read from files into 
+    String objects, only waiting if files can't be read fast enough or if the comparator 
+    pipe can't consume the Strings fast enough;
+
+    [[3]] The comparator pipe is continuously comparing the String instances, only 
+    waiting if the line reader pipes can't produce Strings fast enough.
+
+* When to use pipelines
+
+    If it is possible to divide a task into separate pieces of code, then the overhead 
+    introduced by running pipes in parallel will payoff if:
+
+    [[1]] Processing considerable amounts of data
+    
+    [[2]] Parallelizing CPU bound pipes in a multi core machine
+
+* When not to
+
+    Apart from not being able to divide a task into separate pieces of code, the overhead 
+    introduced by running pipes in parallel will not payoff if:
+
+    [[1]] Processing small amount of data 
+
+    [[2]] Parallelizing CPU bound pipes in a single core machine

@@ -19,24 +19,14 @@
 package pipe4j.pipe.adaptor;
 
 import java.util.Collection;
-import java.util.Iterator;
 
-import pipe4j.core.connector.BlockingBuffer;
-import pipe4j.pipe.SimpleObjectPipe;
-
-public class CollectionInAdaptor extends SimpleObjectPipe {
-	private final Collection<?> collection;
-
+/**
+ * Simple adaptor to feed a pipeline with elements from a provided collection.
+ * 
+ * @author bbennett
+ */
+public class CollectionInAdaptor extends IteratorInAdaptor {
 	public CollectionInAdaptor(Collection<?> collection) {
-		this.collection = collection;
-	}
-
-	@Override
-	protected void run(BlockingBuffer inputBuffer, BlockingBuffer outputBuffer)
-			throws Exception {
-		for (Iterator<?> iterator = collection.iterator(); !cancelled()
-				&& iterator.hasNext();) {
-			outputBuffer.put(iterator.next());
-		}
+		super(collection.iterator());
 	}
 }

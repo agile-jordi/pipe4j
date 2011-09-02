@@ -48,17 +48,19 @@ public class TextLineComparatorPipeTest extends TestCase {
 
 		LineReaderPipe lineReaderOne = new LineReaderPipe();
 		LineReaderPipe lineReaderTwo = new LineReaderPipe();
-		TextLineComparatorPipe comparator = new TextLineComparatorPipe();
-		StringOut out = new StringOut();
 
 		builder.createStreamConnection(input1, lineReaderOne);
 		builder.createStreamConnection(input2, lineReaderTwo);
 
+		TextLineComparatorPipe comparator = new TextLineComparatorPipe();
 		builder.createObjectConnection(lineReaderOne,
-				PipelineBuilder.DEFAULT_CONNECTION, comparator, "one");
+				PipelineBuilder.DEFAULT_CONNECTION, comparator,
+				TextLineComparatorPipe.INPUT_ONE);
 		builder.createObjectConnection(lineReaderTwo,
-				PipelineBuilder.DEFAULT_CONNECTION, comparator, "two");
+				PipelineBuilder.DEFAULT_CONNECTION, comparator,
+				TextLineComparatorPipe.INPUT_TWO);
 
+		StringOut out = new StringOut();
 		builder.createStreamConnection(comparator, out);
 
 		PipelineExecutor.execute(0, builder.build());
