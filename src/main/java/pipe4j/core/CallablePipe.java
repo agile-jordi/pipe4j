@@ -78,9 +78,9 @@ public class CallablePipe implements Callable<Result> {
 			long writeWaitTimeMilliseconds = result
 					.getWriteWaitTimeMilliseconds();
 
-			if (connections.getIntputStream() instanceof Profiled) {
+			if (connections.getInputStream() instanceof Profiled) {
 				readWaitTimeMilliseconds += ((Profiled) connections
-						.getIntputStream()).getReadWaitTimeMilliseconds();
+						.getInputStream()).getReadWaitTimeMilliseconds();
 			}
 
 			if (connections.getInputBuffer() instanceof Profiled) {

@@ -49,7 +49,7 @@ public class XMLEventPipe extends AbstractPipe {
 	@Override
 	public void run(Connections connections) throws Exception {
 		XMLEventReader reader = factory.createXMLEventReader(connections
-				.getIntputStream());
+				.getInputStream());
 		BlockingBuffer outputBuffer = connections.getOutputBuffer();
 		while (!cancelled() && reader.hasNext()) {
 			outputBuffer.put(reader.nextEvent());

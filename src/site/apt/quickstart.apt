@@ -1,4 +1,6 @@
-Table of Contents
+Pipe4j Quickstart
+
+* Table of Contents
 
     * {{{What_You_Need}What You Need}}
     
@@ -11,6 +13,8 @@ Table of Contents
     * {{{Timeout_and_Aborts}Timeout and Aborts}}
     
     * {{{Non-Linear_Pipelines}Non-Linear Pipelines}}
+    
+    * {{{Writing_Your_Own_Pipe}Writing Your Own Pipe}}
     
     * {{Performance}}
 
@@ -191,6 +195,163 @@ Non-Linear Pipelines
 
 =======================================================================
 
+* Building Non-Linear Pipelines
+
+    The NonLinearPipelineBuilder class is the proper implementation of the PipelineBuilder 
+    interface for building non-linear pipelines. The semantic is to add connected pairs
+    instead of pipes alone. When a pair is added, both ends will be added as well, if not 
+    already contained in the pipeline. Connected pairs can be added by calling any of
+    the following methods:
+    
+    * createDefaultObjectConnection(Pipe source, Pipe sink)
+    
+      Connects source and sink through a BlockingBuffer. The buffer will be set as source's 
+      default output and sink's default input.
+    
+    * createObjectConnection(Pipe source, String sourceConnectionName, Pipe sink, String 
+    sinkConnectionName)
+
+      Connects source and sink through a BlockingBuffer. The buffer will be set as source's
+      output buffer named after the sourceConnectionName parameter, and sink's input
+      buffer named after the sinkConnectionName parameter. To find more information on
+      named connections check the {{{Named_Connections}Named Connections}} section.
+
+    * createDefaultStreamConnection(Pipe source, Pipe sink)
+    
+      Connects source and sink through a pair of InputStream and OutputStream. The 
+      OutputStream will be set as source's default output and the InputStream as sink's 
+      default input.
+      
+    * createStreamConnection(Pipe source, String sourceConnectionName, Pipe sink, String 
+    sinkConnectionName)
+
+      Connects source and sink through a pair of InputStream and OutputStream. The 
+      OutputStream will be set as source's output stream named after the 
+      sourceConnectionName parameter, and sink's input stream named after the 
+      sinkConnectionName parameter. To find more information on named connections check 
+      the {{{Named_Connections}Named Connections}} section.
+
+    []
+    The constant PipelineBuilder.DEFAULT_CONNECTION signals that the connection should
+    be bound as default input or output. 
+
+* Named Connections
+
+    The Pipe interface - implemented by all pipes - declares a "run" method which
+    received one single argument: an instance of the Connections interface. The
+    Connections interface is responsible for managing all connections used by the pipe,
+    offering bind and lookup of connections based on their names via 
+    getNamedxxx(String name) and setNamedxxx(String name, xxxx) methods.
+
+    If a new pipe must implemented and it is required that it can communicate with
+    multiple pipes, then it should extend from AbstractPipe and lookup for the
+    required connections using the Connections instance. Connections allows to
+    bind and lookup connections based on their names via getNamedxxx(String name) and
+    setNamedxxx(String name, xxxx) methods. Please check 
+    {{{Writing_Your_Own_Pipe}Writing Your Own Pipe}} for more details.
+
+Writing Your Own Pipe
+
+    All pipes must implement the Pipe interface, which is simple and declared only
+    two methods:
+    
+    * cancel()
+    
+      Requests that pipe stops execution, gracefully returning from the "run" method
+      and cleaning and resources it may have opened, except for the connections
+      managed by the Connections instance.
+    
+    * run(Connections connections)
+
+      Execute pipe, possibly reading and writing to other pipes. Receives an instance
+      of the Connections interface as parameter. The Connections interface is responsible 
+      for managing all connections used by the associated pipe.
+
+    It is recommended that all pipe implementations extend from the AbstractPipe abstract
+    class, which handles cancel requests. On a linear pipeline, pipes will only use the 
+    default input and output connections, which can be retrieved by calling Connections 
+    methods "getOutputStream", "getInputStream", "getOutputBuffer" and "getInputBuffer". 
+    For that matter it is more convenient to write your own pipes by extending either 
+    SimpleStreamPipe or SimpleObjectPipe abstract classes, which declare abstract "run" 
+    methods receiving only the default connections as parameters.
+
+    Pipe implementations usually involve a main loop, where the pipe tries to read the
+    next chunk of the input stream or new object from the input buffer. It is highly
+    recommended that this main loop also checks if cancel was requested, by calling
+    AbstractPipe.cancelled() method. A pipeline execution may be requested to be aborted
+    or it may timeout. The PipelineExecutor will do its best, trying to interrupt the
+    pipe threads, but it is safer if all pipe implementations respect the cancel
+    request and exit gracefully.
+    
+    Sample stream pipe implementation:
+    
+=======================================================================  
+  
+-----------------------------------------------------------------------
+    public class SampleStreamPipe extends SimpleStreamPipe {
+        @Override
+        protected void run(InputStream inputStream, OutputStream outputStream) throws Exception {
+            byte[] buffer = new byte[8192];
+            while (!cancelled() && (numRead = inputStream.read(buffer)) != -1) {
+                // Do some work and write data to outputStream
+            }
+        }
+    }
+-----------------------------------------------------------------------
+
+=======================================================================
+
+    Sample object pipe implementation:
+
+=======================================================================  
+  
+-----------------------------------------------------------------------
+    public class PreparedStatementOut extends SimpleObjectPipe {
+        @Override
+        protected void run(BlockingBuffer inputBuffer, BlockingBuffer outputBuffer) throws Exception {
+            Object obj;
+            while (!cancelled() && (obj = inputBuffer.take()) != null) {
+                // Do some work and put an object into outputBuffer
+            }
+        }
+    }
+-----------------------------------------------------------------------
+
+=======================================================================
+
+    If a new pipe must implemented and it is required that it can communicate with
+    multiple pipes, then it should extend from AbstractPipe alone and lookup for the
+    required connections using the Connections instance. To find more information on named 
+    connections check the {{{Named_Connections}Named Connections}} section.
+    
+    Sample pipe with multiple connections:
+
+=======================================================================  
+  
+-----------------------------------------------------------------------
+    public class TextLineComparatorPipe extends AbstractPipe {
+        @Override
+        public void run(Connections connections) throws Exception {
+            BlockingBuffer inputBufferOne = connections.getNamedInputBuffer("my input one");
+            BlockingBuffer inputBufferTwo = connections.getNamedInputBuffer("my input two");
+            BlockingBuffer defaultOutputBuffer = connections.getOutputBuffer();
+
+            Object obj1 = inputBufferOne.take();
+            Object obj2 = inputBufferTwo.take();
+
+            while (!cancelled() && obj1 != null && obj2 != null) {
+
+                // do some work and write an object to defaultOutputBuffer
+            
+                obj1 = inputBufferOne.take();
+                obj2 = inputBufferTwo.take();
+            }
+        }
+    }
+-----------------------------------------------------------------------
+
+=======================================================================
+    
 Performance
 
     Now, what was the advantage of writing this text comparison functionality using a 

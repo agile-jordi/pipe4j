@@ -39,7 +39,7 @@ public interface Connections extends Closeable {
 	/**
 	 * @return Default input stream or null if not available
 	 */
-	InputStream getIntputStream();
+	InputStream getInputStream();
 
 	/**
 	 * @return Default input buffer or null if not available
@@ -51,27 +51,87 @@ public interface Connections extends Closeable {
 	 */
 	BlockingBuffer getOutputBuffer();
 
+	/**
+	 * @param name
+	 *            Connection name
+	 * @return Named output stream
+	 */
 	OutputStream getNamedOutputStream(String name);
 
+	/**
+	 * @param name
+	 *            Connection name
+	 * @return named input stream
+	 */
 	InputStream getNamedInputStream(String name);
 
+	/**
+	 * @param name
+	 *            Connection name
+	 * @return named input object buffer
+	 */
 	BlockingBuffer getNamedInputBuffer(String name);
 
+	/**
+	 * @param name
+	 *            Connection name
+	 * @return named output object buffer
+	 */
 	BlockingBuffer getNamedOutputBuffer(String name);
 
+	/**
+	 * @param name
+	 *            Connection name
+	 * @param inputStream
+	 *            New input stream
+	 */
 	void setNamedInputStream(String name, InputStream inputStream);
 
+	/**
+	 * @param name
+	 *            Connection name
+	 * @param outputStream
+	 *            New output stream
+	 */
 	void setNamedOutputStream(String name, OutputStream outputStream);
 
+	/**
+	 * @param name
+	 *            Connection name
+	 * @param outputBuffer
+	 *            New output object buffer
+	 */
 	void setNamedOutputBuffer(String name, BlockingBuffer outputBuffer);
 
+	/**
+	 * @param outputBuffer
+	 *            New default output object buffer
+	 */
 	void setOutputBuffer(BlockingBuffer outputBuffer);
 
+	/**
+	 * @param name
+	 *            Connection name
+	 * @param inputBuffer
+	 *            New input object buffer
+	 */
 	void setNamedInputBuffer(String name, BlockingBuffer inputBuffer);
 
+	/**
+	 * @param inputBuffer
+	 *            New default input object buffer
+	 */
 	void setInputBuffer(BlockingBuffer inputBuffer);
 
+	/**
+	 * @param inputStream
+	 *            New default input stream
+	 */
 	void setInputStream(InputStream inputStream);
 
+	/**
+	 * @param outputStream
+	 *            new default output stream
+	 */
 	void setOutputStream(OutputStream outputStream);
 }

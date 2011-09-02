@@ -64,7 +64,7 @@ public class NonLinearPipelineBuilder implements PipelineBuilder {
 		return pipeline.get(pipe);
 	}
 
-	public void createStreamConnection(Pipe source, Pipe sink) {
+	public void createDefaultStreamConnection(Pipe source, Pipe sink) {
 		createStreamConnection(source, DEFAULT_CONNECTION, sink,
 				DEFAULT_CONNECTION);
 	}
@@ -99,7 +99,7 @@ public class NonLinearPipelineBuilder implements PipelineBuilder {
 
 	}
 
-	public void createObjectConnection(Pipe source, Pipe sink) {
+	public void createDefaultObjectConnection(Pipe source, Pipe sink) {
 		createObjectConnection(source, DEFAULT_CONNECTION, sink,
 				DEFAULT_CONNECTION);
 	}
