@@ -9,11 +9,11 @@
 
 	<name>Pipe4j</name>
 	<url>http://maven.apache.org</url>
-	<tagBase>file://${project.build.directory}/tags</tagBase>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<relativizeDecorationLinks>false</relativizeDecorationLinks>
+		<tagBase>file://${project.build.directory}/tags</tagBase>
 	</properties>
 
 	<developers>
