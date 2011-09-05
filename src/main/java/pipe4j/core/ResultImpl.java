@@ -43,11 +43,6 @@ public class ResultImpl implements Result {
 	}
 
 	@Override
-	public boolean hasException() {
-		return !exceptionList.isEmpty();
-	}
-
-	@Override
 	public Type getType() {
 		return type;
 	}

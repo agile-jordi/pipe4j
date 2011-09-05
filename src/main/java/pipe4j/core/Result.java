@@ -25,8 +25,6 @@ public interface Result extends ExceptionWrapper {
 
 	Result.Type getType();
 
-	boolean hasException();
-
 	long getEndTimestamp();
 
 	long getStartTimestamp();
