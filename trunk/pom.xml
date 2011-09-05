@@ -139,4 +139,8 @@
 		<connection>scm:svn:http://pipe4j.googlecode.com/svn/trunk/</connection>
 		<url>http://code.google.com/p/pipe4j/source/browse</url>
 	</scm>
+	<issueManagement>
+		<system>Google Code</system>
+		<url>http://code.google.com/p/icefusion/issues/list</url>
+	</issueManagement>
 </project>
