@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>pipe4j</groupId>
 	<artifactId>pipe4j</artifactId>
-	<version>1.0</version>
+	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Pipe4j</name>
@@ -108,14 +109,14 @@
 				<version>2.3</version>
 				<reportSets>
 					<reportSet>
-						<configuration />
+						<configuration></configuration>
 						<reports>
 							<report>jxr</report>
 						</reports>
 					</reportSet>
 					<reportSet>
 						<id>aggregate</id>
-						<configuration />
+						<configuration></configuration>
 						<reports>
 							<report>aggregate</report>
 						</reports>
@@ -134,8 +135,8 @@
 	Please refer to documentation section for more information.
 	</description>
 	<scm>
-		<developerConnection>scm:svn:https://pipe4j.googlecode.com/svn/tags/pipe4j-1.0</developerConnection>
-		<connection>scm:svn:http://pipe4j.googlecode.com/svn/tags/pipe4j-1.0</connection>
-		<url>http://code.google.com/p/pipe4j/source/browse/tags/pipe4j-1.0</url>
+		<developerConnection>scm:svn:https://pipe4j.googlecode.com/svn/trunk/</developerConnection>
+		<connection>scm:svn:http://pipe4j.googlecode.com/svn/trunk/</connection>
+		<url>http://code.google.com/p/pipe4j/source/browse</url>
 	</scm>
 </project>
