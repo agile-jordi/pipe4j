@@ -115,7 +115,7 @@ The NonLinearPipelineBuilder class is the proper implementation of the PipelineB
  * createDefaultObjectConnection(Pipe source, Pipe sink)    
   Connects source and sink through a BlockingBuffer. The buffer will be set as source's default output and sink's default input.  
  * createObjectConnection(Pipe source, String sourceConnectionName, Pipe sink, String sinkConnectionName)
-  Connects source and sink through a BlockingBuffer. The buffer will be set as source's output buffer named after the sourceConnectionName parameter, and sink's input buffer named after the sinkConnectionName parameter. To find more information on named connections check the [Named_Connections] section.
+  Connects source and sink through a BlockingBuffer. The buffer will be set as source's output buffer named after the sourceConnectionName parameter, and sink's input buffer named after the sinkConnectionName parameter. To find more information on named connections check the [Quickstart#Named_Connections] section.
  * createDefaultStreamConnection(Pipe source, Pipe sink)    
   Connects source and sink through a pair of InputStream and OutputStream. The OutputStream will be set as source's default output and the InputStream as sink's default input.    
  * createStreamConnection(Pipe source, String sourceConnectionName, Pipe sink, String sinkConnectionName)
