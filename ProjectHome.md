@@ -1,0 +1,3 @@
+The goal is to process significant amounts of data efficiently, avoiding memory issues and maximizing resource usage.
+The proposed solution is a programming model where data processing is divided into separate units of work (pipes), each implementing simple callback interfaces and running in separate threads.
+Pipe4j supports both linear and non-linear pipelines of pipes that read or write streams of bytes or java objects.

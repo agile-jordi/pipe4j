@@ -1,0 +1,223 @@
+
+
+# What You Need #
+
+All you need to start using Pipe4j is to add the core jar file to your classpath (see download secion from website). No configuration is required; Pipe4j does not use any configuration files.
+
+# My First Pipeline #
+
+In this example we will emulate the following unix pipeline:
+
+```
+    cat foo.txt | gzip -c > foo.gz
+```
+
+To achieve the same, our Pipe4j pipeline will be composed by three pipes: one to read the foo.txt file, one to gzip the stream and one to write the foo.gz file. These three pipe implementations are shipped with Pipe4j, amongst many others. The implementation classes are: FileIn, GZipPipe and FileOut. The sample below shows how to build and run this pipeline using the LinearPipeline facade class:
+
+```
+    LinearPipeline.run(
+        new FileIn("foo.txt"), 
+        new GZipPipe(),
+        new FileOut("foo.gz"));
+```
+
+The following steps were performed in this example:
+
+  1. The three required pipe implementations where instantiated and passed to the facade
+  1. The facade called LinearPipelineBuilder to assemble a list of java.util.concurrent.Callable instances
+  1. The facade called PipelineExecutor, passing the list of Callable instances
+  1. The executor started three thread to run each Callable instance
+  1. Each thread executed a Callable instance, which is a wrapper that delegates work to the actual pipe doing some setup and cleanup before and after
+  1. Each pipe implementation is executed, reading data from the previous pipe, doing some work and writing data to the next pipe
+  1. The executor waited for all threads to complete
+  1. The executor returned a PipelineInfo instance with details of the execution, which in this example was ignored
+
+As you may have guessed, the pipes communicated with each other through PipedInputStream and PipedOutputStream connected pairs. The FileIn and FileOut pipes are the head and tail of the pipeline, so FileIn reads from an actual file and is not connected to a previous pipe, and FileOut writes to an actual file and is not connect to a following pipe.
+
+# Object Pipelines #
+
+Beside byte streams, pipes can also communicate by passing java objects around. Instead of InputStream and OutputStream, communication is handled by an instance of the BlockingBuffer interface. This is a very simple interface only two methods: "put" and "take". The "put" method is called to add (write) an object to the buffer, blocking the calling thread if the buffer is full. The "take" method on the other hand is called to remove (read) an object from the buffer, blocking the calling thread if the buffer happens to be empty. In the follow example a collection of objects will be written into a database table:
+
+```
+    PreparedStatement ps = conn.prepareStatement("insert into x values(?)");
+
+    Collection<Integer> coll = new ArrayList<Integer>();
+    for (int i = 1; i <= 10; i++) {
+	    coll.add(i);
+    }
+
+    LinearPipeline.run(new CollectionInAdaptor(coll),
+		new PreparedStatementOut(ps));
+		
+    ps.close();
+```
+
+The steps performed are the same as the first example. What is different is the way the values (in this case Integer instances) were communicated between pipes. As serializing and deserializing the Integer instances would be costly, we prefer to pass forward the object references. The CollectionInAdaptor pipe is a head pipe, feeding the pipeline with the contents of the provided collection. For each object returned by the collection's Iterator a call to BlobkingBuffer.put(Object) is made.
+The PreparedStatementOut pipe is a tail pipe, sinking the data produced by the pipeline to a database. This pipe will try to read as much objects as possible, calling BlockingBuffer.take(), and bind them to the provided prepared statement.
+
+The statement will be executed in batches and by the end of the pipeline execution all the integers from the provided collection will be inserted into table "x".
+
+# Verifying Results #
+
+> TODO
+
+# Timeout and Aborts #
+
+> TODO
+
+# Non-Linear Pipelines #
+
+All examples so far involved building and executing linear pipelines, where each pipe reads from the previous pipe and writes to the next pipe. Linear pipelines are structured as arrays or lists of pipes, where the flow of data is implicit by the ordered nature of the pipeline. Non-Linear pipelines on the other hand are structured like networks, where nodes can be connected to any number of other nodes. If one needs to run pipes that read and/or write from/to more that one pipe then non-linear pipelines is the way to go. These are flexible enough to model any sort of pipeline, including linear pipelines. The LinearPipeline facade delegates the building of the pipeline to LinearPipelineBuilder, which in turn delegates to NonLinearPipelineBuilder. The net result is a network of pipes that look like a ordered list of pipes.
+
+The following example is a simple usage of a non-linear pipeline. Suppose we need to compare two text files line by line and provide a result in the end saying if the two files are "identical" or "different". This pipeline must be fed by two files, therefore it needs two head pipes.
+
+```
+    NonLinearPipelineBuilder builder = new NonLinearPipelineBuilder();
+
+    // The two heads of our pipeline
+    FileIn input1 = new FileIn("file1.txt");
+    FileIn input2 = new FileIn("file2.txt");
+
+    // Pipes to read stream into lines (String)
+    LineReaderPipe lineReaderOne = new LineReaderPipe();
+    LineReaderPipe lineReaderTwo = new LineReaderPipe();
+
+    // Add the file inputs and the line readers
+    // The pairs will be connected via InputStream and OutputStream pairs
+    builder.createStreamConnection(input1, lineReaderOne);
+    builder.createStreamConnection(input2, lineReaderTwo);
+
+    // Pipe to compare two String instances and write result
+    TextLineComparatorPipe comparator = new TextLineComparatorPipe();
+	
+    // Connect line readers to comparator pipe
+    builder.createObjectConnection(lineReaderOne, PipelineBuilder.DEFAULT_CONNECTION, 
+        comparator, TextLineComparatorPipe.INPUT_ONE);
+    builder.createObjectConnection(lineReaderTwo, PipelineBuilder.DEFAULT_CONNECTION, 
+        comparator, TextLineComparatorPipe.INPUT_TWO);
+
+    // Placeholder for result ("different" or "identical")
+    StringOut out = new StringOut();
+    builder.createStreamConnection(comparator, out);
+
+    // Ask builder for final representation of the pipeline and execute it!
+    PipelineExecutor.execute(0, builder.build());
+	
+    // Result was written to StringOut
+    System.out.println(out.getString());
+```
+
+## Building Non-Linear Pipelines ##
+
+The NonLinearPipelineBuilder class is the proper implementation of the PipelineBuilder interface for building non-linear pipelines. The semantic is to add connected pairs instead of pipes alone. When a pair is added, both ends will be added as well, if not already contained in the pipeline. Connected pairs can be added by calling any of the following methods:
+
+  * createDefaultObjectConnection(Pipe source, Pipe sink)
+> > Connects source and sink through a BlockingBuffer. The buffer will be set as source's default output and sink's default input.
+  * createObjectConnection(Pipe source, String sourceConnectionName, Pipe sink, String sinkConnectionName)
+> > Connects source and sink through a BlockingBuffer. The buffer will be set as source's output buffer named after the sourceConnectionName parameter, and sink's input buffer named after the sinkConnectionName parameter. To find more information on named connections check the [Quickstart#Named\_Connections](Quickstart#Named_Connections.md) section.
+  * createDefaultStreamConnection(Pipe source, Pipe sink)
+> > Connects source and sink through a pair of InputStream and OutputStream. The OutputStream will be set as source's default output and the InputStream as sink's default input.
+  * createStreamConnection(Pipe source, String sourceConnectionName, Pipe sink, String sinkConnectionName)
+> > Connects source and sink through a pair of InputStream and OutputStream. The OutputStream will be set as source's output stream named after the sourceConnectionName parameter, and sink's input stream named after the sinkConnectionName parameter. To find more information on named connections check the [Quickstart#Named\_Connections](Quickstart#Named_Connections.md) section.
+
+The constant PipelineBuilder.DEFAULT\_CONNECTION signals that the connection should be bound as default input or output.
+
+## Named Connections ##
+
+The Pipe interface - implemented by all pipes - declares a "run" method which received one single argument: an instance of the Connections interface. The Connections interface is responsible for managing all connections used by the pipe, offering bind and lookup of connections based on their names via getNamedxxx(String name) and setNamedxxx(String name, xxxx) methods.
+
+If a new pipe must implemented and it is required that it can communicate with multiple pipes, then it should extend from AbstractPipe and lookup for the required connections using the Connections instance. Connections allows to bind and lookup connections based on their names via getNamedxxx(String name) and setNamedxxx(String name, xxxx) methods. Please check [Quickstart#Writing\_Your\_Own\_Pipe](Quickstart#Writing_Your_Own_Pipe.md) for more details.
+
+# Writing Your Own Pipe #
+
+All pipes must implement the Pipe interface, which is simple and declared only two methods:
+
+  * cancel()
+> > Requests that pipe stops execution, gracefully returning from the "run" method and cleaning and resources it may have opened, except for the connections managed by the Connections instance.
+  * run(Connections connections)
+> > Execute pipe, possibly reading and writing to other pipes. Receives an instance of the Connections interface as parameter. The Connections interface is responsible for managing all connections used by the associated pipe.
+
+It is recommended that all pipe implementations extend from the AbstractPipe abstract class, which handles cancel requests. On a linear pipeline, pipes will only use the default input and output connections, which can be retrieved by calling Connections methods "getOutputStream", "getInputStream", "getOutputBuffer" and "getInputBuffer". For that matter it is more convenient to write your own pipes by extending either SimpleStreamPipe or SimpleObjectPipe abstract classes, which declare abstract "run" methods receiving only the default connections as parameters.
+
+Pipe implementations usually involve a main loop, where the pipe tries to read the next chunk of the input stream or new object from the input buffer. It is highly recommended that this main loop also checks if cancel was requested, by calling AbstractPipe.cancelled() method. A pipeline execution may be requested to be aborted or it may timeout. The PipelineExecutor will do its best, trying to interrupt the pipe threads, but it is safer if all pipe implementations respect the cancel request and exit gracefully.
+
+Sample stream pipe implementation:
+
+```
+    public class SampleStreamPipe extends SimpleStreamPipe {
+        @Override
+        protected void run(InputStream inputStream, OutputStream outputStream) throws Exception {
+            byte[] buffer = new byte[8192];
+            while (!cancelled() && (numRead = inputStream.read(buffer)) != -1) {
+                // Do some work and write data to outputStream
+            }
+        }
+    }
+```
+
+Sample object pipe implementation:
+
+```
+    public class PreparedStatementOut extends SimpleObjectPipe {
+        @Override
+        protected void run(BlockingBuffer inputBuffer, BlockingBuffer outputBuffer) throws Exception {
+            Object obj;
+            while (!cancelled() && (obj = inputBuffer.take()) != null) {
+                // Do some work and put an object into outputBuffer
+            }
+        }
+    }
+```
+
+If a new pipe must implemented and it is required that it can communicate with multiple pipes, then it should extend from AbstractPipe alone and lookup for the required connections using the Connections instance. To find more information on named connections check the [Quickstart#Named\_Connections](Quickstart#Named_Connections.md) section.
+
+Sample pipe with multiple connections:
+
+```
+    public class TextLineComparatorPipe extends AbstractPipe {
+        @Override
+        public void run(Connections connections) throws Exception {
+            BlockingBuffer inputBufferOne = connections.getNamedInputBuffer("my input one");
+            BlockingBuffer inputBufferTwo = connections.getNamedInputBuffer("my input two");
+            BlockingBuffer defaultOutputBuffer = connections.getOutputBuffer();
+
+            Object obj1 = inputBufferOne.take();
+            Object obj2 = inputBufferTwo.take();
+
+            while (!cancelled() && obj1 != null && obj2 != null) {
+
+                // do some work and write an object to defaultOutputBuffer
+            
+                obj1 = inputBufferOne.take();
+                obj2 = inputBufferTwo.take();
+            }
+        }
+    }
+```
+
+# Performance #
+
+Now, what was the advantage of writing this text comparison functionality using a pipeline?
+
+First you shouldn't have memory issues as you are processing data in chunks as opposed to loading the whole file in memory. The total memory used by a pipeline is usually the sum of the buffers (1 kilobyte for byte streams, undefined for object buffers) plus memory being used by each pipe.
+
+Second the pipeline performs faster because each pipe runs in parallel and has the illusion that the input data is promptly available to be read, and the next pipe is promptly available to receive the result. Once a pipeline is full (all pipes are processing some data and not waiting to read input), it is expected that data is produced at the tail of the pipeline in a speed matching the slowest pipe of the
+pipeline. In detail:
+
+  1. The two files are being continuously read in parallel, only waiting if the line reader pipes are not fast enough to consume the data;
+  1. The line readers are continuously transforming bytes read from files into String objects, only waiting if files can't be read fast enough or if the comparator pipe can't consume the Strings fast enough;
+  1. The comparator pipe is continuously comparing the String instances, only waiting if the line reader pipes can't produce Strings fast enough.
+
+## When to use pipelines ##
+
+If it is possible to divide a task into separate pieces of code, then the overhead introduced by running pipes in parallel will payoff if:
+
+  1. Processing considerable amounts of data
+  1. Parallelizing CPU bound pipes in a multi core machine
+
+## When not to ##
+
+Apart from not being able to divide a task into separate pieces of code, the overhead introduced by running pipes in parallel will not payoff if:
+
+  1. Processing small amount of data
+  1. Parallelizing CPU bound pipes in a single core machine
